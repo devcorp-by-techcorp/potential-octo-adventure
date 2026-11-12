@@ -7,7 +7,7 @@ across handset ↔ tablet and both orientations from **measured runtime geometry
 ## Run
 
 ```bash
-npm install          # from repo root (workspaces)
+npm install --ignore-scripts   # from repo root (workspaces)
 npm run mobile       # or: npm run start --workspace @illuminate/mobile
 ```
 
@@ -63,6 +63,61 @@ apps/mobile/
     └── components/         Icon · ui (Button/Card/Badge/…) · AppShell · Luma · IntakeScreen ·
                             BookingDetail · finance/ (register, audit trail, BAS, reports, accounts)
 ```
+
+## Illuminate Kids
+
+The children's photography branch (early childhood centres, kinders, schools, sports
+clubs, performing arts) has its own surfaces and its own look, reachable from the main
+marketing page (header tag and a section below Collections).
+
+```
+app/kids/                    PUBLIC + PORTALS — Kids visual kit (cream, ink borders, green/gold)
+├── index.tsx                landing · organisation enquiry sheet · Luma chat (no prompt buttons)
+├── register.tsx             parent registration: code → children + consent → account
+└── org.tsx                  organisation dashboard: Overview · Groups · Shoot tracker · Inbox · Docs
+app/(admin)/illuminate-kids.tsx   STUDIO Kids workspace — studio design system:
+                             Dashboard · Bookings · Shoot Tracker · Inquiries · Organisations · Finance
+src/data/kids.ts             records, seeds, consent tiers, enquiry state machine, registration logic
+src/state/kids.tsx           one shared store for all four surfaces
+src/components/kids/parts.tsx   Kids UI kit
+src/components/KidsOverview.tsx Kids summaries on the main Dashboard / Bookings / Inquiries / Tracker
+```
+
+Rules the code enforces:
+
+- **Consent first.** Five options per child, all off by default. A child with none is
+  flagged as excluded from all photos. The sibling option appears only once children
+  are sibling-linked.
+- **Names stay private until registration.** The organisation lists student names; the
+  studio workspace resolves a name and unique number only for registered children and
+  shows a count for everyone else.
+- **One organisation at a time.** Name matching across groups and sibling linking never
+  leave the organisation the linking code belongs to, and nothing is linked without the
+  parent ticking it.
+- **Permanent unique number** (`IK-NNNNNN`) per child, shown on the parent account, the
+  organisation roster and the studio workspace.
+- **Tentative enquiries.** A public enquiry is a tentative request; the studio moves it
+  only through allowed transitions, each appended to an audit trail. No pricing, holds
+  or reply-time promises on public Kids surfaces.
+- **Separation.** The main studio pages show Kids operations (company-wide view) but no
+  child details and no Kids finance; the Kids workspace shows no studio data, and Kids
+  finance never appears in studio Finance.
+
+Demo linking codes: `ILK-7305`, `ILK-2190`, `ILK-4821`.
+
+**Luma (Kids).** Set `EXPO_PUBLIC_LUMA_ENDPOINT` to a backend route that accepts
+`POST { surface, system, messages }` and returns `{ text }`; the app sends the policy
+prompt in `src/data/kids.ts` and never holds a model key. Without it, or on failure,
+Luma answers from a small offline fallback.
+
+## Tests
+
+`npm run typecheck` and `npm run e2e` (from `apps/mobile`). The e2e scripts need
+Playwright with Chromium available to Node; they export the web build, render every
+screen at five viewport sizes checking for runtime errors and horizontal overflow, then
+drive the Kids workflows end to end (enquiry → studio inquiry transitions, parent
+registration with consent, cross-group match, sibling link, organisation portal, and
+the privacy and finance separation rules).
 
 ## How responsiveness works (Mechanism Law)
 

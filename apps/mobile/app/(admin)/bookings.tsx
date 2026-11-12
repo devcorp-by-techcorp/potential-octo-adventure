@@ -13,6 +13,7 @@ import { Eyebrow, Body, Card, Badge } from "~/components/ui";
 import { Icon } from "~/components/Icon";
 import { BookingDetail } from "~/components/BookingDetail";
 import { BOOKINGS, Booking, money$, dateLabel } from "~/data/seed";
+import { KidsOverview } from "~/components/KidsOverview";
 
 export default function Bookings() {
   const { theme, space } = useTokens();
@@ -38,7 +39,8 @@ export default function Bookings() {
                 <View style={{ alignItems: "flex-end" }}>
                   <Badge label={b.status} tone={b.status === "confirmed" ? "success" : "warning"} />
                   <Text style={{ fontFamily: "CormorantGaramond_600SemiBold", fontSize: 16, color: theme.ink.primary, marginTop: 6 }}>{money$(b.value)}</Text>
-                </View>
+                  <View style={{ marginTop: 24 }}><KidsOverview kind="bookings" /></View>
+    </View>
               </Card>
             </Pressable>
           );

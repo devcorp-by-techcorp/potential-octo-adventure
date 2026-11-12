@@ -12,6 +12,7 @@ const items: NavItem[] = [
   { name: "bookings", label: "Bookings", icon: "calendar", href: "/(admin)/bookings" },
   { name: "inquiries", label: "Inquiries", icon: "inbox", href: "/(admin)/inquiries", badge: INQUIRIES_FULL.filter((q) => q.status === "new").length },
   { name: "tracker", label: "Shoot Tracker", icon: "camera", href: "/(admin)/tracker" },
+  { name: "illuminate-kids", label: "Illuminate Kids", icon: "heart", href: "/(admin)/illuminate-kids" },
   { name: "contacts", label: "Contacts", icon: "users", href: "/(admin)/contacts" },
   { name: "staff", label: "Studio Staff", icon: "user", href: "/(admin)/staff" },
   { name: "documents", label: "Documents", icon: "doc", href: "/(admin)/documents" },

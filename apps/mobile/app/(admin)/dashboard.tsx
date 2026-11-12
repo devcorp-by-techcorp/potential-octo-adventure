@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card, Badge } from "~/components/ui";
+import { KidsOverview } from "~/components/KidsOverview";
 import { BOOKINGS, INQUIRIES_FULL, CONTACTS, ACTIVITY, PHASES, dayOf, monShort, STUDIO_TODAY } from "~/data/seed";
 
 export default function Dashboard() {
@@ -44,6 +45,9 @@ export default function Dashboard() {
           </Card>
         ))}
       </View>
+
+      {/* Company-wide view: Kids operations surface here; Kids finance and child details never do. */}
+      <KidsOverview kind="dashboard" />
 
       <View style={{ flexDirection: twoPanel ? "row" : "column", gap: space.s5, alignItems: "flex-start" }}>
         <View style={{ flex: twoPanel ? 1 : undefined, width: twoPanel ? undefined : "100%" }}>

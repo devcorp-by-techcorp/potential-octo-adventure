@@ -9,7 +9,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "e2e": "expo export --platform web --output-dir dist-e2e && node e2e/screens.js dist-e2e && node e2e/kids.js dist-e2e"
   },
   "dependencies": {
     "@expo-google-fonts/cinzel": "^0.2.3",
@@ -19,6 +20,7 @@
     "@expo/metro-runtime": "~3.2.3",
     "@illuminate/tokens": "*",
     "expo": "~51.0.0",
+    "expo-clipboard": "~6.0.3",
     "expo-constants": "~16.0.0",
     "expo-font": "~12.0.0",
     "expo-image": "~1.13.0",

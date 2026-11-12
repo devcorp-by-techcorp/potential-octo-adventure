@@ -9,6 +9,8 @@ import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card, Badge, Button } from "~/components/ui";
 import { Icon } from "~/components/Icon";
 import { INQUIRIES_FULL, Inquiry, dateLabel, dateShort } from "~/data/seed";
+import { KidsOverview } from "~/components/KidsOverview";
+
 
 export default function Inquiries() {
   const { theme, space } = useTokens();
@@ -93,6 +95,7 @@ export default function Inquiries() {
         {twoPanel || !open ? list : null}
         {reader}
       </View>
+      {twoPanel || !open ? <KidsOverview kind="inquiries" /> : null}
     </ScrollView>
   );
 }

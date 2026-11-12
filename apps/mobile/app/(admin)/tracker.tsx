@@ -9,6 +9,8 @@ import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card } from "~/components/ui";
 import { Icon } from "~/components/Icon";
 import { BOOKINGS, PHASES, dateLabel } from "~/data/seed";
+import { KidsOverview } from "~/components/KidsOverview";
+
 
 export default function Tracker() {
   const { theme, space } = useTokens();
@@ -85,6 +87,7 @@ export default function Tracker() {
           </View>
         ) : null}
       </View>
+      <KidsOverview kind="tracker" />
     </ScrollView>
   );
 }

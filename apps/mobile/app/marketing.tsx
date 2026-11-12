@@ -21,6 +21,8 @@ import { Eyebrow, Display, Body, Card, Button, Badge } from "~/components/ui";
 import { Icon } from "~/components/Icon";
 import { LogoBanner, LogoMark } from "~/components/Logo";
 import { MARKETING, PROCESS, PACKAGES, PROOFS, proofUri } from "~/data/seed";
+import { K } from "~/data/kids";
+import { KidsTag } from "~/components/kids/parts";
 
 const HERO = proofUri(PROOFS[2].pid, 1400);
 
@@ -70,6 +72,9 @@ export default function Marketing() {
         <Text numberOfLines={1} style={{ flex: 1, minWidth: 0, fontFamily: "Cinzel_600SemiBold", fontSize: fs(11.5), letterSpacing: 2.4, color: "#f4ebd9" }}>
           ILLUMINATE STUDIOS
         </Text>
+        <Pressable onPress={() => router.push("/kids")} accessibilityRole="link" accessibilityLabel="Illuminate Kids" style={{ minHeight: 44, justifyContent: "center", paddingHorizontal: 6 }}>
+          <KidsTag />
+        </Pressable>
         <Pressable onPress={luma.open} accessibilityLabel="Ask Luma" style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(201,169,110,0.4)", borderRadius: radius.xs }}>
           <Icon name="sparkle" size={19} color="#c9a96e" />
         </Pressable>
@@ -162,6 +167,25 @@ export default function Marketing() {
               </Card>
             ))}
           </View>
+        </View>
+
+        {/* Illuminate Kids entry */}
+        <View style={{ paddingHorizontal: gutter, paddingTop: space.s7 }}>
+          <Pressable onPress={() => router.push("/kids")} accessibilityRole="link" accessibilityLabel="Visit Illuminate Kids. Photos for centres, schools and clubs."
+            style={{ overflow: "hidden", flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16, padding: Math.max(20, gutter), borderRadius: 24, backgroundColor: K.ground, borderWidth: 2, borderColor: K.ink }}>
+            <View style={{ position: "absolute", right: -50, top: -60, width: 180, height: 180, borderRadius: 90, backgroundColor: K.gold, opacity: 0.3 }} />
+            <View style={{ flex: 1, minWidth: 220, gap: 8 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <Text style={{ fontFamily: "Cinzel_600SemiBold", fontSize: 12, letterSpacing: 2.2, color: K.ink }}>ILLUMINATE</Text>
+                <KidsTag small />
+              </View>
+              <Text style={{ fontFamily: "CormorantGaramond_700Bold", fontSize: fs(28), lineHeight: fs(30), color: K.ink }}>Photos for centres, schools and clubs</Text>
+              <Text style={{ fontFamily: "Inter_400Regular", fontSize: fs(13.5), lineHeight: fs(13.5) * 1.55, color: K.body, maxWidth: 520 }}>Early childhood centres, kindergartens, schools, sports clubs and dance schools. Parents register with their organisation's code.</Text>
+            </View>
+            <View style={{ minHeight: 48, justifyContent: "center", paddingHorizontal: 20, borderRadius: 999, backgroundColor: K.ink }}>
+              <Text style={{ fontFamily: "Inter_700Bold", fontSize: 14, color: K.ground }}>Visit Illuminate Kids →</Text>
+            </View>
+          </Pressable>
         </View>
 
         {/* Print collection preview */}
