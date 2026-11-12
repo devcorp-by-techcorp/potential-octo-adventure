@@ -39,13 +39,13 @@ export default function Bookings() {
                 <View style={{ alignItems: "flex-end" }}>
                   <Badge label={b.status} tone={b.status === "confirmed" ? "success" : "warning"} />
                   <Text style={{ fontFamily: "CormorantGaramond_600SemiBold", fontSize: 16, color: theme.ink.primary, marginTop: 6 }}>{money$(b.value)}</Text>
-                  <View style={{ marginTop: 24 }}><KidsOverview kind="bookings" /></View>
-    </View>
+                </View>
               </Card>
             </Pressable>
           );
         })}
       </View>
+      <View style={{ marginTop: 24 }}><KidsOverview kind="bookings" /></View>
     </View>
   );
 

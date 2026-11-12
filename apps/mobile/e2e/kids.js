@@ -118,6 +118,8 @@ const res = []; const ok = (name, cond, extra='') => res.push(`${cond ? 'PASS' :
       t = await text(); ok(T('main dashboard carries Kids overview'), /KIDS BOOKINGS|Kids bookings/i.test(t) && /Open Kids/i.test(t));
       ok(T('main dashboard exposes no child names'), !/Oliver Thompson|Ruby Singh|Mia Thompson/.test(t));
       await shot('admin-dashboard');
+      await nav('/bookings'); t = await text();
+      ok(T('bookings page shows the Kids summary once, outside the rows'), (t.match(/ILLUMINATE KIDS BOOKINGS/gi) || []).length === 1, String((t.match(/ILLUMINATE KIDS BOOKINGS/gi) || []).length));
       await nav('/illuminate-kids'); t = await text();
       ok(T('kids workspace dashboard'), /Tentative requests/i.test(t) && /Registration progress/i.test(t)); ok(T('kids workspace no overflow'), (await ov()) <= 0, 'ov=' + await ov());
       await shot('admin-kids-dash');
