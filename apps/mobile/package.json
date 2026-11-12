@@ -10,7 +10,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "e2e": "expo export --platform web --output-dir dist-e2e && node e2e/screens.js dist-e2e && node e2e/kids.js dist-e2e"
+    "e2e": "expo export --platform web --output-dir dist-e2e && node e2e/finance.js && node e2e/screens.js dist-e2e && node e2e/kids.js dist-e2e && node e2e/studio.js dist-e2e"
   },
   "dependencies": {
     "@expo-google-fonts/cinzel": "^0.2.3",

@@ -57,10 +57,15 @@ export const Reports: React.FC<{ settings: FinSettings; period: Period; invoices
         <View style={{ marginTop: 12 }}>
           <RptRow label="Opening bank balance" value={cf.opening} />
           <RptRow label="Cash receipts (incl. GST collected)" value={cf.inflow} />
-          <RptRow label="Cash payments (incl. GST paid)" value={cf.outflow} neg />
+          <RptRow label="Cash payments (incl. GST paid, wages net of PAYG)" value={cf.outflow} neg />
           <RptRow label="Net cash movement" value={cf.net} strong />
           <RptRow label="Closing bank balance" value={cf.closing} strong gold />
         </View>
+        {cf.withheld > 0 ? (
+          <Text style={{ fontFamily: "Inter_400Regular", fontSize: 11.5, lineHeight: 17, color: theme.ink.tertiary, marginTop: 10 }}>
+            {finAUD(cf.withheld)} of PAYG was withheld from wages this period. It is still in the bank and is owed to the ATO with the BAS.
+          </Text>
+        ) : null}
       </Card>
 
       <Card style={{ padding: 18 }}>

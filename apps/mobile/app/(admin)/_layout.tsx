@@ -1,16 +1,17 @@
+import React from "react";
 import { AppShell, NavItem } from "~/components/AppShell";
 import { FinanceProvider } from "~/state/finance";
-import { INQUIRIES_FULL } from "~/data/seed";
+import { useRecords } from "~/state/records";
 
 /**
  * The nine studio-admin surfaces, in design-system order and icon vocabulary.
  * Nothing from the client portal belongs here — the pre-shoot intake is a
  * client surface and Luma is reached from the header, not the nav.
  */
-const items: NavItem[] = [
+const NAV: NavItem[] = [
   { name: "dashboard", label: "Dashboard", icon: "sparkle", href: "/(admin)/dashboard" },
   { name: "bookings", label: "Bookings", icon: "calendar", href: "/(admin)/bookings" },
-  { name: "inquiries", label: "Inquiries", icon: "inbox", href: "/(admin)/inquiries", badge: INQUIRIES_FULL.filter((q) => q.status === "new").length },
+  { name: "inquiries", label: "Inquiries", icon: "inbox", href: "/(admin)/inquiries" },
   { name: "tracker", label: "Shoot Tracker", icon: "camera", href: "/(admin)/tracker" },
   { name: "illuminate-kids", label: "Illuminate Kids", icon: "heart", href: "/(admin)/illuminate-kids" },
   { name: "contacts", label: "Contacts", icon: "users", href: "/(admin)/contacts" },
@@ -21,6 +22,8 @@ const items: NavItem[] = [
 ];
 
 export default function AdminLayout() {
+  const { newInquiryCount } = useRecords();
+  const items = React.useMemo(() => NAV.map((i) => (i.name === "inquiries" ? { ...i, badge: newInquiryCount } : i)), [newInquiryCount]);
   return (
     <FinanceProvider>
       <AppShell items={items} roleLabel="Studio Admin" maxTabs={4} />

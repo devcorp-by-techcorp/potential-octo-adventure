@@ -12,7 +12,7 @@ import { Icon } from "./Icon";
 import { lumaReply, LUMA_OPENERS, LUMA_QUICKS } from "~/data/seed";
 import { useSession } from "~/state/session";
 import { useStudio, adminGreeting } from "~/state/studio";
-import { INQUIRIES_FULL } from "~/data/seed";
+import { useRecords } from "~/state/records";
 
 interface Msg { who: "you" | "luma"; text: string; }
 const LumaContext = createContext<{ open: () => void }>({ open: () => {} });
@@ -38,8 +38,9 @@ const LumaDrawer: React.FC<{ visible: boolean; onClose: () => void }> = ({ visib
   // Studio staff are greeted by the name held in Site Content, so a change
   // there is the name Luma uses on the next open.
   const { identity } = useStudio();
+  const { newInquiryCount } = useRecords();
   const openerFor = (p: typeof persona) =>
-    p === "admin" ? adminGreeting(identity, INQUIRIES_FULL.filter((q) => q.status === "new").length) : LUMA_OPENERS[p];
+    p === "admin" ? adminGreeting(identity, newInquiryCount) : LUMA_OPENERS[p];
   const [input, setInput] = useState("");
   // Opener is persona-resolved (public visitor / client / studio) — the drawer
   // is mounted app-wide, so it re-seeds when the persona changes.

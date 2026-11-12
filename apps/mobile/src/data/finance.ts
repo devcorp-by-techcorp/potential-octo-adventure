@@ -241,18 +241,33 @@ export function finPL(period: Period, invoices: FinInvoice[], expenses: Expense[
 }
 
 // ── cash flow ───────────────────────────────────────────────────────────
+/**
+ * Cash that actually leaves the bank for an expense. A wage is paid net of
+ * PAYG withholding: the withheld amount stays in the bank as a liability
+ * (2-120) until it is remitted with the BAS. This is the same amount
+ * `finLedger` credits to the bank account, so cash flow and the ledger agree.
+ */
+export function finCashPaid(e: Expense): number {
+  return finCategory(e.category).wages ? finR2(e.gross - (e.withheld ?? 0)) : e.gross;
+}
+/** PAYG withheld from a wage — owed to the ATO, not yet paid out. */
+const finWithheld = (e: Expense) => (finCategory(e.category).wages ? e.withheld ?? 0 : 0);
+
 export function finCashflow(period: Period, invoices: FinInvoice[], expenses: Expense[], settings: FinSettings) {
   const rIn = (from: string, to: string) => finR2(invoices.filter((i) => i.paid && i.paid >= from && i.paid <= to).reduce((s, i) => s + i.gross, 0));
-  const rOut = (from: string, to: string) => finR2(expenses.filter((e) => e.date >= from && e.date <= to).reduce((s, e) => s + e.gross, 0));
+  const within = (from: string, to: string) => expenses.filter((e) => e.date >= from && e.date <= to);
+  const rOut = (from: string, to: string) => finR2(within(from, to).reduce((s, e) => s + finCashPaid(e), 0));
   const opening = finR2(settings.openingBalance + rIn("2025-07-01", addDays(period.start, -1)) - rOut("2025-07-01", addDays(period.start, -1)));
   const inflow = rIn(period.start, period.end);
   const outflow = rOut(period.start, period.end);
-  return { opening, inflow, outflow, net: finR2(inflow - outflow), closing: finR2(opening + inflow - outflow) };
+  /** PAYG withheld from wages in the period: held in the bank, remitted separately with the BAS. */
+  const withheld = finR2(within(period.start, period.end).reduce((s, e) => s + finWithheld(e), 0));
+  return { opening, inflow, outflow, withheld, net: finR2(inflow - outflow), closing: finR2(opening + inflow - outflow) };
 }
 
 export function finCashToday(invoices: FinInvoice[], expenses: Expense[], settings: FinSettings) {
   const inflow = invoices.filter((i) => i.paid && i.paid <= FIN_TODAY).reduce((s, i) => s + i.gross, 0);
-  const outflow = expenses.filter((e) => e.date <= FIN_TODAY).reduce((s, e) => s + e.gross, 0);
+  const outflow = expenses.filter((e) => e.date <= FIN_TODAY).reduce((s, e) => s + finCashPaid(e), 0);
   return finR2(settings.openingBalance + inflow - outflow);
 }
 

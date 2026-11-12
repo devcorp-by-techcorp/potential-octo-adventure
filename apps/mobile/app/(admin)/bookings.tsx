@@ -12,14 +12,21 @@ import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Body, Card, Badge } from "~/components/ui";
 import { Icon } from "~/components/Icon";
 import { BookingDetail } from "~/components/BookingDetail";
-import { BOOKINGS, Booking, money$, dateLabel } from "~/data/seed";
+import { Booking, money$, dateLabel } from "~/data/seed";
+import { useLocalSearchParams } from "expo-router";
+import { useRecords } from "~/state/records";
 import { KidsOverview } from "~/components/KidsOverview";
 
 export default function Bookings() {
   const { theme, space } = useTokens();
   const { fs, gutter, isWide } = useResponsive();
   const insets = useSafeAreaInsets();
-  const [activeId, setActiveId] = useState<string | null>(isWide ? BOOKINGS[0].id : null);
+  const { bookings: BOOKINGS } = useRecords();
+  const params = useLocalSearchParams<{ booking?: string }>();
+  const linked = Array.isArray(params.booking) ? params.booking[0] : params.booking;
+  const [activeId, setActiveId] = useState<string | null>(linked ?? (isWide ? BOOKINGS[0]?.id ?? null : null));
+  // A booking just created from an inquiry opens straight away.
+  React.useEffect(() => { if (linked) setActiveId(linked); }, [linked]);
   const active = BOOKINGS.find((b) => b.id === activeId) || null;
 
   const List = (

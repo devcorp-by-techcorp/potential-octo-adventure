@@ -1,6 +1,6 @@
 /**
  * Root layout — providers, fonts, and the top-level Stack.
- * Order matters: SafeAreaProvider → Theme → Session → Studio → Portal → Kids → Luma → Stack.
+ * Order matters: SafeAreaProvider → Theme → Session → Studio → Records → Portal → Kids → Luma → Stack.
  * Studio sits above Luma and the shell: both address the user by the identity
  * held in Site Content.
  */
@@ -18,6 +18,7 @@ import { SessionProvider } from "~/state/session";
 import { StudioProvider } from "~/state/studio";
 import { PortalProvider } from "~/state/portal";
 import { KidsProvider } from "~/state/kids";
+import { RecordsProvider } from "~/state/records";
 import { LumaProvider } from "~/components/Luma";
 
 SplashScreen.preventAutoHideAsync();
@@ -37,6 +38,7 @@ export default function RootLayout() {
       <ThemeProvider>
         <SessionProvider>
           <StudioProvider>
+          <RecordsProvider>
             <PortalProvider>
               <KidsProvider>
                 <LumaProvider>
@@ -45,6 +47,7 @@ export default function RootLayout() {
                 </LumaProvider>
               </KidsProvider>
             </PortalProvider>
+          </RecordsProvider>
           </StudioProvider>
         </SessionProvider>
       </ThemeProvider>

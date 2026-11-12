@@ -10,7 +10,8 @@ import { View, Text, ScrollView, Pressable } from "react-native";
 import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card, Badge } from "~/components/ui";
-import { BOOKINGS, dateLabel, dateShort, STUDIO_TODAY } from "~/data/seed";
+import { dateLabel, dateShort, STUDIO_TODAY } from "~/data/seed";
+import { useRecords } from "~/state/records";
 import { FIN_PERIODS, finAUD, finInvoices, type Period } from "~/data/finance";
 import { useFinance } from "~/state/finance";
 import { Seg, SegBar, PeriodBar, Note, Mono } from "~/components/finance/parts";
@@ -32,7 +33,8 @@ export default function Finance() {
   const [expenseView, setExpenseView] = React.useState<"register" | "audit">("register");
   const [period, setPeriod] = React.useState<Period>(FIN_PERIODS.fy);
 
-  const invoices = React.useMemo(() => finInvoices(BOOKINGS, settings), [settings]);
+  const { bookings } = useRecords();
+  const invoices = React.useMemo(() => finInvoices(bookings, settings), [bookings, settings]);
   const fy = invoices.filter((i) => i.issue >= "2025-07-01" && i.issue <= "2026-06-30");
   const invoiced = fy.reduce((s, i) => s + i.gross, 0);
   const received = fy.filter((i) => i.paid).reduce((s, i) => s + i.gross, 0);

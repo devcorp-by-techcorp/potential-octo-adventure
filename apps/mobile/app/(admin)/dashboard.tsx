@@ -10,7 +10,8 @@ import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card, Badge } from "~/components/ui";
 import { KidsOverview } from "~/components/KidsOverview";
-import { BOOKINGS, INQUIRIES_FULL, CONTACTS, ACTIVITY, PHASES, dayOf, monShort, STUDIO_TODAY } from "~/data/seed";
+import { useRecords } from "~/state/records";
+import { ACTIVITY, PHASES, dayOf, monShort, STUDIO_TODAY } from "~/data/seed";
 
 export default function Dashboard() {
   const { theme, radius, space } = useTokens();
@@ -19,8 +20,8 @@ export default function Dashboard() {
   const kpiCols = width >= 760 ? 4 : width >= 420 ? 2 : 1;
   const twoPanel = width >= 860;
   const today = new Date(STUDIO_TODAY);
+  const { bookings: BOOKINGS, contacts: CONTACTS, newInquiryCount: newInquiries } = useRecords();
   const confirmed = BOOKINGS.filter((b) => b.status === "confirmed");
-  const newInquiries = INQUIRIES_FULL.filter((q) => q.status === "new").length;
   const upcoming = BOOKINGS.filter((b) => new Date(b.date) > today).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5);
   const inProgress = BOOKINGS.filter((b) => b.phase >= 2 && b.phase < 7);
   const kpis = [

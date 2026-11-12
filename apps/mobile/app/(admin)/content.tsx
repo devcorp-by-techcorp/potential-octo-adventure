@@ -9,7 +9,8 @@ import { View, Text, ScrollView, Pressable, TextInput, Image } from "react-nativ
 import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Body, Card, Badge, Button } from "~/components/ui";
-import { MARKETING, PROOFS, proofUri, INQUIRIES_FULL } from "~/data/seed";
+import { MARKETING, PROOFS, proofUri } from "~/data/seed";
+import { useRecords } from "~/state/records";
 import { useStudio, adminGreeting } from "~/state/studio";
 import type { IdentityKey } from "~/data/studio";
 
@@ -37,7 +38,7 @@ export default function SiteContent() {
   const [saved, setSaved] = React.useState<string | null>(null);
   const { identity, setIdentityField } = useStudio();
   const [identityFlash, setIdentityFlash] = React.useState<string | null>(null);
-  const newInquiries = INQUIRIES_FULL.filter((q) => q.status === "new").length;
+  const { newInquiryCount: newInquiries } = useRecords();
   const twoCol = width >= 760;
   const frameCols = width < 560 ? 3 : 6;
 
