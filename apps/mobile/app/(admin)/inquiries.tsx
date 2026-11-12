@@ -8,21 +8,35 @@ import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card, Badge, Button } from "~/components/ui";
 import { Icon } from "~/components/Icon";
-import { INQUIRIES_FULL, Inquiry, dateLabel, dateShort } from "~/data/seed";
+import { Inquiry, dateLabel, dateShort } from "~/data/seed";
+import { useRouter } from "expo-router";
+import { useStudio } from "~/state/studio";
+import { useRecords } from "~/state/records";
 import { KidsOverview } from "~/components/KidsOverview";
 
 
 export default function Inquiries() {
   const { theme, space } = useTokens();
   const { fs, gutter, width } = useResponsive();
-  const [rows, setRows] = React.useState<Inquiry[]>(INQUIRIES_FULL);
-  const [openId, setOpenId] = React.useState<string | null>(INQUIRIES_FULL[0]?.id ?? null);
+  const router = useRouter();
+  const { inquiries, acceptInquiry, declineInquiry } = useRecords();
+  const { identity } = useStudio();
+  // Accepted inquiries have become bookings, so they leave this list.
+  const rows = inquiries.filter((q) => q.status !== "accepted");
   const twoPanel = width >= 900;
+  // The list is the entry point on a handset; with two panes the first inquiry is shown so the reader is never blank.
+  const [openId, setOpenId] = React.useState<string | null>(twoPanel ? rows[0]?.id ?? null : null);
   const open = rows.find((q) => q.id === openId) ?? null;
   const newCount = rows.filter((q) => q.status === "new").length;
 
-  const accept = (q: Inquiry) => { setRows((r) => r.filter((x) => x.id !== q.id)); setOpenId(null); };
-  const decline = (q: Inquiry) => setRows((r) => r.map((x) => (x.id === q.id ? { ...x, status: "declined" } : x)));
+  // Commits the booking (and the contact, if new) to shared records, then opens it.
+  const accept = (q: Inquiry) => {
+    const who = identity.manager.name ? `${identity.manager.name} · ${identity.manager.title || "Studio Manager"}` : "Studio";
+    const bookingId = acceptInquiry(q.id, who);
+    setOpenId(null);
+    if (bookingId) router.push({ pathname: "/(admin)/bookings", params: { booking: bookingId } });
+  };
+  const decline = (q: Inquiry) => declineInquiry(q.id);
 
   const list = (
     <View style={{ flex: twoPanel ? undefined : 1, width: twoPanel ? 340 : "100%" }}>

@@ -8,7 +8,8 @@ import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Body, Card, Badge } from "~/components/ui";
 import { Icon, IconName } from "~/components/Icon";
-import { TEMPLATES, STUDIO_DOCS, CONTACTS, dateLabel } from "~/data/seed";
+import { TEMPLATES, STUDIO_DOCS, dateLabel } from "~/data/seed";
+import { useRecords } from "~/state/records";
 
 function Seg({ label, icon, on, onPress }: { label: string; icon: IconName; on: boolean; onPress: () => void }) {
   const { theme } = useTokens();
@@ -30,6 +31,7 @@ export default function Documents() {
   const needle = q.trim().toLowerCase();
   const rows = TEMPLATES.filter(([, name, type, g]) =>
     (group === "all" || g === group) && (!needle || name.toLowerCase().includes(needle) || type.toLowerCase().includes(needle)));
+  const { contacts: CONTACTS } = useRecords();
   const clientName = (id: string) => CONTACTS.find((c) => c.id === id)?.name ?? "—";
 
   return (

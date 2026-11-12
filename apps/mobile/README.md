@@ -55,6 +55,7 @@ apps/mobile/
 └── src/
     ├── theme/              ThemeProvider + useTokens (binds @illuminate/tokens to RN)
     ├── state/session.tsx   auth + role context
+    ├── state/records.tsx   bookings, inquiries and contacts — one shared store for the admin portal
     ├── state/portal.tsx    client portal state — inbox, filed documents, selections
     ├── state/finance.tsx   bookkeeping settings, expense register, audit trail
     ├── hooks/useResponsive.ts   the Mechanism-Law geometry hook (useWindowDimensions)
@@ -112,12 +113,15 @@ Luma answers from a small offline fallback.
 
 ## Tests
 
-`npm run typecheck` and `npm run e2e` (from `apps/mobile`). The e2e scripts need
-Playwright with Chromium available to Node; they export the web build, render every
-screen at five viewport sizes checking for runtime errors and horizontal overflow, then
-drive the Kids workflows end to end (enquiry → studio inquiry transitions, parent
-registration with consent, cross-group match, sibling link, organisation portal, and
-the privacy and finance separation rules).
+`npm run typecheck` and `npm run e2e` (from `apps/mobile`). The browser scripts need
+Playwright with Chromium available to Node. `e2e` runs four suites:
+
+- `finance.js` — the bookkeeping engine: cash flow must agree with the double-entry
+  ledger's bank account for every period (wages leave the bank net of PAYG withholding).
+- `screens.js` — every screen at five viewport sizes: no runtime errors, no horizontal overflow.
+- `kids.js` — the Kids workflows end to end, including the privacy and separation rules.
+- `studio.js` — accepting an inquiry creates a booking that Bookings, Dashboard, Contacts,
+  Shoot Tracker and Finance all see.
 
 ## How responsiveness works (Mechanism Law)
 

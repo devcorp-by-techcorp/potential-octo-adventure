@@ -8,11 +8,13 @@ import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card, Badge } from "~/components/ui";
 import { Icon } from "~/components/Icon";
-import { CONTACTS, BOOKINGS, dateShort, initials } from "~/data/seed";
+import { dateShort, initials } from "~/data/seed";
+import { useRecords } from "~/state/records";
 
 export default function Contacts() {
   const { theme, radius, space } = useTokens();
   const { fs, gutter, width } = useResponsive();
+  const { contacts: CONTACTS, bookings: BOOKINGS } = useRecords();
   const [assigned, setAssigned] = React.useState<Record<string, boolean>>(
     () => Object.fromEntries(CONTACTS.map((c) => [c.id, c.assigned])));
   const [q, setQ] = React.useState("");

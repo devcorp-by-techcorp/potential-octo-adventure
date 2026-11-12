@@ -8,20 +8,21 @@ import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card } from "~/components/ui";
 import { Icon } from "~/components/Icon";
-import { BOOKINGS, PHASES, dateLabel } from "~/data/seed";
+import { PHASES, dateLabel } from "~/data/seed";
+import { useRecords } from "~/state/records";
 import { KidsOverview } from "~/components/KidsOverview";
 
 
 export default function Tracker() {
   const { theme, space } = useTokens();
   const { fs, gutter, width } = useResponsive();
-  const [phases, setPhases] = React.useState<Record<string, number>>(
-    () => Object.fromEntries(BOOKINGS.map((b) => [b.id, b.phase])));
+  const { bookings: BOOKINGS, setBookingPhase } = useRecords();
+  const phases: Record<string, number> = Object.fromEntries(BOOKINGS.map((b) => [b.id, b.phase]));
   const [focusId, setFocusId] = React.useState(BOOKINGS[0].id);
   const showAside = width >= 1040;
   const focus = BOOKINGS.find((b) => b.id === focusId) ?? BOOKINGS[0];
   const focusPhase = phases[focus.id];
-  const set = (id: string, p: number) => setPhases((s) => ({ ...s, [id]: p }));
+  const set = setBookingPhase;
 
   return (
     <ScrollView contentContainerStyle={{ padding: gutter, gap: space.s5 }}>
