@@ -1,0 +1,26 @@
+--- a/finance-core.jsx
++++ b/finance-core.jsx
+@@ -319,16 +319,21 @@
+ }
+ 
+ // --- cash flow -------------------------------------------------
++// Cash that actually leaves the bank. A wage is paid net of PAYG withholding:
++// the withheld amount stays in the bank as a liability (2-120) until it is
++// remitted with the BAS. This is the amount finLedger credits to the bank, so
++// cash flow and the ledger agree.
++const finCashPaid = (e) => (finCategory(e.category).wages ? finR2(e.gross - (e.withheld || 0)) : e.gross);
+ function finCashflow(period, invoices, expenses, settings) {
+   const rIn = (from, to) => finR2(invoices.filter((i) => i.paidDate && i.paidDate >= from && i.paidDate <= to).reduce((s, i) => s + i.gross, 0));
+-  const rOut = (from, to) => finR2(expenses.filter((e) => e.date >= from && e.date <= to).reduce((s, e) => s + e.gross, 0));
++  const rOut = (from, to) => finR2(expenses.filter((e) => e.date >= from && e.date <= to).reduce((s, e) => s + finCashPaid(e), 0));
+   const opening = finR2(FIN_SETTINGS_DEFAULT.openingBalance + rIn("2025-07-01", finAddDays(period.start, -1)) - rOut("2025-07-01", finAddDays(period.start, -1)));
+   const inflow = rIn(period.start, period.end), outflow = rOut(period.start, period.end);
+   return { opening, inflow, outflow, net: finR2(inflow - outflow), closing: finR2(opening + inflow - outflow) };
+ }
+ function finCashToday(invoices, expenses) {
+   const inflow = invoices.filter((i) => i.paidDate && i.paidDate <= FIN_TODAY).reduce((s, i) => s + i.gross, 0);
+-  const outflow = expenses.filter((e) => e.date <= FIN_TODAY).reduce((s, e) => s + e.gross, 0);
++  const outflow = expenses.filter((e) => e.date <= FIN_TODAY).reduce((s, e) => s + finCashPaid(e), 0);
+   return finR2(FIN_SETTINGS_DEFAULT.openingBalance + inflow - outflow);
+ }
+ 
