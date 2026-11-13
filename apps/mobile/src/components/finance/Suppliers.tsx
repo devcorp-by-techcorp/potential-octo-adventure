@@ -72,11 +72,13 @@ const Fact: React.FC<{ label: string; value: string }> = ({ label, value }) => {
   );
 };
 
-export const Suppliers: React.FC<{ onRecordExpense?: (name: string) => void }> = ({ onRecordExpense }) => {
+export const Suppliers: React.FC<{ onRecordExpense?: (name: string) => void; onAddPartner?: () => void; initialQuery?: string }> = ({ onRecordExpense, onAddPartner, initialQuery }) => {
   const { theme, radius, space } = useTokens();
   const { width } = useResponsive();
   const { suppliers, upsertSupplier, toggleSupplierActive } = useStudio();
-  const [query, setQuery] = React.useState("");
+  const [query, setQuery] = React.useState(initialQuery ?? "");
+  // Arriving from the directory with a partner named: show that record.
+  React.useEffect(() => { if (initialQuery) setQuery(initialQuery); }, [initialQuery]);
   const [draft, setDraft] = React.useState<Draft | null>(null);
   const [flash, setFlash] = React.useState<string | null>(null);
   // Validation stays pinned beside the save button until the form is corrected.
@@ -148,7 +150,8 @@ export const Suppliers: React.FC<{ onRecordExpense?: (name: string) => void }> =
           style={{ flexGrow: 1, flexBasis: 220, minHeight: 46, paddingHorizontal: 14, borderWidth: 1, borderColor: theme.border.default,
             borderRadius: radius.xs, backgroundColor: theme.surface.raised, color: theme.ink.primary, fontSize: 15 }}
         />
-        <Button label="Add supplier" onPress={() => { setError(null); setDraft(emptyDraft()); }} />
+        {/* New partners are added in the directory — one intake point for everyone the studio deals with. */}
+        <Button label="Add partner" onPress={() => (onAddPartner ? onAddPartner() : (setError(null), setDraft(emptyDraft())))} />
       </View>
 
       {flash ? <Note>{flash}</Note> : null}

@@ -22,6 +22,7 @@ import { Icon } from "~/components/Icon";
 import { LogoBanner, LogoMark } from "~/components/Logo";
 import { MARKETING, PROCESS, PACKAGES, PROOFS, proofUri } from "~/data/seed";
 import { K } from "~/data/kids";
+import { EnquirySheet } from "~/components/EnquirySheet";
 import { KidsTag } from "~/components/kids/parts";
 
 const HERO = proofUri(PROOFS[2].pid, 1400);
@@ -40,6 +41,10 @@ export default function Marketing() {
   const pkgCols = width >= 1000 ? 3 : width >= 660 ? 2 : 1;
   const pct = (n: number) => (n === 1 ? "100%" : (`${100 / n}%` as const));
 
+  // "Begin an enquiry" sheet; a collection card opens it with that collection preselected.
+  const [enquiry, setEnquiry] = React.useState<{ open: boolean; pkg: string | null }>({ open: false, pkg: null });
+  const beginEnquiry = (pkg: string | null = null) => setEnquiry({ open: true, pkg });
+
   const heroCopy = (
     <View style={{ flex: heroSplit ? 1 : undefined, justifyContent: "flex-end", padding: fs(26), paddingTop: heroSplit ? fs(26) : insets.top + fs(70), gap: 10 }}>
       <LogoBanner height={24} variant="onDark" />
@@ -51,7 +56,12 @@ export default function Marketing() {
         {MARKETING.lede}
       </Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
-        <Button label="Enquire with Luma" icon="sparkle" onPress={luma.open} />
+        <Button label="Begin an enquiry" icon="calendar" onPress={() => beginEnquiry()} />
+        <Pressable onPress={luma.open} accessibilityRole="button"
+          style={{ minHeight: 44, paddingVertical: 12, paddingHorizontal: 18, borderRadius: radius.xs, borderWidth: 1, borderColor: "rgba(201,169,110,0.55)", flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Icon name="sparkle" size={16} color="#c9a96e" />
+          <Text style={{ fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1.2, fontSize: fs(11), color: "#c9a96e" }}>Ask Luma</Text>
+        </Pressable>
         <Pressable
           onPress={() => router.push("/sign-in")}
           accessibilityRole="button"
@@ -72,6 +82,12 @@ export default function Marketing() {
         <Text numberOfLines={1} style={{ flex: 1, minWidth: 0, fontFamily: "Cinzel_600SemiBold", fontSize: fs(11.5), letterSpacing: 2.4, color: "#f4ebd9" }}>
           ILLUMINATE STUDIOS
         </Text>
+        {width >= 560 ? (
+          <Pressable onPress={() => beginEnquiry()} accessibilityRole="button" style={{ minHeight: 44, flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: "rgba(201,169,110,0.55)", borderRadius: radius.xs }}>
+            <Icon name="calendar" size={15} color="#c9a96e" />
+            <Text style={{ fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1.1, fontSize: fs(10.5), color: "#c9a96e" }}>Begin an enquiry</Text>
+          </Pressable>
+        ) : null}
         <Pressable onPress={() => router.push("/kids")} accessibilityRole="link" accessibilityLabel="Illuminate Kids" style={{ minHeight: 44, justifyContent: "center", paddingHorizontal: 6 }}>
           <KidsTag />
         </Pressable>
@@ -163,7 +179,7 @@ export default function Marketing() {
                     </View>
                   ))}
                 </View>
-                <Button label="Enquire" icon="arrow" variant={p.featured ? "primary" : "ghost"} fullWidth style={{ marginTop: 4 }} onPress={luma.open} />
+                <Button label="Enquire" icon="arrow" variant={p.featured ? "primary" : "ghost"} fullWidth style={{ marginTop: 4 }} onPress={() => beginEnquiry(p.name)} />
               </Card>
             ))}
           </View>
@@ -216,12 +232,14 @@ export default function Marketing() {
               </Text>
             </View>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+              <Button label="Begin an enquiry" icon="calendar" onPress={() => beginEnquiry()} />
               <Button label="Ask Luma" icon="sparkle" variant="ghost" onPress={luma.open} />
-              <Button label="Client sign-in" icon="arrow" onPress={() => router.push("/sign-in")} />
+              <Button label="Client sign-in" icon="arrow" variant="ghost" onPress={() => router.push("/sign-in")} />
             </View>
           </View>
         </View>
       </ScrollView>
+      <EnquirySheet visible={enquiry.open} initialPackage={enquiry.pkg} onClose={() => setEnquiry((e) => ({ ...e, open: false }))} />
     </View>
   );
 }

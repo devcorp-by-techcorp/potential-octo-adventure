@@ -176,6 +176,8 @@ export interface SupplierItem { desc: string; cost: number; unit: string }
 export interface Supplier {
   id: string;
   active: boolean;
+  /** Enquired with but not yet engaged — shown as a potential partner in the directory. */
+  prospect?: boolean;
   name: string;
   entity: string;
   abn: string;

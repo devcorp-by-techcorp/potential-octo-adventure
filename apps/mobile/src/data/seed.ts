@@ -213,7 +213,12 @@ export const CONTACTS: Contact[] = [
   { id: "c6", name: "Beatrice Holloway", email: "bea.holloway@gmail.com", phone: "+61 421 904 677", bookingId: "b6", assigned: true, tags: ["Family"] },
 ];
 
-export interface Inquiry { id: string; name: string; email: string; date: string; type: string; receivedAt: string; status: string; message: string; }
+export interface Inquiry {
+  id: string; name: string; email: string; date: string; type: string; receivedAt: string; status: string; message: string;
+  /** Present on enquiries raised through the public "Begin an enquiry" sheet. */
+  ref?: string; source?: string; phone?: string; venue?: string; pkg?: string;
+  audit?: import("./enquiry").AuditEntry[];
+}
 export const INQUIRIES_FULL: Inquiry[] = [
   { id: "q1", name: "Astrid Lindqvist", email: "astrid@northstudio.co", date: "2026-09-12", type: "Wedding", receivedAt: "2026-05-13", status: "new", message: "Considering Signature or Atelier for a 150-guest wedding at Mona Farm. Could we arrange a call?" },
   { id: "q2", name: "Nile Bashir", email: "nile.b@gmail.com", date: "2026-07-05", type: "Editorial", receivedAt: "2026-05-12", status: "new", message: "Looking for a fine-art editorial session for a magazine feature." },

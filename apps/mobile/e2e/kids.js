@@ -83,6 +83,8 @@ const res = []; const ok = (name, cond, extra='') => res.push(`${cond ? 'PASS' :
       await pg.getByRole('button', { name: /Class, group or team/ }).click(); await pg.waitForTimeout(300);
       await pg.getByRole('button', { name: 'Prep A · Ms Hannah Lee' }).click(); await pg.waitForTimeout(300);
       await pg.getByLabel('First name').fill('Mia'); await pg.getByLabel('Last name').fill('Thompson');
+      ok(T('sibling linking starts unticked, so no sibling consent tier yet'), (await pg.getByRole('checkbox', { name: 'Link these children as siblings' }).getAttribute('aria-checked')) === 'false' && (await pg.getByRole('switch').count()) === 4);
+      await pg.getByRole('checkbox', { name: 'Link these children as siblings' }).click();
       ok(T('sibling consent tier appears once linked'), (await pg.getByRole('switch').count()) === 5);
       await pg.getByRole('checkbox', { name: /I am the parent/ }).click();
       await pg.getByRole('button', { name: 'Save registration' }).click(); await pg.waitForTimeout(500);
