@@ -12,6 +12,7 @@ import { useResponsive } from "~/hooks/useResponsive";
 import { Eyebrow, Display, Body, Card, Badge } from "~/components/ui";
 import { dateLabel, dateShort, STUDIO_TODAY } from "~/data/seed";
 import { useRecords } from "~/state/records";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { FIN_PERIODS, finAUD, finInvoices, type Period } from "~/data/finance";
 import { useFinance } from "~/state/finance";
 import { Seg, SegBar, PeriodBar, Note, Mono } from "~/components/finance/parts";
@@ -28,7 +29,14 @@ export default function Finance() {
   const { theme, space } = useTokens();
   const { fs, gutter, width } = useResponsive();
   const { settings, setSettings, expenses, audit } = useFinance();
-  const [tab, setTab] = React.useState<Tab>("overview");
+  const router = useRouter();
+  const params = useLocalSearchParams<{ tab?: string; q?: string }>();
+  const pTab = Array.isArray(params.tab) ? params.tab[0] : params.tab;
+  const pQuery = Array.isArray(params.q) ? params.q[0] : params.q;
+  const isTab = (v: unknown): v is Tab => typeof v === "string" && ["overview", "invoices", "expenses", "suppliers", "bas", "reports", "accounts"].includes(v);
+  const [tab, setTab] = React.useState<Tab>(isTab(pTab) ? pTab : "overview");
+  // Deep links from the directory (a partner's record, or settled invoices).
+  React.useEffect(() => { if (isTab(pTab)) setTab(pTab); }, [pTab]);
   const [filter, setFilter] = React.useState<"all" | "paid" | "due" | "overdue">("all");
   const [expenseView, setExpenseView] = React.useState<"register" | "audit">("register");
   const [period, setPeriod] = React.useState<Period>(FIN_PERIODS.fy);
@@ -175,7 +183,7 @@ export default function Finance() {
         </View>
       ) : null}
 
-      {tab === "suppliers" ? <Suppliers onRecordExpense={() => { setTab("expenses"); setExpenseView("register"); }} /> : null}
+      {tab === "suppliers" ? <Suppliers initialQuery={pQuery} onAddPartner={() => router.push({ pathname: "/(admin)/contacts", params: { add: "partner" } })} onRecordExpense={() => { setTab("expenses"); setExpenseView("register"); }} /> : null}
       {tab === "bas" ? <Bas settings={settings} invoices={invoices} expenses={expenses} /> : null}
       {tab === "reports" ? <Reports settings={settings} period={period} invoices={invoices} expenses={expenses} /> : null}
       {tab === "accounts" ? <Accounts settings={settings} period={period} invoices={invoices} expenses={expenses} /> : null}

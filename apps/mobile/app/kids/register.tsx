@@ -43,7 +43,8 @@ export default function KidsRegister() {
   const [g2On, setG2On] = React.useState(false);
   const [g2, setG2] = React.useState({ name: "", email: "" });
   const [kids, setKids] = React.useState<DraftChild[]>([blankDraftChild()]);
-  const [linkSiblings, setLinkSiblings] = React.useState(true);
+  // Off by default, like every consent option: siblings are linked only when the parent chooses it.
+  const [linkSiblings, setLinkSiblings] = React.useState(false);
   const [attest, setAttest] = React.useState(false);
   const [err, setErr] = React.useState("");
   const [matches, setMatches] = React.useState<GroupMatch[] | null>(null);

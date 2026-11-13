@@ -65,6 +65,21 @@ apps/mobile/
                             BookingDetail · finance/ (register, audit trail, BAS, reports, accounts)
 ```
 
+## Enquiries and the directory
+
+- **Begin an enquiry** (`src/components/EnquirySheet.tsx`, opened from the marketing header,
+  hero, each collection card and the footer): date and session → details → reference. It files
+  a tentative request; no date is reserved or held and no pricing is shown. Dates that already
+  carry a confirmed booking are struck through and refused.
+- **Enquiry state machine** (`src/data/enquiry.ts`, shared with Illuminate Kids): tentative
+  request → awaiting studio → awaiting client → confirmed, plus needs-a-human and closed. The
+  studio can only make allowed transitions; confirming needs a linked client in Contacts and a
+  date with no confirmed booking, and is what creates the booking. Every change is audited.
+- **Contacts** (`app/(admin)/contacts.tsx`, `src/data/directory.ts`): three tabs — Contacts
+  (one fuzzy search across everyone, and where contacts and partners are added), Clients
+  (past/current/potential, indexed by surname) and Partners (suppliers by type of business).
+  Finance → Suppliers' "Add partner" opens the partner form here.
+
 ## Illuminate Kids
 
 The children's photography branch (early childhood centres, kinders, schools, sports
@@ -120,8 +135,9 @@ Playwright with Chromium available to Node. `e2e` runs four suites:
   ledger's bank account for every period (wages leave the bank net of PAYG withholding).
 - `screens.js` — every screen at five viewport sizes: no runtime errors, no horizontal overflow.
 - `kids.js` — the Kids workflows end to end, including the privacy and separation rules.
-- `studio.js` — accepting an inquiry creates a booking that Bookings, Dashboard, Contacts,
-  Shoot Tracker and Finance all see.
+- `studio.js` — the public "Begin an enquiry" sheet, the studio's guarded enquiry
+  transitions through to a confirmed booking that every admin screen sees, and the
+  three-tab Contacts directory (fuzzy search, stage/type filters, add contact and partner).
 
 ## How responsiveness works (Mechanism Law)
 

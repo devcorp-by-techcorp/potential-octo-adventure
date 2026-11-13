@@ -63,10 +63,6 @@ export interface KidsDb {
   docs: Record<string, OrgDoc[]>;
 }
 
-export type InquiryState =
-  | "tentative_request" | "awaiting_studio_confirmation" | "awaiting_client_confirmation"
-  | "confirmed" | "needs_human" | "abandoned";
-export interface AuditEntry { at: string; actor: string; from: InquiryState; to: InquiryState; }
 export interface KidsInquiry {
   id: string; org: string; type: string; count: string; dates: string; name: string; email: string;
   received: string; status: string; audit: AuditEntry[]; source: string;
@@ -99,46 +95,12 @@ export const REGISTRATION_STEPS = [
   { title: "Choose your consent", body: "Pick exactly what you agree to for each child. Only consented children are photographed." },
 ];
 
-// ── Enquiry state machine (mirrors the studio backend's domain rules) ─────
-const LEGACY_STATE: Record<string, InquiryState> = {
-  new: "tentative_request", replied: "awaiting_studio_confirmation", booked: "confirmed", declined: "abandoned",
-};
-export const INQ_LABELS: Record<InquiryState, string> = {
-  tentative_request: "Tentative request",
-  awaiting_studio_confirmation: "Awaiting studio",
-  awaiting_client_confirmation: "Awaiting client",
-  confirmed: "Confirmed",
-  needs_human: "Needs a human",
-  abandoned: "Closed",
-};
-export const INQ_FLOW: Partial<Record<InquiryState, InquiryState[]>> = {
-  tentative_request: ["awaiting_studio_confirmation", "needs_human", "abandoned"],
-  awaiting_studio_confirmation: ["awaiting_client_confirmation", "confirmed", "needs_human", "abandoned"],
-  awaiting_client_confirmation: ["confirmed", "needs_human", "abandoned"],
-  needs_human: ["awaiting_studio_confirmation", "abandoned"],
-};
-/** What the organisation is told about its request in each state. */
-export const INQ_MESSAGES: Record<InquiryState, string> = {
-  tentative_request: "Your tentative request has been received for studio review.",
-  awaiting_studio_confirmation: "Your request is awaiting studio confirmation.",
-  awaiting_client_confirmation: "The studio is awaiting your confirmation.",
-  confirmed: "Your booking is confirmed.",
-  needs_human: "A studio team member needs to review your request.",
-  abandoned: "This request is no longer active.",
-};
-/** Resolve a stored status to a state; legacy statuses map on read. */
-export const inqState = (q: { status: string }): InquiryState =>
-  LEGACY_STATE[q.status] ?? (q.status in INQ_LABELS ? (q.status as InquiryState) : "tentative_request");
-/** The studio's label for moving an enquiry into `to` from `from`. */
-export const transitionLabel = (from: InquiryState, to: InquiryState): string =>
-  ({
-    awaiting_studio_confirmation: from === "needs_human" ? "Return to review" : "Take into review",
-    awaiting_client_confirmation: "Ask organisation to confirm",
-    confirmed: "Confirm photo day",
-    needs_human: "Flag for a human",
-    abandoned: "Close request",
-    tentative_request: "Reopen",
-  })[to];
+// ── Enquiry state machine (shared with the studio; see ./enquiry) ─────────
+export { INQ_LABELS, INQ_FLOW, INQ_MESSAGES, inqState } from "./enquiry";
+import { transitionLabel as sharedTransitionLabel, type InquiryState, type AuditEntry } from "./enquiry";
+export type { InquiryState, AuditEntry };
+/** Kids wording: the other party is an organisation and a confirmation is a photo day. */
+export const transitionLabel = (from: InquiryState, to: InquiryState) => sharedTransitionLabel(from, to, "organisation", "Confirm photo day");
 
 // ── Seeds ─────────────────────────────────────────────────────────────────
 const roster = (gid: string, names: string[], reg: Record<string, string> = {}): RosterEntry[] =>
