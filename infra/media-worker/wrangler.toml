@@ -1,0 +1,20 @@
+name = "illuminate-media-worker"
+main = "src/worker.js"
+compatibility_date = "2026-05-31"
+
+# Custom domain — binds THIS WORKER (not the bucket) to the media hostname.
+# Requires the zone illuminatestudios.com.au to be active on this Cloudflare account.
+# No wildcard in a custom-domain pattern.
+[[routes]]
+pattern = "media.illuminatestudios.com.au"
+custom_domain = true
+
+# R2 binding — derivatives bucket ONLY. The Worker never touches the originals bucket.
+# preview_bucket_name is used by `wrangler dev` / preview deploys.
+[[r2_buckets]]
+binding = "DERIVATIVES_BUCKET"
+bucket_name = "illuminate-prod-derivatives"
+preview_bucket_name = "illuminate-staging-derivatives"
+
+# Secret (DO NOT put the value here):
+#   wrangler secret put CLOUDFLARE_WORKER_SHARED_SECRET
