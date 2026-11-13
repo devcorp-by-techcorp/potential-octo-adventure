@@ -1,0 +1,18 @@
+# Web app — local artifacts (root .gitignore also covers these)
+/node_modules
+/build
+/dist
+.eslintcache
+
+# Local env (templates kept via .env.example)
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store

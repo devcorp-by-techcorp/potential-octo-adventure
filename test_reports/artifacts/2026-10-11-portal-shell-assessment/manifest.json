@@ -1,0 +1,15 @@
+{
+  "base_commit": "b7452ef57e45c6b982265c2635e6dbff88c28728",
+  "state": "uncommitted working tree",
+  "files": {
+    ".github/workflows/ci.yml": "5482946fac9101fd84fcba054f31cc217904a4f476b12638f25787f11d01a0e5",
+    "web/src/index.css": "f86fffd21be3dfc53dda2c14c4cc88867b52bb8d80767725e034fdf4df297c83",
+    "web/src/pages/Client.jsx": "35c2162e9339ed99d9a5fdbd1b61b7f1813e78ca252c2430ed6bbcaf3244ef99",
+    "web/src/pages/Studio.jsx": "9b57209e522ce84c3542b0d7480ea7d5478afc34a64e5b0e2a9a2ca076dd1f5f",
+    "web/src/components/PortalShell.jsx": "10033e0c16598d5f957e3e0d2b86796c39695e313a9b9c5931f74d6f8810bc09",
+    "web/src/components/portal-shell.css": "e3cba88f5be2a6fae4055877863dd3779e2d98e6d9b6f20a0c8156e0dc7a6b63",
+    "web/tests/portal_shell.py": "83d86841ce976da39af1f46d70b72b65e38d5f82b2bf0b0ea04214df722739fd"
+  },
+  "browser_result_exists": false,
+  "python_test_syntax": "pass"
+}

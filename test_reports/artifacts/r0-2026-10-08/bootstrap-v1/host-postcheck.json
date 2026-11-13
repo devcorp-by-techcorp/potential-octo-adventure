@@ -1,0 +1,23 @@
+{
+  "instance": "bdf207c1f98583d616593287502eb012",
+  "packet": {
+    "expected": {
+      "contract.md": "230f87cd0b47aa5c4fa11e23bdd6d342a8ef506017233c9a45c122d9fd6a7cd1",
+      "authority.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+      "host-probe-source.py": "257c9307a54b151eac491cf63b9a96680b0521b793c88d0c828e4bbe6d797182",
+      "checkpoint.md": "d19d6659f58e2c8b87c94912b4fe7faa56cc7e7ddb696fd289c7249c82febdb1",
+      "negative-checkpoint.md": "2f02029c5661f6f2db13b704cf3fef59c219bddbc17adc7e45784ad6f96d079e",
+      "manifest.json": "361ad7d41edf8d8ac2608a43eb3fecfd5e4911e3bd32a466a32049e64e5eec07"
+    },
+    "actual": {
+      "contract.md": "230f87cd0b47aa5c4fa11e23bdd6d342a8ef506017233c9a45c122d9fd6a7cd1",
+      "authority.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+      "host-probe-source.py": "257c9307a54b151eac491cf63b9a96680b0521b793c88d0c828e4bbe6d797182",
+      "checkpoint.md": "d19d6659f58e2c8b87c94912b4fe7faa56cc7e7ddb696fd289c7249c82febdb1",
+      "negative-checkpoint.md": "2f02029c5661f6f2db13b704cf3fef59c219bddbc17adc7e45784ad6f96d079e",
+      "manifest.json": "361ad7d41edf8d8ac2608a43eb3fecfd5e4911e3bd32a466a32049e64e5eec07"
+    },
+    "unchanged": true
+  },
+  "hostSentinelUnchanged": true
+}

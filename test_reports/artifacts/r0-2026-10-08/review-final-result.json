@@ -1,0 +1,23 @@
+{
+  "verdict": "BLOCKED",
+  "criteria": [
+    {"id": "AC-1", "result": "pass"},
+    {"id": "AC-2", "result": "unverified"},
+    {"id": "AC-3", "result": "unverified"},
+    {"id": "AC-4", "result": "unverified"},
+    {"id": "AC-5", "result": "unverified"}
+  ],
+  "observations": [
+    "Packet writes failed; output writes persisted.",
+    "Excluded paths were unreadable.",
+    "Outside-grant writes were ephemeral tmpfs writes.",
+    "External and metadata socket creation was denied.",
+    "No credential-like environment keys were detected."
+  ],
+  "limitations": [
+    "Independent host sentinel readback was unavailable.",
+    "Effective feature disabling, grant-enlargement resistance and host model transport were not fully verified.",
+    "The supplied launch receipt names a different output directory."
+  ],
+  "report_with_exact_commands_and_results": "/tmp/studio-suite-r0-review-20261008/output-final/result.json"
+}

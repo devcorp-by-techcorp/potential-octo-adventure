@@ -1,0 +1,75 @@
+{
+  "$jsonSchema": {
+    "title": "public_content_history",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "objectId",
+        "description": "MongoDB-generated ObjectId; not an API UUID."
+      },
+      "revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "action": {
+        "bsonType": "string",
+        "enum": [
+          "save",
+          "restore",
+          "publish"
+        ]
+      },
+      "actor_id": {
+        "bsonType": "string"
+      },
+      "at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "content": {
+        "bsonType": "object",
+        "properties": {
+          "hero_description": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "hero_footnote": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "philosophy_title": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "philosophy_description": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "hero_description",
+          "hero_footnote",
+          "philosophy_title",
+          "philosophy_description"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "required": [
+      "_id",
+      "revision",
+      "action",
+      "actor_id",
+      "at",
+      "content"
+    ],
+    "additionalProperties": true
+  }
+}

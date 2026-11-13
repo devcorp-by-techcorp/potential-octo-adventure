@@ -1,0 +1,18 @@
+{
+  "base": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+  "contractSha256": "f46f07f6bcc7974082323b0443893aed130f8f10f7c42142324fc69e1d492aef",
+  "sha256": {
+    ".github/workflows/ci.yml": "63fb111a1882faac6f8fd002462f69c8604b8a677da4cb151aa4b88adf4e4fb9",
+    "scripts/autonomous/__init__.py": "65968778f26316e0328ca0d25acf96f89b09a0e904d8f34f9a9a681f2f54e21b",
+    "scripts/autonomous/gate.py": "197316e4993a7f9e0da6d6cb397b9fcfa5163a2f5b754a5db6d2092c31f01523",
+    "scripts/autonomous/protocol.py": "384d26b990c27f21281d7dc9f0bd71c5b9afef7de7c71b8535a81b27841222cb",
+    "scripts/autonomous/review_host.py": "8f28064fa9ffc008b5ad86cbc1147defe19428cbd38ed2b77147d8781dd082c2",
+    "scripts/autonomous/supervisor.py": "bce2d196c7cafdec5f339ef22d157851c77cfa31a6f83a66a850866439b99da3",
+    "scripts/autonomous/tests/__init__.py": "72575e9f4d0bcf2cf17434934e8054574631914e1c5fa66cfdddbe7f59b9ca21",
+    "scripts/autonomous/tests/test_gate.py": "66d2fffcf2ddd20f2ebbae10d1fae44c85b81c79a990c6cbf4bce025c3f3aa81",
+    "scripts/autonomous/tests/test_protocol.py": "36b14695782e7fade67a99f73b4b680dc936b3cce85d08e297fe9f5e3df19322",
+    "scripts/autonomous/tests/test_review_host.py": "44c93963b7ad6caa254b373d94012a75635de1b352c89728a9aa872d7104887c",
+    "scripts/autonomous/tests/test_supervisor.py": "299e6cd3c89c7bcb2a45fca197a422f3449d83c552df98f4210e371085add6f2"
+  },
+  "testExitCode": 0
+}

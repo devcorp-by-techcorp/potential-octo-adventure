@@ -1,0 +1,107 @@
+{
+  "$jsonSchema": {
+    "title": "client_identities",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "email": {
+        "bsonType": "string"
+      },
+      "name": {
+        "bsonType": "string"
+      },
+      "enabled": {
+        "bsonType": "bool"
+      },
+      "password_hash": {
+        "bsonType": "string"
+      },
+      "auth_version": {
+        "bsonType": "string"
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "updated_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "authorization_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "transaction_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "booking_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "content_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "conversation_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "session_management_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "acceptance_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "access_revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "role": {
+        "bsonType": "string",
+        "enum": [
+          "client"
+        ]
+      }
+    },
+    "required": [
+      "_id",
+      "email",
+      "name",
+      "enabled",
+      "password_hash",
+      "auth_version",
+      "created_at",
+      "role"
+    ],
+    "additionalProperties": true
+  }
+}

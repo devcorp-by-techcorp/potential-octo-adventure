@@ -1,0 +1,23 @@
+{
+  "$jsonSchema": {
+    "title": "document_upload_heads",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "sequence": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      }
+    },
+    "required": [
+      "_id",
+      "sequence"
+    ],
+    "additionalProperties": true
+  }
+}

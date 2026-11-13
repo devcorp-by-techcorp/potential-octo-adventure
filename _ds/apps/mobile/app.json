@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Illuminate Studios",
+    "slug": "illuminate-studios",
+    "scheme": "illuminate",
+    "version": "0.1.0",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
+    "plugins": ["expo-router", "expo-font"],
+    "experiments": { "typedRoutes": true },
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": false,
+      "bundleIdentifier": "studio.illuminate.app"
+    },
+    "android": {
+      "package": "studio.illuminate.app",
+      "resizeableActivity": true
+    }
+  }
+}

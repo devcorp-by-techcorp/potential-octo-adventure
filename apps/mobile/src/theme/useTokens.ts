@@ -1,4 +1,4 @@
-import { space, radius, type, motion, shadowToRN, trackingToRN } from "@illuminate/tokens";
+import { space, radius, type, motion, shadowToRN, trackingToRN } from "@is/tokens";
 import { useTheme } from "./ThemeProvider";
 
 /**

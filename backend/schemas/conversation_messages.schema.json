@@ -1,0 +1,55 @@
+{
+  "$jsonSchema": {
+    "title": "conversation_messages",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "objectId",
+        "description": "MongoDB-generated ObjectId; not an API UUID."
+      },
+      "conversation_id": {
+        "bsonType": "string"
+      },
+      "message_id": {
+        "bsonType": "string"
+      },
+      "sequence": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "sender_scope": {
+        "bsonType": "string",
+        "enum": [
+          "studio",
+          "client"
+        ]
+      },
+      "actor_id": {
+        "bsonType": "string"
+      },
+      "text": {
+        "bsonType": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      }
+    },
+    "required": [
+      "_id",
+      "conversation_id",
+      "message_id",
+      "sequence",
+      "sender_scope",
+      "actor_id",
+      "text",
+      "created_at"
+    ],
+    "additionalProperties": true
+  }
+}

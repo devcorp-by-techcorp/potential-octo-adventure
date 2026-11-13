@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex",
+    "-c",
+    "permissions.r0_probe.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\"/tmp/studio-suite-r0-isolation-4uvvipkz/packet\"=\"read\",\"/tmp/studio-suite-r0-isolation-4uvvipkz/review-output\"=\"write\",\"/home/techcorp2024/.codex/tmp/arg0\"=\"read\",\"/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin\"=\"read\",\"/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/codex-path\"=\"read\"}",
+    "-c",
+    "permissions.r0_probe.network.enabled=false",
+    "sandbox",
+    "-P",
+    "r0_probe",
+    "-C",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/review-output",
+    "--",
+    "/usr/bin/python3",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/packet/native-probe.py"
+  ],
+  "exit": 0,
+  "stdout": "{\"host_home\": {\"denied\": true, \"errno\": 21}, \"host_sentinel\": {\"denied\": true, \"errno\": 2}, \"session_transcripts\": {\"denied\": true, \"errno\": 2}, \"proc_host_environ\": \"UNEXPECTED_READ\", \"proc_host_root\": {\"denied\": true, \"errno\": 2}, \"source_read\": true, \"source_write\": {\"denied\": true, \"errno\": 30}, \"host_write\": \"UNEXPECTED_WRITE\", \"temporary_write\": \"success\", \"external_network\": {\"denied\": true, \"errno\": 1}, \"environment_keys\": [\"BROWSER\", \"CODEX_CI\", \"CODEX_MANAGED_BY_NPM\", \"CODEX_MANAGED_PACKAGE_ROOT\", \"CODEX_PERMISSION_PROFILE\", \"CODEX_SANDBOX_NETWORK_DISABLED\", \"CODEX_SESSION_ID\", \"CODEX_THREAD_ID\", \"CODEX_VERSION\", \"COLORTERM\", \"DBUS_SESSION_BUS_ADDRESS\", \"DISPLAY\", \"DISPLAY_LOW_DENSITY\", \"GH_PAGER\", \"GIT_PAGER\", \"GTK_IM_MODULE\", \"HOME\", \"INVOCATION_ID\", \"JOURNAL_STREAM\", \"LANG\", \"LC_ALL\", \"LC_CTYPE\", \"LD_ARGV0_REL\", \"LOGNAME\", \"MANAGERPID\", \"NCURSES_NO_UTF8_ACS\", \"NO_COLOR\", \"PAGER\", \"PATH\", \"PWD\", \"QT_ACCESSIBILITY\", \"QT_AUTO_SCREEN_SCALE_FACTOR\", \"QT_QPA_PLATFORMTHEME\", \"SHELL\", \"SHLVL\", \"SOMMELIER_VERSION\", \"SOMMELIER_VM_IDENTIFIER\", \"SYSTEMD_EXEC_PID\", \"TERM\", \"USER\", \"WAYLAND_DISPLAY\", \"WAYLAND_DISPLAY_LOW_DENSITY\", \"XCURSOR_SIZE\", \"XCURSOR_SIZE_LOW_DENSITY\", \"XCURSOR_THEME\", \"XDG_CONFIG_HOME\", \"XDG_CURRENT_DESKTOP\", \"XDG_DATA_DIRS\", \"XDG_RUNTIME_DIR\", \"XDG_SESSION_TYPE\", \"_\"]}\n",
+  "stderr": "",
+  "host_sentinel_unchanged": true,
+  "source_unchanged": true
+}

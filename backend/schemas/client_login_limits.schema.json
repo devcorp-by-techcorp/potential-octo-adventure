@@ -1,0 +1,28 @@
+{
+  "$jsonSchema": {
+    "title": "client_login_limits",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "attempts": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "expires_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      }
+    },
+    "required": [
+      "_id",
+      "attempts",
+      "expires_at"
+    ],
+    "additionalProperties": true
+  }
+}

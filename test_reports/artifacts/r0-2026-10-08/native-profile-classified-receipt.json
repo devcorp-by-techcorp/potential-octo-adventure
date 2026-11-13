@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex",
+    "-c",
+    "permissions.r0_probe.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\"/tmp/studio-suite-r0-isolation-4uvvipkz/packet\"=\"read\",\"/tmp/studio-suite-r0-isolation-4uvvipkz/review-output\"=\"write\",\"/home/techcorp2024/.codex/tmp/arg0\"=\"read\",\"/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin\"=\"read\",\"/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/codex-path\"=\"read\"}",
+    "-c",
+    "permissions.r0_probe.network.enabled=false",
+    "sandbox",
+    "-P",
+    "r0_probe",
+    "-C",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/review-output",
+    "--",
+    "/usr/bin/python3",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/packet/namespace-classification.py"
+  ],
+  "exit": 0,
+  "stdout": "{\"proc1_is_sandbox_helper\": true, \"proc1_argument_count\": 12, \"host_sentinel\": {\"denied\": true, \"errno\": 2}, \"credential_path\": {\"denied\": true, \"errno\": 2}, \"builder_config\": {\"denied\": true, \"errno\": 2}, \"transcript_path\": {\"denied\": true, \"errno\": 2}, \"host_write\": \"UNEXPECTED_WRITE\", \"own_pid\": 2, \"source_read\": true, \"source_write\": {\"denied\": true, \"errno\": 30}, \"temporary_write\": \"success\", \"external_network\": {\"denied\": true, \"errno\": 1}, \"environment_keys\": [\"CODEX_SANDBOX_NETWORK_DISABLED\", \"HOME\", \"LC_CTYPE\", \"PATH\", \"PWD\"]}\n",
+  "stderr": "",
+  "host_sentinel_unchanged": true,
+  "source_unchanged": true
+}

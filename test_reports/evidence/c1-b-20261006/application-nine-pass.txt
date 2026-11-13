@@ -1,0 +1,19 @@
+Running browser suite: studio_reporting.py
+Studio reporting browser: persisted counts, refresh, reload, privacy, role isolation, failure recovery and invalidation passed
+Running browser suite: booking_drafts.py
+Booking proposal browser workflow passed
+Running browser suite: conversations.py
+Conversation browser regression passed: persistent two-session messages, unread/read, exact retry, private fields, mobile widths and grant withdrawal.
+Running browser suite: studio_contacts.py
+Canonical contacts browser workflow passed
+Running browser suite: public_content.py
+public content: authenticated save, public isolation, reload persistence, separate publication, literal markup, restore without publication, history; zero page errors
+Running browser suite: enquiry_operations.py
+Enquiry operations browser: indexed search, page download, partial and uncertain saves, persistence and role isolation passed
+Running browser suite: documents.py
+Document browser regression passed: private real upload/download, uncertain-response retry, explicit publication, persistent versions, unpublish, mobile widths and grant withdrawal.
+Running browser suite: account_sessions.py
+account sessions: staff/client real sign-ins, withdrawal, persistence, lost-response retry preserving later login, isolation and four widths passed
+Running browser suite: booking_resources.py
+Booking resources browser: real persistence, lost-response exact retry, revision conflict/recovery, disable, client denial, authorization loss and four widths passed
+All 9 browser suites passed

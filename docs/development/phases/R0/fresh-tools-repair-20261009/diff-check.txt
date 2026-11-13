@@ -1,0 +1,1 @@
+fatal: not a git repository: /home/techcorp2024/studio-suite_v2/.git/worktrees/studio-suite-r0-candidate-20261008

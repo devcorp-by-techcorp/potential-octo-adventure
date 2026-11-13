@@ -1,0 +1,20 @@
+{
+  "phase_id": "R0",
+  "state": "SCOPED",
+  "implementation_started": true,
+  "contract_sha256": "f46f07f6bcc7974082323b0443893aed130f8f10f7c42142324fc69e1d492aef",
+  "authority_sha256": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+  "base_commit": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+  "scope_memory_id": "6ac6d8e16705457911c73a00",
+  "scope_verdict_path": "test_reports/artifacts/r0-2026-10-08/scope-v3/review-result.txt",
+  "candidate_worktree": "/home/techcorp2024/scratch/studio-suite-r0-candidate-20261008",
+  "candidate_branch": "codex/studio-suite-r0-candidate-20261008",
+  "next_action": "Complete scoped infrastructure implementation and meaningful tests before BUILT/TESTED/outcome review; no product activation.",
+  "R0_GREEN": false,
+  "RESET_CONFIRMED": false,
+  "controller_thread": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+  "controller_model": "gpt-6.1-sol",
+  "controller_effort": "medium",
+  "controller_runtime_root": "/tmp/studio-r0-builder-resumed-x925c72b",
+  "source_access_verified": true
+}

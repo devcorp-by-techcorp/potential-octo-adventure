@@ -1,0 +1,191 @@
+{
+  "$jsonSchema": {
+    "title": "public_content_commands",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "objectId",
+        "description": "MongoDB-generated ObjectId; not an API UUID."
+      },
+      "actor_id": {
+        "bsonType": "string"
+      },
+      "command_id": {
+        "bsonType": "string"
+      },
+      "payload": {
+        "bsonType": "object",
+        "properties": {
+          "action": {
+            "bsonType": "string",
+            "enum": [
+              "save",
+              "restore",
+              "publish"
+            ]
+          },
+          "command_id": {
+            "bsonType": "string"
+          },
+          "expected_revision": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 0
+          },
+          "content": {
+            "bsonType": "object",
+            "properties": {
+              "hero_description": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "hero_footnote": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "philosophy_title": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "philosophy_description": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "hero_description",
+              "hero_footnote",
+              "philosophy_title",
+              "philosophy_description"
+            ],
+            "additionalProperties": true
+          },
+          "source_revision": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 0
+          }
+        },
+        "required": [
+          "action",
+          "command_id",
+          "expected_revision"
+        ],
+        "additionalProperties": true
+      },
+      "result": {
+        "bsonType": "object",
+        "properties": {
+          "draft": {
+            "bsonType": "object",
+            "properties": {
+              "hero_description": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "hero_footnote": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "philosophy_title": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "philosophy_description": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "hero_description",
+              "hero_footnote",
+              "philosophy_title",
+              "philosophy_description"
+            ],
+            "additionalProperties": true
+          },
+          "published": {
+            "bsonType": "object",
+            "properties": {
+              "hero_description": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "hero_footnote": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "philosophy_title": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "philosophy_description": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "hero_description",
+              "hero_footnote",
+              "philosophy_title",
+              "philosophy_description"
+            ],
+            "additionalProperties": true
+          },
+          "revision": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 0
+          },
+          "published_revision": {
+            "bsonType": [
+              "int",
+              "long",
+              "null"
+            ]
+          },
+          "updated_at": {
+            "bsonType": [
+              "date",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "draft",
+          "published",
+          "revision",
+          "published_revision",
+          "updated_at"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "required": [
+      "_id",
+      "actor_id",
+      "command_id",
+      "payload",
+      "result"
+    ],
+    "additionalProperties": true
+  }
+}

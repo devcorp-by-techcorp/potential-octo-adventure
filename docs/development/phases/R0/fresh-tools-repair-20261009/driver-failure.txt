@@ -1,0 +1,1 @@
+Initial evidence driver: suite exit 0 (50 tests); git lookup failed with FileNotFoundError because PATH contains only codex-path. Retried using /usr/bin/git.

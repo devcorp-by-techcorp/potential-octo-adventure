@@ -1,0 +1,194 @@
+{
+  "phase_id": "R0",
+  "review_kind": "scope",
+  "verdict": "REWORK",
+  "disposition_basis": "Pre-build contract source fidelity and testability, not implementation success.",
+  "contract_sha256": "95510bb0203e1fe4b700a7151fbee31183106d23442cc1c08669afd20c22c5a1",
+  "packet_sha256": "9a20530d07d6388670b00b25e792f9aac32bc9a6d51be30b8cf06672fdf3cee2",
+  "packet_encoding": "SHA-256 of UTF-8 JSON mapping all seven input basenames to SHA-256 of their raw bytes; Python json.dumps(mapping, sort_keys=True, separators=(',', ':')), without trailing newline.",
+  "instance": "cbb7c785b0e48758ce82dba0053669ef",
+  "thread_id": "01a118b4-405b-73b3-a519-5b82a9d959cd",
+  "candidate_commit": null,
+  "candidate_tree": null,
+  "source_digest_checks": {
+    "all_manifest_pins_match": true,
+    "all_contract_authority_pins_match": true,
+    "sha256": {
+      "authority.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+      "assessment.md": "ebef319b9b0cd3f5122749bd597661118a667e326a3020edeecbd0e448ac0c50",
+      "design-system-source-manifest.json": "abbcc51be2b6f4c3e381134d14732da4192257e27cde37a3f4a4ec8ae48f292f",
+      "base-ci.yml": "642722fe0d30bfeced712cbcec8f21d03fa148d6b557e9527580c46f63a6364d",
+      "host-probe-source.py": "f3575fe35dfaecce1d08ce0bbca56f28f5cf4f8446046646774895e196b2f762",
+      "manifest.json": "774fbf81b84386de21886fed7f0c2a1f7ee0aacdc86af6e720308cee99c5a47b"
+    }
+  },
+  "sandbox_receipts": {
+    "challenge": "r0-scope-cbb7c785b0e48758ce82dba0053669ef",
+    "configuration_sha256": "bfc9bf8c7199acd61b1e59856682af84204deaa3d9b0294d637c9cba3a498843",
+    "transport_sha256": "30e13b9bc8c1ed5439d6e9ec65c5c0953990f5a3fc717b85acf5e940c2bcc1e1",
+    "packet_sha256": "5035e5205045b336805910f4f2809b308bc7e9808fabd48e80f85fd7016fc27d",
+    "sentinel_sha256": "9448fa63ff923f91a26e02d329ec15d5e56d224849f58366e4b70dd7214a52e5",
+    "receipt_digests_independently_recomputed": true,
+    "effective_model": "gpt-6.1-sol",
+    "effective_effort": "medium",
+    "permission_profile": "r0_qualified",
+    "approval_policy": "never",
+    "root_access": "deny",
+    "input_access": "read-only",
+    "output_access": "writable",
+    "network_enabled": false,
+    "fresh_thread_initial_turns": [],
+    "inherited_environment_policy": "none",
+    "integrations_and_history_features": "Disabled in effective feature metadata and launch configuration.",
+    "host_pid_namespace": "pid:[4026532604]",
+    "restricted_tool_pid_namespace": "pid:[4026532877]",
+    "sentinel_exists_on_original_host": true,
+    "sentinel_before_and_after_sha256": "a50ea13afea155ce4c6ca7eef585caca7de20a8458904c222dcb0f7f1ff048ce",
+    "original_sentinel_and_packet_unchanged": true,
+    "isolation_disposition": "pass_for_exercised_exact_instance_checks"
+  },
+  "criteria": [
+    {
+      "id": "AC-1",
+      "result": "pass",
+      "disposition": "Requires fresh pre-build scope review, effective controller model/effort and live memory-first activation.",
+      "evidence": ["contract.md:35-60", "contract.md:100", "authority.md:Mandate and activation"]
+    },
+    {
+      "id": "AC-2",
+      "result": "pass",
+      "disposition": "Observable transitions, preserved failure state, evidence binding and conditional actual Goal-tool lifecycle are specified.",
+      "evidence": ["contract.md:55-60", "contract.md:101", "authority.md:Phase state machine"]
+    },
+    {
+      "id": "AC-3",
+      "result": "pass",
+      "disposition": "Neutral allowlisted packets, contamination rejection and hostile construction tests are required.",
+      "evidence": ["contract.md:102", "authority.md:Input packet allowlist"]
+    },
+    {
+      "id": "AC-4",
+      "result": "pass",
+      "disposition": "Exact-instance grants, transport, sentinel and escape checks are mandatory; missing isolation evidence cannot pass. Exercised reviewer-instance checks found no escape.",
+      "evidence": ["contract.md:38-40", "contract.md:103", "contract.md:118-127", "sandbox_receipts", "independent_checks"]
+    },
+    {
+      "id": "AC-5",
+      "result": "pass",
+      "disposition": "Independent dispositions, exact hashes, unresolved findings and material negative gate tests are required.",
+      "evidence": ["contract.md:104", "authority.md:Result contract"]
+    },
+    {
+      "id": "AC-6",
+      "result": "pass",
+      "disposition": "Atomic lease, actual process identity, interruption reconciliation and owned-process cleanup are testable requirements.",
+      "evidence": ["contract.md:105", "authority.md:178"]
+    },
+    {
+      "id": "AC-7",
+      "result": "pass",
+      "disposition": "Bootstrap qualification remains one R0 phase. Synthetic rehearsal receipts cannot replace actual R0 publication, memory, CI or reset evidence.",
+      "evidence": ["contract.md:106", "contract.md:129-137", "authority.md:Bootstrap exception without bypassing acceptance", "authority.md:204"]
+    },
+    {
+      "id": "AC-8",
+      "result": "pass",
+      "disposition": "Separate executable/authority and records manifests, reviewed-byte integration, records review and approval invalidation are specified.",
+      "evidence": ["contract.md:78-87", "contract.md:107", "authority.md:Phase state machine"]
+    },
+    {
+      "id": "AC-9",
+      "result": "pass",
+      "disposition": "Live remote equality, new draft PR and all retained plus infrastructure jobs are required on integration and final records heads.",
+      "evidence": ["contract.md:74-76", "contract.md:108", "base-ci.yml:jobs", "assessment.md:Verified baseline"]
+    },
+    {
+      "id": "AC-10",
+      "result": "pass",
+      "disposition": "Document reconciliation, parent-status limits, installed memory protocol, coding metadata, write receipts and full readback are mandatory.",
+      "evidence": ["contract.md:43-53", "contract.md:109", "authority.md:Documentation and Empirical gate"]
+    },
+    {
+      "id": "AC-11",
+      "result": "fail",
+      "disposition": "The ordinary actual R0 compaction/fresh-bootstrap boundary is adequately specified, but the supervisor's mandatory terminal and partial/blocked closing branch is absent from observable acceptance.",
+      "evidence": ["contract.md:110", "contract.md:129-137", "authority.md:163-176"],
+      "finding_ids": ["R0-SCOPE-01"]
+    }
+  ],
+  "findings": [
+    {
+      "id": "R0-SCOPE-01",
+      "severity": "blocking",
+      "requirement": "The qualified supervisor reset sequence must support terminal completion and distinguish it from partial/blocked delivery.",
+      "source": "authority.md:163-176",
+      "location": "contract.md:101,106,110,129-137",
+      "reproduction": "Compare the authority's self-compaction sequence, especially lines 171-176, with AC-2, AC-7 and AC-11. Check for acceptance covering terminal:true, next_phase_id:null, fresh read-only closing bootstrap and refusal of full completion while required goals remain blocked.",
+      "observed": "The contract requires continuation with a next ID but provides no observable terminal/partial closing assertion or corresponding qualification test.",
+      "expected": "Add terminal and partial/blocked supervisor behavior with positive and negative qualification cases. This qualifies infrastructure behavior; it does not authorize implementing C11 product work."
+    }
+  ],
+  "advisory_findings": [],
+  "independent_checks": [
+    {
+      "check": "Raw-byte SHA-256 verification using /usr/bin/python3",
+      "result": "All six manifest pins and four contract authority pins matched; manifest.json was independently hashed."
+    },
+    {
+      "check": "Parse complete source inventory",
+      "result": "86 source-file entries and 115 archive-member entries."
+    },
+    {
+      "check": "Input write-open without writing bytes",
+      "result": "contract.md denied with EROFS, errno 30."
+    },
+    {
+      "check": "Original outside-sentinel read and write-open",
+      "result": "Both paths unavailable with ENOENT; host callback independently confirmed the original sentinel exists and remained unchanged."
+    },
+    {
+      "check": "Excluded home/config, Empirical skill, host PID environment/root/fd paths",
+      "result": "Unavailable with ENOENT; no contents or credential values exported."
+    },
+    {
+      "check": "PID/root traversal",
+      "result": "Restricted tool PID namespace differed from host namespace; host PID paths and /proc/self/root or /proc/1/root sentinel traversal were unavailable."
+    },
+    {
+      "check": "IPv4, IPv6, cloud metadata and IPv4/IPv6 loopback connections",
+      "result": "Each denied with EPERM, errno 1; no payload sent."
+    },
+    {
+      "check": "Unix Docker socket connection",
+      "result": "Denied with EPERM, errno 1."
+    },
+    {
+      "check": "Private mount namespace and private tmpfs mount",
+      "result": "Both denied with EPERM, errno 1."
+    },
+    {
+      "check": "Separate output scratch write/readback",
+      "result": "Succeeded; harmless scratch file removed."
+    },
+    {
+      "check": "Broker extra path and command fields",
+      "result": "Actual callbacks rejected both with unexpected-fields; configuration receipt also reports wrong-thread and invalid-probe rejection."
+    },
+    {
+      "check": "Final challenge-bound sentinel and packet readback",
+      "result": "Original sentinel and every frozen packet file unchanged."
+    },
+    {
+      "check": "Receipt digest recomputation",
+      "result": "All four final receipt hashes matched Python sorted-key JSON SHA-256 recomputation."
+    }
+  ],
+  "limitations": [
+    "No supervisor implementation exists; no implementation, unit-test or outcome success is claimed.",
+    "Controller memory/history was not queried. Reviewer memory integration and installed memory-skill access were unavailable under the enforced boundary.",
+    "Git ancestry, base-tree identity, live publication, CI, controller Goal lifecycle and actual controller compaction/bootstrap remain future operational gates, not verified accomplishments.",
+    "The source inventory was parsed and its pinned digest verified; underlying _ds files and archives were not supplied for fresh hash/CRC validation.",
+    "Isolation findings cover the exercised exact-instance paths and transports, not an exhaustive proof against every possible escape.",
+    "No application or authority changes, remote writes, objective activation or reviewer compaction were performed."
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "verdict": "BLOCKED",
+  "contract_id": "R0 preparatory bootstrap qualification",
+  "instance": "bdf207c1f98583d616593287502eb012",
+  "thread_id": "01a118a3-1a64-7711-b9a9-a64b8948bb35",
+  "bq": [
+    {
+      "id": "BQ-1",
+      "disposition": "PASS",
+      "facts": "Predecessor controller turn completed; matching contextCompaction item completed; compaction turn completed successfully."
+    },
+    {
+      "id": "BQ-2",
+      "disposition": "PASS",
+      "facts": "Distinct thread/start, empty initial turns, effective gpt-6.1-sol/medium; launch source supplies only standing instructions, checkpoint pointer and contract ID."
+    },
+    {
+      "id": "BQ-3",
+      "disposition": "FAIL",
+      "facts": "First Empirical request preceded file reads but was denied invalid-request. Successful live retrieval occurred only after source reads.",
+      "workspace": "studio_suite_v2",
+      "records_verified": [
+        "6ac6d00d6705457911c73200",
+        "6ac6c8f46705457911c723b2",
+        "6ac6c9446705457911c724ab",
+        "6ac6c94b6705457911c724fa"
+      ],
+      "stopOnMemoryFailure": true
+    },
+    {
+      "id": "BQ-4",
+      "disposition": "FAIL",
+      "facts": "Independent frozen/live hashes agree with each other, but the supplied negative checkpoint's expected authority hash disagrees. Git, remote refs, merged PR and all exact-head CI jobs agree with checkpoint claims."
+    },
+    {
+      "id": "BQ-5",
+      "disposition": "PASS",
+      "facts": "This receipt binds current evidence and denies reset, GREEN and product advancement."
+    },
+    {
+      "id": "BQ-6",
+      "disposition": "PASS",
+      "facts": "Negative bootstrap reports BLOCKED, names the authority mismatch and permits no advancement."
+    }
+  ],
+  "hashes": {
+    "supplied_checkpoint_sha256": "2f02029c5661f6f2db13b704cf3fef59c219bddbc17adc7e45784ad6f96d079e",
+    "live_original_checkpoint_sha256": "d19d6659f58e2c8b87c94912b4fe7faa56cc7e7ddb696fd289c7249c82febdb1",
+    "contract_sha256": "230f87cd0b47aa5c4fa11e23bdd6d342a8ef506017233c9a45c122d9fd6a7cd1",
+    "authority_expected_by_supplied_checkpoint": "0000000000000000000000000000000000000000000000000000000000000000",
+    "authority_actual_sha256": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d"
+  },
+  "git_ci": {
+    "branch": "codex/prerequisite-reconciliation-20261006",
+    "head": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "tree": "3e212b16ab94df4ae705dbd17392d42e66de36c8",
+    "remote_preview": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "remote_main": "5c2fe515b0eba4b0d89492305a21f9548c2dd853",
+    "pr_18": "merged",
+    "run": 37443377221,
+    "run_status": "completed/success",
+    "required_jobs": {
+      "112202251063": "completed/success",
+      "112202251329": "completed/success",
+      "112202251588": "completed/success"
+    }
+  },
+  "prior_gate_state": {
+    "R0": "PREPARATION_ONLY",
+    "R0_A": "baseline evidence collected",
+    "R0_B_host": "qualification PASS recorded and read back",
+    "GREEN": false,
+    "RESET_CONFIRMED": false,
+    "supervisor_or_product_phase_active": false
+  },
+  "next_contract_id": "R0 preparatory bootstrap qualification",
+  "exact_next_scope": "Resolve the checkpoint authority disagreement and repeat a distinct fresh read-only bootstrap with successful live Empirical retrieval before any source reads. Only after capability qualification may the full R0 supervisor/gate contract be frozen and receive a fresh source-fidelity scope audit.",
+  "advancement_permission": false,
+  "findings": [
+    "Blocking authority SHA-256 mismatch in the supplied negative checkpoint.",
+    "Successful Empirical retrieval did not precede source reads."
+  ],
+  "evidence_receipts": {
+    "empirical": "83840d99d19d470aeb0a1ba87fd2b35c96633321007043859a85aab3b261d734",
+    "source_lifecycle": "681bc4cf5be19607f57b03321e610ef397b172b4a2c4292c16fe62d36280acbe",
+    "git_ci": "df3c57a56d4e69f7aee2837f8d301657f458d989db6d8ee415d7bc65686faa2a"
+  },
+  "limits": [
+    "Read-only observation; no application changes or remote writes performed.",
+    "Git/CI and lifecycle facts were retrieved through the fixed live broker.",
+    "Existing application-head CI is not final R0 integration-head CI.",
+    "Full R0 scope, implementation, outcome/records reviews, publication and final reset remain required.",
+    "No R0-C, C3, C4 or other product implementation is authorized."
+  ]
+}

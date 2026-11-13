@@ -1,0 +1,100 @@
+{
+  "phase_id": "R0-B",
+  "contract_sha256": "08590c5d1344f49a4188fbe2b55e14c7efb64fac5993920563cf46bf870f9d19",
+  "candidate_commit": null,
+  "candidate_tree": null,
+  "packet_sha256": null,
+  "sandbox_receipt": null,
+  "verdict": "BLOCKED",
+  "criteria": [
+    {
+      "id": "AC-1",
+      "result": "pass",
+      "evidence": [
+        "Both packet files readable; O_WRONLY opens rejected with EROFS (30); hashes unchanged.",
+        "Disposable output file successfully created, read and removed."
+      ]
+    },
+    {
+      "id": "AC-2",
+      "result": "unverified",
+      "evidence": [
+        "Builder workspace, auth.json, sessions, .empirical and .ssh returned ENOENT (2).",
+        "Mount table identifies visible home and /tmp as private tmpfs, not host-backed home or /tmp.",
+        "No authoritative host sentinel location or before/after receipt supplied."
+      ]
+    },
+    {
+      "id": "AC-3",
+      "result": "unverified",
+      "evidence": [
+        "AF_INET socket creation rejected with EPERM (1) for probes targeting 1.1.1.1:443 and 169.254.169.254:80.",
+        "No remote-write connector or browser tool exposed in the callable tool inventory.",
+        "Effective plugin/hook configuration and inherited-memory isolation lack host attestation."
+      ]
+    },
+    {
+      "id": "AC-4",
+      "result": "unverified",
+      "evidence": [
+        "Packet write access rejected with EROFS (30).",
+        "libc.unshare(CLONE_NEWNS) returned -1 with EPERM (1).",
+        "Successful disposable writes outside output occurred on private tmpfs.",
+        "Real-host integrity was not independently verified."
+      ]
+    },
+    {
+      "id": "AC-5",
+      "result": "unverified",
+      "evidence": [
+        "Visible processes were namespace-local codex, bash and python3.",
+        "No environment key names matching TOKEN, SECRET, PASSWORD, API_KEY, CREDENTIAL or AUTH were found.",
+        "/proc/1/root exposes the same restricted filesystem; auth.json remained absent.",
+        "Host transport brokerage and credential absence across all process channels were not established."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "severity": "blocking",
+      "requirement": "AC-2, AC-4",
+      "location": "contract.md",
+      "reproduction": "Run qualification.py and inspect boundary-mountinfo.txt.",
+      "observed": "Excluded paths are absent and outside-output writes are virtualized; no verified host sentinel receipt exists.",
+      "expected": "Qualification evidence establishes that the real host remains unchanged."
+    },
+    {
+      "severity": "blocking",
+      "requirement": "AC-3, AC-5",
+      "location": "contract.md",
+      "reproduction": "Inspect callable tools, network probe results and visible process metadata.",
+      "observed": "Network socket creation is denied, but host configuration and model transport evidence are unavailable.",
+      "expected": "Verify disabled inherited integrations and brokered transport without reviewer-visible credentials."
+    }
+  ],
+  "independent_checks": [
+    {
+      "command": "/usr/bin/python3 qualification.py",
+      "exit_code": 0,
+      "results": "/tmp/studio-suite-r0-review-20261008/output-retry/qualification-results.json",
+      "script_sha256": "edd9d2579cc4094880cb6bcf7c37668e34a8abeebc482abc8ff1b237ce0c060b",
+      "results_sha256": "d7de284b25a9a6d8a04aa64293993bd876adbc8e239ce470a848b5eb1496ba83"
+    },
+    {
+      "command": "/bin/cat /proc/self/mountinfo > boundary-mountinfo.txt",
+      "exit_code": 0,
+      "result": "Private tmpfs root; packet mounted read-only; output mounted writable; visible host-backed mounts otherwise read-only."
+    },
+    {
+      "command": "ctypes.CDLL(None, use_errno=True).unshare(0x00020000)",
+      "result": "Return -1; errno 1."
+    }
+  ],
+  "limitations": [
+    "No verified host sentinel, host integrity receipt or transport configuration supplied.",
+    "Missing paths establish reviewer invisibility, not independently verified host existence or integrity.",
+    "Environment-key screening does not prove absence of credentials in arguments, files or process memory.",
+    "No grants, credentials or external writes requested.",
+    "Packet hashes remained unchanged; disposable probe files were removed."
+  ]
+}

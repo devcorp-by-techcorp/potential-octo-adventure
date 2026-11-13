@@ -1,0 +1,132 @@
+import json
+import os
+import selectors
+import subprocess
+import time
+from pathlib import Path
+
+ROOT = Path('/tmp/studio-suite-r0-reset-20261008')
+ROOT.mkdir(exist_ok=True)
+EXE = '/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex'
+server = subprocess.Popen([EXE, 'app-server', '--stdio'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+sel = selectors.DefaultSelector()
+sel.register(server.stdout, selectors.EVENT_READ, 'stdout')
+sel.register(server.stderr, selectors.EVENT_READ, 'stderr')
+buffer = b''
+receipts = []
+responses = {}
+completed_turns = {}
+next_id = 0
+
+def send(method, params, request=True):
+    global next_id
+    message = {'method': method, 'params': params}
+    if request:
+        next_id += 1
+        message['id'] = next_id
+    server.stdin.write((json.dumps(message) + '\n').encode())
+    server.stdin.flush()
+    return next_id
+
+def read_until(predicate, timeout=45):
+    global buffer
+    deadline = time.monotonic() + timeout
+    while not predicate():
+        if time.monotonic() >= deadline:
+            raise TimeoutError('bounded protocol wait expired')
+        if server.poll() is not None:
+            raise RuntimeError('app-server exited: ' + str(server.returncode))
+        for key, _ in sel.select(min(1, deadline - time.monotonic())):
+            data = os.read(key.fileobj.fileno(), 65536)
+            if not data:
+                sel.unregister(key.fileobj)
+                continue
+            if key.data == 'stderr':
+                continue  # No transcripts, reasoning or credential-bearing diagnostics exported.
+            buffer += data
+            while b'\n' in buffer:
+                line, buffer = buffer.split(b'\n', 1)
+                msg = json.loads(line)
+                if 'id' in msg and ('result' in msg or 'error' in msg):
+                    responses[msg['id']] = msg
+                method = msg.get('method')
+                params = msg.get('params', {})
+                item = params.get('item', {})
+                if method in ['turn/started', 'turn/completed']:
+                    turn = params.get('turn', {})
+                    rec = {'event': method, 'threadId': params.get('threadId'), 'turnId': turn.get('id'), 'status': turn.get('status'), 'error': turn.get('error')}
+                    receipts.append(rec)
+                    print(json.dumps(rec), flush=True)
+                    if method == 'turn/completed':
+                        completed_turns[params.get('threadId')] = rec
+                elif method in ['item/started', 'item/completed'] and item.get('type') == 'contextCompaction':
+                    rec = {'event': method, 'threadId': params.get('threadId'), 'turnId': params.get('turnId'), 'item': item}
+                    receipts.append(rec)
+                    print(json.dumps(rec), flush=True)
+                elif method == 'item/completed' and item.get('type') == 'agentMessage':
+                    rec = {'event': 'final_message', 'threadId': params.get('threadId'), 'text': item.get('text')}
+                    receipts.append(rec)
+                    print(json.dumps(rec), flush=True)
+                elif method == 'error':
+                    rec = {'event': 'error', 'params': params}
+                    receipts.append(rec)
+                    print(json.dumps(rec), flush=True)
+
+def request(method, params):
+    ident = send(method, params)
+    read_until(lambda: ident in responses, 20)
+    response = responses.pop(ident)
+    if 'error' in response:
+        raise RuntimeError(json.dumps({'method': method, 'error': response['error']}))
+    return response['result']
+
+try:
+    initialized = request('initialize', {'clientInfo': {'name': 'studio-suite-r0-runtime-probe', 'title': 'R0 disposable capability smoke', 'version': '0.1'}, 'capabilities': {'experimentalApi': True}})
+    receipts.append({'initialize': initialized})
+    send('initialized', {}, False)
+    config = {'model_reasoning_effort': 'medium', 'web_search': 'disabled', 'features': {name: False for name in ['apps', 'plugins', 'hooks', 'memories', 'shell_tool', 'browser_use', 'computer_use', 'image_generation', 'multi_agent', 'multi_agent_v2', 'code_mode_host']}}
+    thread = request('thread/start', {'model': 'gpt-6.1-sol', 'allowProviderModelFallback': False, 'config': config, 'cwd': str(ROOT), 'ephemeral': True, 'environments': [], 'approvalPolicy': 'never', 'sandbox': 'read-only', 'baseInstructions': 'You are executing a disposable runtime capability smoke test. Follow only the supplied test input. No tools or external actions.', 'developerInstructions': 'No tools, files, connectors, network, or other tasks. Return only the requested marker.'})
+    tid = thread['thread']['id']
+    rec = {k: thread.get(k) for k in ['model', 'modelProvider', 'reasoningEffort', 'approvalPolicy', 'sandbox', 'sandboxPolicy', 'permissions']}
+    rec.update({'event': 'thread_created', 'threadId': tid, 'requested_effort': 'medium'})
+    receipts.append(rec)
+    print(json.dumps(rec), flush=True)
+    request('turn/start', {'threadId': tid, 'model': 'gpt-6.1-sol', 'effort': 'medium', 'input': [{'type': 'text', 'text': 'Return exactly R0_RUNTIME_OK.', 'text_elements': []}]})
+    read_until(lambda: tid in completed_turns, 45)
+    if completed_turns[tid]['status'] != 'completed':
+        raise RuntimeError('capability smoke turn did not complete')
+    del completed_turns[tid]
+    acknowledgment = request('thread/compact/start', {'threadId': tid})
+    receipts.append({'event': 'compaction_acknowledged', 'threadId': tid, 'response': acknowledgment})
+    print(json.dumps(receipts[-1]), flush=True)
+    read_until(lambda: tid in completed_turns, 45)
+    matching = [r for r in receipts if r.get('event') == 'item/completed' and r.get('threadId') == tid and r.get('item', {}).get('type') == 'contextCompaction']
+    if completed_turns[tid]['status'] != 'completed' or not matching:
+        raise RuntimeError('actual successful compaction lifecycle not established')
+    receipts.append({'event': 'compaction_verified', 'threadId': tid})
+    print(json.dumps(receipts[-1]), flush=True)
+    fresh = request('thread/start', {'model': 'gpt-6.1-sol', 'allowProviderModelFallback': False, 'config': config, 'cwd': str(ROOT), 'ephemeral': True, 'environments': [], 'approvalPolicy': 'never', 'sandbox': 'read-only', 'baseInstructions': 'Execute only the supplied disposable capability smoke input. No tools or external actions.', 'developerInstructions': 'No tools, files, connectors, network, or other tasks. Return only the requested marker.'})
+    fid = fresh['thread']['id']
+    if fid == tid or fresh['thread'].get('turns'):
+        raise RuntimeError('fresh thread is not new with empty history')
+    rec = {'event': 'fresh_thread_created', 'threadId': fid, 'priorThreadId': tid, 'model': fresh.get('model'), 'reasoningEffort': fresh.get('reasoningEffort'), 'initial_turns': fresh['thread'].get('turns', [])}
+    receipts.append(rec)
+    print(json.dumps(rec), flush=True)
+    request('turn/start', {'threadId': fid, 'model': 'gpt-6.1-sol', 'effort': 'medium', 'input': [{'type': 'text', 'text': 'Return exactly R0_FRESH_RUNTIME_OK.', 'text_elements': []}]})
+    read_until(lambda: fid in completed_turns, 45)
+    if completed_turns[fid]['status'] != 'completed':
+        raise RuntimeError('fresh capability turn did not complete')
+    receipts.append({'event': 'fresh_runtime_verified', 'threadId': fid, 'note': 'Capability smoke only; not a product phase bootstrap or R0 acceptance.'})
+    print(json.dumps(receipts[-1]), flush=True)
+except Exception as exc:
+    receipts.append({'event': 'probe_failed', 'type': type(exc).__name__, 'error': str(exc)})
+    print(json.dumps(receipts[-1]), flush=True)
+finally:
+    server.terminate()
+    try:
+        server.communicate(timeout=5)
+    except subprocess.TimeoutExpired:
+        server.kill()
+        server.communicate()
+    (ROOT / 'receipt.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    print(json.dumps({'event': 'probe_closed', 'receipt': str(ROOT / 'receipt.json'), 'server_exit': server.returncode}), flush=True)

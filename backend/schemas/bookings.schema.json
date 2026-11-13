@@ -1,0 +1,108 @@
+{
+  "$jsonSchema": {
+    "title": "bookings",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "source_enquiry_id": {
+        "bsonType": "string"
+      },
+      "reference": {
+        "bsonType": "string"
+      },
+      "client_name": {
+        "bsonType": "string"
+      },
+      "event_type": {
+        "bsonType": "string"
+      },
+      "scheduled_date": {
+        "bsonType": "string",
+        "description": "Calendar date stored as YYYY-MM-DD text.",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+      },
+      "location": {
+        "bsonType": "string"
+      },
+      "staff_note": {
+        "bsonType": "string"
+      },
+      "state": {
+        "bsonType": "string",
+        "enum": [
+          "planning",
+          "confirmed",
+          "preparation",
+          "shoot",
+          "gallery_preparation",
+          "delivered",
+          "cancelled"
+        ]
+      },
+      "revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "updated_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "history": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "from": {
+              "bsonType": [
+                "string",
+                "null"
+              ]
+            },
+            "to": {
+              "bsonType": "string"
+            },
+            "actor_id": {
+              "bsonType": "string"
+            },
+            "at": {
+              "bsonType": "date",
+              "description": "UTC instant stored as a BSON date, with millisecond precision."
+            }
+          },
+          "required": [
+            "from",
+            "to",
+            "actor_id",
+            "at"
+          ],
+          "additionalProperties": true
+        }
+      }
+    },
+    "required": [
+      "_id",
+      "source_enquiry_id",
+      "reference",
+      "client_name",
+      "event_type",
+      "scheduled_date",
+      "location",
+      "staff_note",
+      "state",
+      "revision",
+      "created_at",
+      "updated_at",
+      "history"
+    ],
+    "additionalProperties": true
+  }
+}

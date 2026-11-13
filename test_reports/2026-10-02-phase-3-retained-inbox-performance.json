@@ -1,0 +1,725 @@
+{
+  "dataset": 10000,
+  "legacy": 2500,
+  "page_size": 100,
+  "queries": {
+    "all": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "PROJECTION_SIMPLE",
+          "transformBy": {
+            "_id": 1,
+            "reference": 1,
+            "name": 1,
+            "event_type": 1,
+            "preferred_date": 1,
+            "collection": 1,
+            "created_at": 1,
+            "studio_status": 1,
+            "studio_revision": 1
+          },
+          "inputStage": {
+            "stage": "FETCH",
+            "inputStage": {
+              "stage": "IXSCAN",
+              "keyPattern": {
+                "created_at": -1,
+                "_id": -1
+              },
+              "indexName": "studio_enquiries_created_id",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "created_at": [],
+                "_id": []
+              },
+              "isUnique": false,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "created_at": [
+                  "[MaxKey, MinKey]"
+                ],
+                "_id": [
+                  "[MaxKey, MinKey]"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 101,
+      "totalDocsExamined": 101,
+      "executionTimeMillis": 0
+    },
+    "all_cursor": {
+      "plan": {
+        "stage": "SUBPLAN",
+        "inputStage": {
+          "stage": "LIMIT",
+          "limitAmount": 101,
+          "inputStage": {
+            "stage": "PROJECTION_SIMPLE",
+            "transformBy": {
+              "_id": 1,
+              "reference": 1,
+              "name": 1,
+              "event_type": 1,
+              "preferred_date": 1,
+              "collection": 1,
+              "created_at": 1,
+              "studio_status": 1,
+              "studio_revision": 1
+            },
+            "inputStage": {
+              "stage": "FETCH",
+              "inputStage": {
+                "stage": "SORT_MERGE",
+                "sortPattern": {
+                  "created_at": -1,
+                  "_id": -1
+                },
+                "inputStages": [
+                  {
+                    "stage": "IXSCAN",
+                    "keyPattern": {
+                      "created_at": -1,
+                      "_id": -1
+                    },
+                    "indexName": "studio_enquiries_created_id",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "created_at": [],
+                      "_id": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "created_at": [
+                        "[new Date(1767226100000), new Date(1767226100000)]"
+                      ],
+                      "_id": [
+                        "(\"00000000-0000-0000-0000-000000001389\", \"\"]"
+                      ]
+                    }
+                  },
+                  {
+                    "stage": "IXSCAN",
+                    "keyPattern": {
+                      "created_at": -1,
+                      "_id": -1
+                    },
+                    "indexName": "studio_enquiries_created_id",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "created_at": [],
+                      "_id": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "created_at": [
+                        "(new Date(1767226100000), new Date(-9223372036854775808)]"
+                      ],
+                      "_id": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 101,
+      "totalDocsExamined": 101,
+      "executionTimeMillis": 0
+    },
+    "new": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "PROJECTION_SIMPLE",
+          "transformBy": {
+            "_id": 1,
+            "reference": 1,
+            "name": 1,
+            "event_type": 1,
+            "preferred_date": 1,
+            "collection": 1,
+            "created_at": 1,
+            "studio_status": 1,
+            "studio_revision": 1
+          },
+          "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+              "studio_status": {
+                "$in": [
+                  null,
+                  "new"
+                ]
+              }
+            },
+            "inputStage": {
+              "stage": "SORT_MERGE",
+              "sortPattern": {
+                "created_at": -1,
+                "_id": -1
+              },
+              "inputStages": [
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "studio_status": 1,
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_status_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "studio_status": [],
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "studio_status": [
+                      "[undefined, undefined]"
+                    ],
+                    "created_at": [
+                      "[MaxKey, MinKey]"
+                    ],
+                    "_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                },
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "studio_status": 1,
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_status_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "studio_status": [],
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "studio_status": [
+                      "[null, null]"
+                    ],
+                    "created_at": [
+                      "[MaxKey, MinKey]"
+                    ],
+                    "_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                },
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "studio_status": 1,
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_status_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "studio_status": [],
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "studio_status": [
+                      "[\"new\", \"new\"]"
+                    ],
+                    "created_at": [
+                      "[MaxKey, MinKey]"
+                    ],
+                    "_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 102,
+      "totalDocsExamined": 101,
+      "executionTimeMillis": 0
+    },
+    "new_cursor": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "PROJECTION_SIMPLE",
+          "transformBy": {
+            "_id": 1,
+            "reference": 1,
+            "name": 1,
+            "event_type": 1,
+            "preferred_date": 1,
+            "collection": 1,
+            "created_at": 1,
+            "studio_status": 1,
+            "studio_revision": 1
+          },
+          "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+              "studio_status": {
+                "$in": [
+                  null,
+                  "new"
+                ]
+              }
+            },
+            "inputStage": {
+              "stage": "SORT_MERGE",
+              "sortPattern": {
+                "created_at": -1,
+                "_id": -1
+              },
+              "inputStages": [
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "created_at": [
+                      "[new Date(1767226100000), new Date(1767226100000)]"
+                    ],
+                    "_id": [
+                      "(\"00000000-0000-0000-0000-000000001389\", \"\"]"
+                    ]
+                  }
+                },
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "created_at": [
+                      "(new Date(1767226100000), new Date(-9223372036854775808)]"
+                    ],
+                    "_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 203,
+      "totalDocsExamined": 203,
+      "executionTimeMillis": 5
+    },
+    "in_review": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "PROJECTION_SIMPLE",
+          "transformBy": {
+            "_id": 1,
+            "reference": 1,
+            "name": 1,
+            "event_type": 1,
+            "preferred_date": 1,
+            "collection": 1,
+            "created_at": 1,
+            "studio_status": 1,
+            "studio_revision": 1
+          },
+          "inputStage": {
+            "stage": "FETCH",
+            "inputStage": {
+              "stage": "IXSCAN",
+              "keyPattern": {
+                "studio_status": 1,
+                "created_at": -1,
+                "_id": -1
+              },
+              "indexName": "studio_enquiries_status_created_id",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "studio_status": [],
+                "created_at": [],
+                "_id": []
+              },
+              "isUnique": false,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "studio_status": [
+                  "[\"in_review\", \"in_review\"]"
+                ],
+                "created_at": [
+                  "[MaxKey, MinKey]"
+                ],
+                "_id": [
+                  "[MaxKey, MinKey]"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 101,
+      "totalDocsExamined": 101,
+      "executionTimeMillis": 0
+    },
+    "in_review_cursor": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "PROJECTION_SIMPLE",
+          "transformBy": {
+            "_id": 1,
+            "reference": 1,
+            "name": 1,
+            "event_type": 1,
+            "preferred_date": 1,
+            "collection": 1,
+            "created_at": 1,
+            "studio_status": 1,
+            "studio_revision": 1
+          },
+          "inputStage": {
+            "stage": "FETCH",
+            "inputStage": {
+              "stage": "SORT_MERGE",
+              "sortPattern": {
+                "created_at": -1,
+                "_id": -1
+              },
+              "inputStages": [
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "studio_status": 1,
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_status_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "studio_status": [],
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "studio_status": [
+                      "[\"in_review\", \"in_review\"]"
+                    ],
+                    "created_at": [
+                      "(new Date(1767226100000), new Date(-9223372036854775808)]"
+                    ],
+                    "_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                },
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "studio_status": 1,
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_status_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "studio_status": [],
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "studio_status": [
+                      "[\"in_review\", \"in_review\"]"
+                    ],
+                    "created_at": [
+                      "[new Date(1767226100000), new Date(1767226100000)]"
+                    ],
+                    "_id": [
+                      "(\"00000000-0000-0000-0000-00000000138b\", \"\"]"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 101,
+      "totalDocsExamined": 101,
+      "executionTimeMillis": 2
+    },
+    "archived": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "PROJECTION_SIMPLE",
+          "transformBy": {
+            "_id": 1,
+            "reference": 1,
+            "name": 1,
+            "event_type": 1,
+            "preferred_date": 1,
+            "collection": 1,
+            "created_at": 1,
+            "studio_status": 1,
+            "studio_revision": 1
+          },
+          "inputStage": {
+            "stage": "FETCH",
+            "inputStage": {
+              "stage": "IXSCAN",
+              "keyPattern": {
+                "studio_status": 1,
+                "created_at": -1,
+                "_id": -1
+              },
+              "indexName": "studio_enquiries_status_created_id",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "studio_status": [],
+                "created_at": [],
+                "_id": []
+              },
+              "isUnique": false,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "studio_status": [
+                  "[\"archived\", \"archived\"]"
+                ],
+                "created_at": [
+                  "[MaxKey, MinKey]"
+                ],
+                "_id": [
+                  "[MaxKey, MinKey]"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 101,
+      "totalDocsExamined": 101,
+      "executionTimeMillis": 0
+    },
+    "archived_cursor": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "PROJECTION_SIMPLE",
+          "transformBy": {
+            "_id": 1,
+            "reference": 1,
+            "name": 1,
+            "event_type": 1,
+            "preferred_date": 1,
+            "collection": 1,
+            "created_at": 1,
+            "studio_status": 1,
+            "studio_revision": 1
+          },
+          "inputStage": {
+            "stage": "FETCH",
+            "inputStage": {
+              "stage": "SORT_MERGE",
+              "sortPattern": {
+                "created_at": -1,
+                "_id": -1
+              },
+              "inputStages": [
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "studio_status": 1,
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_status_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "studio_status": [],
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "studio_status": [
+                      "[\"archived\", \"archived\"]"
+                    ],
+                    "created_at": [
+                      "(new Date(1767226100000), new Date(-9223372036854775808)]"
+                    ],
+                    "_id": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                },
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "studio_status": 1,
+                    "created_at": -1,
+                    "_id": -1
+                  },
+                  "indexName": "studio_enquiries_status_created_id",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "studio_status": [],
+                    "created_at": [],
+                    "_id": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "studio_status": [
+                      "[\"archived\", \"archived\"]"
+                    ],
+                    "created_at": [
+                      "[new Date(1767226100000), new Date(1767226100000)]"
+                    ],
+                    "_id": [
+                      "(\"00000000-0000-0000-0000-00000000138c\", \"\"]"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "nReturned": 101,
+      "totalKeysExamined": 101,
+      "totalDocsExamined": 101,
+      "executionTimeMillis": 2
+    }
+  },
+  "latency_dataset": 10004,
+  "list_milliseconds": {
+    "median": 3.725154499989003,
+    "p95": 5.140352999887909,
+    "samples": 30
+  },
+  "detail_milliseconds": {
+    "median": 1.9779225000320366,
+    "p95": 2.3468509998565423,
+    "samples": 30
+  },
+  "runtime": {
+    "python": "3.11.16",
+    "node": "v20.20.2",
+    "pnpm": "10.34.3",
+    "chromium": "Google Chrome for Testing 145.0.7632.6",
+    "actionlint": "1.7.7",
+    "playwright": "1.58.0",
+    "motor": "3.3.1",
+    "pymongo": "4.5.0",
+    "argon2-cffi": "25.1.0",
+    "pytest": "9.1.1",
+    "ruff": "0.16.10",
+    "fastapi": "0.110.1",
+    "pydantic": "2.13.5",
+    "pydantic-settings": "2.15.0",
+    "mongodb": "7.0.16"
+  },
+  "method": "30 warm sequential authenticated httpx ASGI requests per endpoint; local real MongoDB phase3 replica set; perf_counter elapsed; nearest-rank p95 (sample 29/30); no production SLA"
+}

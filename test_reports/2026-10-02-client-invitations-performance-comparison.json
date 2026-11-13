@@ -1,0 +1,631 @@
+{
+  "dataset": 1000,
+  "runtime": {
+    "python": "3.11.16",
+    "mongodb": "7.0.16",
+    "node": "v20.20.2",
+    "pnpm": "10.34.3",
+    "chromium": "Google Chrome for Testing 145.0.7632.6",
+    "actionlint": "1.7.7",
+    "playwright": "1.58.0",
+    "motor": "3.3.1",
+    "pymongo": "4.5.0",
+    "argon2-cffi": "25.1.0",
+    "pytest": "9.1.1",
+    "ruff": "0.16.10",
+    "fastapi": "0.110.1",
+    "pydantic": "2.13.5",
+    "pydantic-settings": "2.15.0"
+  },
+  "explain": {
+    "token": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 1,
+        "inputStage": {
+          "stage": "FETCH",
+          "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+              "token_hash": 1
+            },
+            "indexName": "token_hash_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+              "token_hash": []
+            },
+            "isUnique": true,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+              "token_hash": [
+                "[\"53e7478da54a301d2e693ba727e8a9fadbbff4d78a0419c3fcb7b02fec23f880\", \"53e7478da54a301d2e693ba727e8a9fadbbff4d78a0419c3fcb7b02fec23f880\"]"
+              ]
+            }
+          }
+        }
+      },
+      "stats": {
+        "executionSuccess": true,
+        "nReturned": 1,
+        "executionTimeMillis": 0,
+        "totalKeysExamined": 1,
+        "totalDocsExamined": 1,
+        "executionStages": {
+          "stage": "LIMIT",
+          "nReturned": 1,
+          "executionTimeMillisEstimate": 0,
+          "works": 2,
+          "advanced": 1,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "limitAmount": 1,
+          "inputStage": {
+            "stage": "FETCH",
+            "nReturned": 1,
+            "executionTimeMillisEstimate": 0,
+            "works": 1,
+            "advanced": 1,
+            "needTime": 0,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 0,
+            "docsExamined": 1,
+            "alreadyHasObj": 0,
+            "inputStage": {
+              "stage": "IXSCAN",
+              "nReturned": 1,
+              "executionTimeMillisEstimate": 0,
+              "works": 1,
+              "advanced": 1,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 0,
+              "keyPattern": {
+                "token_hash": 1
+              },
+              "indexName": "token_hash_1",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "token_hash": []
+              },
+              "isUnique": true,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "token_hash": [
+                  "[\"53e7478da54a301d2e693ba727e8a9fadbbff4d78a0419c3fcb7b02fec23f880\", \"53e7478da54a301d2e693ba727e8a9fadbbff4d78a0419c3fcb7b02fec23f880\"]"
+                ]
+              },
+              "keysExamined": 1,
+              "seeks": 1,
+              "dupsTested": 0,
+              "dupsDropped": 0
+            }
+          }
+        }
+      }
+    },
+    "grant": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 1,
+        "inputStage": {
+          "stage": "FETCH",
+          "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+              "client_id": 1,
+              "enquiry_id": 1
+            },
+            "indexName": "client_id_1_enquiry_id_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+              "client_id": [],
+              "enquiry_id": []
+            },
+            "isUnique": true,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+              "client_id": [
+                "[\"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\", \"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\"]"
+              ],
+              "enquiry_id": [
+                "[\"00000000-0000-0000-0000-000000000001\", \"00000000-0000-0000-0000-000000000001\"]"
+              ]
+            }
+          }
+        }
+      },
+      "stats": {
+        "executionSuccess": true,
+        "nReturned": 1,
+        "executionTimeMillis": 0,
+        "totalKeysExamined": 1,
+        "totalDocsExamined": 1,
+        "executionStages": {
+          "stage": "LIMIT",
+          "nReturned": 1,
+          "executionTimeMillisEstimate": 0,
+          "works": 2,
+          "advanced": 1,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "limitAmount": 1,
+          "inputStage": {
+            "stage": "FETCH",
+            "nReturned": 1,
+            "executionTimeMillisEstimate": 0,
+            "works": 1,
+            "advanced": 1,
+            "needTime": 0,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 0,
+            "docsExamined": 1,
+            "alreadyHasObj": 0,
+            "inputStage": {
+              "stage": "IXSCAN",
+              "nReturned": 1,
+              "executionTimeMillisEstimate": 0,
+              "works": 1,
+              "advanced": 1,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 0,
+              "keyPattern": {
+                "client_id": 1,
+                "enquiry_id": 1
+              },
+              "indexName": "client_id_1_enquiry_id_1",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "client_id": [],
+                "enquiry_id": []
+              },
+              "isUnique": true,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "client_id": [
+                  "[\"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\", \"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\"]"
+                ],
+                "enquiry_id": [
+                  "[\"00000000-0000-0000-0000-000000000001\", \"00000000-0000-0000-0000-000000000001\"]"
+                ]
+              },
+              "keysExamined": 1,
+              "seeks": 1,
+              "dupsTested": 0,
+              "dupsDropped": 0
+            }
+          }
+        }
+      }
+    },
+    "page": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "FETCH",
+          "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+              "client_id": 1,
+              "created_at": -1,
+              "_id": -1
+            },
+            "indexName": "client_access_page",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+              "client_id": [],
+              "created_at": [],
+              "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+              "client_id": [
+                "[\"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\", \"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\"]"
+              ],
+              "created_at": [
+                "[MaxKey, MinKey]"
+              ],
+              "_id": [
+                "[MaxKey, MinKey]"
+              ]
+            }
+          }
+        }
+      },
+      "stats": {
+        "executionSuccess": true,
+        "nReturned": 101,
+        "executionTimeMillis": 0,
+        "totalKeysExamined": 101,
+        "totalDocsExamined": 101,
+        "executionStages": {
+          "stage": "LIMIT",
+          "nReturned": 101,
+          "executionTimeMillisEstimate": 0,
+          "works": 102,
+          "advanced": 101,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "limitAmount": 101,
+          "inputStage": {
+            "stage": "FETCH",
+            "nReturned": 101,
+            "executionTimeMillisEstimate": 0,
+            "works": 101,
+            "advanced": 101,
+            "needTime": 0,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 0,
+            "docsExamined": 101,
+            "alreadyHasObj": 0,
+            "inputStage": {
+              "stage": "IXSCAN",
+              "nReturned": 101,
+              "executionTimeMillisEstimate": 0,
+              "works": 101,
+              "advanced": 101,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 0,
+              "keyPattern": {
+                "client_id": 1,
+                "created_at": -1,
+                "_id": -1
+              },
+              "indexName": "client_access_page",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "client_id": [],
+                "created_at": [],
+                "_id": []
+              },
+              "isUnique": false,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "client_id": [
+                  "[\"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\", \"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\"]"
+                ],
+                "created_at": [
+                  "[MaxKey, MinKey]"
+                ],
+                "_id": [
+                  "[MaxKey, MinKey]"
+                ]
+              },
+              "keysExamined": 101,
+              "seeks": 1,
+              "dupsTested": 0,
+              "dupsDropped": 0
+            }
+          }
+        }
+      }
+    },
+    "page_cursor": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 101,
+        "inputStage": {
+          "stage": "FETCH",
+          "filter": {
+            "$or": [
+              {
+                "$and": [
+                  {
+                    "_id": {
+                      "$lt": "00000000-0000-0000-0000-000000000386"
+                    }
+                  },
+                  {
+                    "created_at": {
+                      "$eq": "2026-01-01 00:00:00"
+                    }
+                  }
+                ]
+              },
+              {
+                "created_at": {
+                  "$lt": "2026-01-01 00:00:00"
+                }
+              }
+            ]
+          },
+          "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+              "client_id": 1,
+              "created_at": -1,
+              "_id": -1
+            },
+            "indexName": "client_access_page",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+              "client_id": [],
+              "created_at": [],
+              "_id": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+              "client_id": [
+                "[\"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\", \"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\"]"
+              ],
+              "created_at": [
+                "[MaxKey, MinKey]"
+              ],
+              "_id": [
+                "[MaxKey, MinKey]"
+              ]
+            }
+          }
+        }
+      },
+      "stats": {
+        "executionSuccess": true,
+        "nReturned": 101,
+        "executionTimeMillis": 1,
+        "totalKeysExamined": 201,
+        "totalDocsExamined": 201,
+        "executionStages": {
+          "stage": "LIMIT",
+          "nReturned": 101,
+          "executionTimeMillisEstimate": 0,
+          "works": 202,
+          "advanced": 101,
+          "needTime": 100,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "limitAmount": 101,
+          "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+              "$or": [
+                {
+                  "$and": [
+                    {
+                      "_id": {
+                        "$lt": "00000000-0000-0000-0000-000000000386"
+                      }
+                    },
+                    {
+                      "created_at": {
+                        "$eq": "2026-01-01 00:00:00"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "created_at": {
+                    "$lt": "2026-01-01 00:00:00"
+                  }
+                }
+              ]
+            },
+            "nReturned": 101,
+            "executionTimeMillisEstimate": 0,
+            "works": 201,
+            "advanced": 101,
+            "needTime": 100,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 0,
+            "docsExamined": 201,
+            "alreadyHasObj": 0,
+            "inputStage": {
+              "stage": "IXSCAN",
+              "nReturned": 201,
+              "executionTimeMillisEstimate": 0,
+              "works": 201,
+              "advanced": 201,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 0,
+              "keyPattern": {
+                "client_id": 1,
+                "created_at": -1,
+                "_id": -1
+              },
+              "indexName": "client_access_page",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "client_id": [],
+                "created_at": [],
+                "_id": []
+              },
+              "isUnique": false,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "client_id": [
+                  "[\"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\", \"6e8bf8fb-1d6d-4c91-886e-a7f2f1375c67\"]"
+                ],
+                "created_at": [
+                  "[MaxKey, MinKey]"
+                ],
+                "_id": [
+                  "[MaxKey, MinKey]"
+                ]
+              },
+              "keysExamined": 201,
+              "seeks": 1,
+              "dupsTested": 0,
+              "dupsDropped": 0
+            }
+          }
+        }
+      }
+    },
+    "invitation_history": {
+      "plan": {
+        "stage": "LIMIT",
+        "limitAmount": 26,
+        "inputStage": {
+          "stage": "FETCH",
+          "inputStage": {
+            "stage": "IXSCAN",
+            "keyPattern": {
+              "enquiry_id": 1,
+              "generation": -1
+            },
+            "indexName": "enquiry_id_1_generation_-1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+              "enquiry_id": [],
+              "generation": []
+            },
+            "isUnique": true,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+              "enquiry_id": [
+                "[\"00000000-0000-0000-0000-000000000001\", \"00000000-0000-0000-0000-000000000001\"]"
+              ],
+              "generation": [
+                "[MaxKey, MinKey]"
+              ]
+            }
+          }
+        }
+      },
+      "stats": {
+        "executionSuccess": true,
+        "nReturned": 1,
+        "executionTimeMillis": 0,
+        "totalKeysExamined": 1,
+        "totalDocsExamined": 1,
+        "executionStages": {
+          "stage": "LIMIT",
+          "nReturned": 1,
+          "executionTimeMillisEstimate": 0,
+          "works": 2,
+          "advanced": 1,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "limitAmount": 26,
+          "inputStage": {
+            "stage": "FETCH",
+            "nReturned": 1,
+            "executionTimeMillisEstimate": 0,
+            "works": 2,
+            "advanced": 1,
+            "needTime": 0,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 1,
+            "docsExamined": 1,
+            "alreadyHasObj": 0,
+            "inputStage": {
+              "stage": "IXSCAN",
+              "nReturned": 1,
+              "executionTimeMillisEstimate": 0,
+              "works": 2,
+              "advanced": 1,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "keyPattern": {
+                "enquiry_id": 1,
+                "generation": -1
+              },
+              "indexName": "enquiry_id_1_generation_-1",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "enquiry_id": [],
+                "generation": []
+              },
+              "isUnique": true,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "enquiry_id": [
+                  "[\"00000000-0000-0000-0000-000000000001\", \"00000000-0000-0000-0000-000000000001\"]"
+                ],
+                "generation": [
+                  "[MaxKey, MinKey]"
+                ]
+              },
+              "keysExamined": 1,
+              "seeks": 1,
+              "dupsTested": 0,
+              "dupsDropped": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "latency": {
+    "/api/client/enquiries": {
+      "samples": 30,
+      "median_ms": 7.5847585000019535,
+      "p95_ms": 9.322253000163983
+    },
+    "/api/client/enquiries/00000000-0000-0000-0000-000000000001": {
+      "samples": 30,
+      "median_ms": 2.5231600001234256,
+      "p95_ms": 2.9840729998795723
+    }
+  },
+  "method": "30 warm sequential authenticated httpx ASGI handler requests; real local Motor/MongoDB replica set; perf_counter, nearest-rank p95; no production SLA"
+}

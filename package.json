@@ -1,13 +1,25 @@
 {
-  "name": "illuminate-my-gallery",
+  "name": "studio-suite",
   "private": true,
-  "version": "0.1.0",
-  "description": "Illuminate Studios — Studio Suite. Cross-platform design tokens + Expo React Native mobile app.",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "packageManager": "pnpm@10.34.3",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "mobile": "npm run start --workspace @illuminate/mobile"
+    "build:tokens": "pnpm -F @is/tokens build",
+    "dev:web": "pnpm build:tokens && pnpm -F studio-suite-web dev",
+    "build": "pnpm build:tokens && pnpm -F studio-suite-web build",
+    "lint:web": "pnpm -F studio-suite-web lint",
+    "check:design": "pnpm build:tokens && node scripts/check-design.mjs",
+    "check:design-source": "python3 scripts/audit-design-source.py",
+    "mobile": "pnpm -F @illuminate/mobile start",
+    "typecheck:mobile": "pnpm -F @illuminate/mobile typecheck",
+    "e2e:mobile": "pnpm -F @illuminate/mobile e2e"
+  },
+  "description": "Illuminate Studios \u2014 Studio Suite: web app, FastAPI backend, Expo mobile app and shared design tokens.",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "~18.2.79"
+    }
   }
 }

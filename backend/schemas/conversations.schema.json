@@ -1,0 +1,37 @@
+{
+  "$jsonSchema": {
+    "title": "conversations",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string",
+        "description": "Client access grant ID; conversations are grant-scoped."
+      },
+      "sequence": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "studio_read": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "client_read": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      }
+    },
+    "required": [
+      "_id"
+    ],
+    "additionalProperties": true
+  }
+}

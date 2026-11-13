@@ -1,0 +1,15 @@
+import pathlib,socket,json,os
+r={}
+for key,path in [('host_home','/home/techcorp2024'),('host_sentinel','/tmp/studio-suite-r0-isolation-4uvvipkz/host-sentinel'),('session_transcripts','/home/techcorp2024/.codex/sessions'),('proc_host_environ','/proc/1/environ'),('proc_host_root','/proc/1/root/home/techcorp2024/.codex/config.toml')]:
+ try: pathlib.Path(path).read_bytes();r[key]='UNEXPECTED_READ'
+ except OSError as e:r[key]={'denied':True,'errno':e.errno}
+r['source_read']=pathlib.Path('/tmp/studio-suite-r0-isolation-4uvvipkz/packet/authority.txt').read_text()=='disposable frozen source\n'
+for key,path in [('source_write','/tmp/studio-suite-r0-isolation-4uvvipkz/packet/authority.txt'),('host_write','/tmp/studio-suite-r0-isolation-4uvvipkz/host-sentinel')]:
+ try:pathlib.Path(path).write_text('unauthorized');r[key]='UNEXPECTED_WRITE'
+ except OSError as e:r[key]={'denied':True,'errno':e.errno}
+pathlib.Path('/tmp/studio-suite-r0-isolation-4uvvipkz/review-output/temporary-output').write_text('temporary output');r['temporary_write']='success'
+try:
+ s=socket.create_connection(('1.1.1.1',443),timeout=2);s.close();r['external_network']='UNEXPECTED_SUCCESS'
+except OSError as e:r['external_network']={'denied':True,'errno':e.errno}
+r['environment_keys']=sorted(os.environ)
+print(json.dumps(r))

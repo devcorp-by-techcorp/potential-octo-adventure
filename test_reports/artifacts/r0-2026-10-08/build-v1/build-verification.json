@@ -1,0 +1,86 @@
+{
+  "phase_id": "R0",
+  "status": "local_build_verification_only",
+  "R0_GREEN": false,
+  "RESET_CONFIRMED": false,
+  "contract_sha256": "f46f07f6bcc7974082323b0443893aed130f8f10f7c42142324fc69e1d492aef",
+  "implementation_sha256": {
+    "scripts/autonomous/__init__.py": "65968778f26316e0328ca0d25acf96f89b09a0e904d8f34f9a9a681f2f54e21b",
+    "scripts/autonomous/protocol.py": "384d26b990c27f21281d7dc9f0bd71c5b9afef7de7c71b8535a81b27841222cb",
+    "scripts/autonomous/review_host.py": "8f28064fa9ffc008b5ad86cbc1147defe19428cbd38ed2b77147d8781dd082c2",
+    "scripts/autonomous/gate.py": "197316e4993a7f9e0da6d6cb397b9fcfa5163a2f5b754a5db6d2092c31f01523",
+    "scripts/autonomous/supervisor.py": "bce2d196c7cafdec5f339ef22d157851c77cfa31a6f83a66a850866439b99da3",
+    "scripts/autonomous/tests/__init__.py": "72575e9f4d0bcf2cf17434934e8054574631914e1c5fa66cfdddbe7f59b9ca21",
+    "scripts/autonomous/tests/test_protocol.py": "36b14695782e7fade67a99f73b4b680dc936b3cce85d08e297fe9f5e3df19322",
+    "scripts/autonomous/tests/test_review_host.py": "44c93963b7ad6caa254b373d94012a75635de1b352c89728a9aa872d7104887c",
+    "scripts/autonomous/tests/test_gate.py": "66d2fffcf2ddd20f2ebbae10d1fae44c85b81c79a990c6cbf4bce025c3f3aa81",
+    "scripts/autonomous/tests/test_supervisor.py": "299e6cd3c89c7bcb2a45fca197a422f3449d83c552df98f4210e371085add6f2",
+    ".github/workflows/ci.yml": "63fb111a1882faac6f8fd002462f69c8604b8a677da4cb151aa4b88adf4e4fb9"
+  },
+  "commands": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/autonomous/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_ci_exact_head_all_jobs_remote_draft_and_no_overwrite (test_gate.GateTests.test_ci_exact_head_all_jobs_remote_draft_and_no_overwrite) ... ok\ntest_independently_bound_review_positive_and_each_missing_ac (test_gate.GateTests.test_independently_bound_review_positive_and_each_missing_ac) ... ok\ntest_manifest_association_without_self_hash_and_byte_drift (test_gate.GateTests.test_manifest_association_without_self_hash_and_byte_drift) ... ok\ntest_material_candidate_source_evidence_and_packet_drift (test_gate.GateTests.test_material_candidate_source_evidence_and_packet_drift) ... ok\ntest_memory_full_readback_metadata_authorship_and_workspace (test_gate.GateTests.test_memory_full_readback_metadata_authorship_and_workspace) ... ok\ntest_reasoning_prior_verdict_missing_receipt_and_forged_pass (test_gate.GateTests.test_reasoning_prior_verdict_missing_receipt_and_forged_pass) ... ok\ntest_records_only_changes_do_not_waive_executable_or_source_drift (test_gate.GateTests.test_records_only_changes_do_not_waive_executable_or_source_drift) ... ok\ntest_reset_and_terminal_success_explicitly_synthetic (test_gate.GateTests.test_reset_and_terminal_success_explicitly_synthetic) ... ok\ntest_reset_every_missing_bootstrap_check_and_wrong_actual_thread (test_gate.GateTests.test_reset_every_missing_bootstrap_check_and_wrong_actual_thread) ... ok\ntest_terminal_blocked_partial_null_next_and_failed_close_denied (test_gate.GateTests.test_terminal_blocked_partial_null_next_and_failed_close_denied) ... ok\ntest_unverified_ac_and_blocking_findings_even_signed_pass (test_gate.GateTests.test_unverified_ac_and_blocking_findings_even_signed_pass) ... ok\ntest_ack_is_not_completion_and_no_replay (test_protocol.ProtocolTests.test_ack_is_not_completion_and_no_replay) ... ok\ntest_actual_controller_compaction_lifecycle (test_protocol.ProtocolTests.test_actual_controller_compaction_lifecycle) ... ok\ntest_empty_scoped_recall_relaxes_and_truncated_fetches_full (test_protocol.ProtocolTests.test_empty_scoped_recall_relaxes_and_truncated_fetches_full) ... ok\ntest_failed_unmatched_and_missing_lifecycle (test_protocol.ProtocolTests.test_failed_unmatched_and_missing_lifecycle) ... ok\ntest_failure_failed_full_readback_or_workspace_blocks (test_protocol.ProtocolTests.test_failure_failed_full_readback_or_workspace_blocks) ... ok\ntest_fresh_start_no_context_fork_or_fallback (test_protocol.ProtocolTests.test_fresh_start_no_context_fork_or_fallback) ... ok\ntest_goal_absence_and_unauthorized (test_protocol.ProtocolTests.test_goal_absence_and_unauthorized) ... ok\ntest_goal_actual_registration_and_no_invented_budget (test_protocol.ProtocolTests.test_goal_actual_registration_and_no_invented_budget) ... ok\ntest_retry_once_then_alternative (test_protocol.ProtocolTests.test_retry_once_then_alternative) ... ok\ntest_reviewers_active_or_non_green_cannot_compact (test_protocol.ProtocolTests.test_reviewers_active_or_non_green_cannot_compact) ... ok\ntest_base_and_candidate_separate_bytes (test_review_host.PacketTests.test_base_and_candidate_separate_bytes) ... ok\ntest_deterministic_packet_authority_words_legitimate (test_review_host.PacketTests.test_deterministic_packet_authority_words_legitimate) ... ok\ntest_effective_configuration_uses_actual_read_apis_no_mutation (test_review_host.PacketTests.test_effective_configuration_uses_actual_read_apis_no_mutation) ... ok\ntest_every_mandatory_host_check_and_live_instance_binding (test_review_host.PacketTests.test_every_mandatory_host_check_and_live_instance_binding) ... ok\ntest_every_manifest_drift_rejected (test_review_host.PacketTests.test_every_manifest_drift_rejected) ... ok\ntest_fixed_broker_extra_fields_and_same_instance (test_review_host.PacketTests.test_fixed_broker_extra_fields_and_same_instance) ... ok\ntest_hostile_fields_nested_and_untrusted_paths (test_review_host.PacketTests.test_hostile_fields_nested_and_untrusted_paths) ... ok\ntest_symlink_file_and_parent_rejected_without_reading_target (test_review_host.PacketTests.test_symlink_file_and_parent_rejected_without_reading_target) ... ok\ntest_arbitrary_phase_text_cannot_promote (test_supervisor.SupervisorTests.test_arbitrary_phase_text_cannot_promote) ... ok\ntest_candidate_source_evidence_drift_on_transition_and_restart (test_supervisor.SupervisorTests.test_candidate_source_evidence_drift_on_transition_and_restart) ... ok\ntest_concurrent_subprocess_duplicate_then_killed_owner_reconciled (test_supervisor.SupervisorTests.test_concurrent_subprocess_duplicate_then_killed_owner_reconciled) ... ok\ntest_existing_controller_reset_returns_unverified_fresh_bootstrap (test_supervisor.SupervisorTests.test_existing_controller_reset_returns_unverified_fresh_bootstrap) ... ok\ntest_failed_states_preserve_last_success_and_deny_dependent_work (test_supervisor.SupervisorTests.test_failed_states_preserve_last_success_and_deny_dependent_work) ... ok\ntest_full_disposable_synthetic_qualification_order_and_restart (test_supervisor.SupervisorTests.test_full_disposable_synthetic_qualification_order_and_restart) ... ok\ntest_incomplete_gate_restart_never_counts_as_passed_or_replays (test_supervisor.SupervisorTests.test_incomplete_gate_restart_never_counts_as_passed_or_replays) ... ok\ntest_independent_review_validation_cannot_be_waived (test_supervisor.SupervisorTests.test_independent_review_validation_cannot_be_waived) ... ok\ntest_journal_tamper_and_torn_write_blocks (test_supervisor.SupervisorTests.test_journal_tamper_and_torn_write_blocks) ... ok\ntest_owned_lease_close_does_not_remove_inode (test_supervisor.SupervisorTests.test_owned_lease_close_does_not_remove_inode) ... ok\ntest_real_git_tree_freeze_detects_records_vs_executable_drift (test_supervisor.SupervisorTests.test_real_git_tree_freeze_detects_records_vs_executable_drift) ... ok\ntest_recovered_repaired_failure_matches_live_state (test_supervisor.SupervisorTests.test_recovered_repaired_failure_matches_live_state) ... ok\ntest_recovery_revalidates_committed_receipts_not_only_hash_chain (test_supervisor.SupervisorTests.test_recovery_revalidates_committed_receipts_not_only_hash_chain) ... ok\ntest_stale_journal_snapshot_cannot_append_after_restart (test_supervisor.SupervisorTests.test_stale_journal_snapshot_cannot_append_after_restart) ... ok\n\n----------------------------------------------------------------------\nRan 43 tests in 0.410s\n\nOK\n"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "scripts/audit-design-source.py"
+      ],
+      "exit_code": 0,
+      "stdout": "design-source: 86 files, 115 archive files; SHA-256 manifest matches, archive CRCs valid\n_ds/Archive.zip: {'archive_only': 26, 'identical': 4}\n_ds/Mobile-first app design system build.zip: {'archive_only': 1, 'identical': 84}\nThis verifies source integrity only; it does not establish application compliance.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/node",
+        "scripts/check-design.mjs"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:internal/modules/esm/resolve:283\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/techcorp2024/scratch/studio-suite-r0-candidate-20261008/packages/tokens/node_modules/typescript/lib/typescript.js' imported from /home/techcorp2024/scratch/studio-suite-r0-candidate-20261008/scripts/check-design.mjs\n    at finalizeResolution (node:internal/modules/esm/resolve:283:11)\n    at moduleResolve (node:internal/modules/esm/resolve:952:10)\n    at defaultResolve (node:internal/modules/esm/resolve:1188:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)\n    at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/techcorp2024/scratch/studio-suite-r0-candidate-20261008/packages/tokens/node_modules/typescript/lib/typescript.js'\n}\n\nNode.js v20.20.1\n"
+    },
+    {
+      "command": [
+        "/usr/bin/node",
+        "scripts/check-token-compatibility.mjs"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "node:internal/modules/esm/resolve:283\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/techcorp2024/scratch/studio-suite-r0-candidate-20261008/packages/tokens/node_modules/typescript/lib/typescript.js' imported from /home/techcorp2024/scratch/studio-suite-r0-candidate-20261008/scripts/check-token-compatibility.mjs\n    at finalizeResolution (node:internal/modules/esm/resolve:283:11)\n    at moduleResolve (node:internal/modules/esm/resolve:952:10)\n    at defaultResolve (node:internal/modules/esm/resolve:1188:11)\n    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)\n    at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {\n  code: 'ERR_MODULE_NOT_FOUND',\n  url: 'file:///home/techcorp2024/scratch/studio-suite-r0-candidate-20261008/packages/tokens/node_modules/typescript/lib/typescript.js'\n}\n\nNode.js v20.20.1\n"
+    },
+    {
+      "command": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 128,
+      "stdout": "",
+      "stderr": "fatal: not a git repository: /home/techcorp2024/studio-suite_v2/.git/worktrees/studio-suite-r0-candidate-20261008\n"
+    }
+  ],
+  "repair_finding": "Full-cycle test referenced original Journal snapshot (2 events), not recovered journal (16). Now asserts disk chain and each begin/commit pair after each restart. Recovery additionally revalidates committed evidence, clears repaired failure state, and rejects stale snapshot writes.",
+  "prior_failure_artifact": "docs/development/phases/R0/build-tests-before-repair.txt",
+  "missing_live_checks": [
+    "Independent fresh outcome/records/final review",
+    "Actual same-instance host probes and disposable connected app-server qualification",
+    "Integration/publication/remote equality/new draft PR",
+    "Exact integration/final-head CI including token checks",
+    "Document/Empirical write readbacks",
+    "GREEN and actual phase controller compaction/fresh bootstrap"
+  ],
+  "next_action": "External host verifies Git diff and missing dependency checks, freezes candidate/packet, runs live qualification and fresh independent outcome review. No product activation."
+}

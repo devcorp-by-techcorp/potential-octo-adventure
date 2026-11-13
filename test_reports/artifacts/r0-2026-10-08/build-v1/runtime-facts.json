@@ -1,0 +1,74 @@
+[
+  {
+    "event": "turn/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turn": {
+      "id": "01a11948-7959-7d93-a019-35357ce3533b",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1791425542,
+      "completedAt": 1791425613,
+      "durationMs": 70974
+    }
+  },
+  {
+    "event": "turn/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turn": {
+      "id": "01a11949-8ed9-7e53-a05c-9166a0c1f117",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1791425613,
+      "completedAt": 1791425625,
+      "durationMs": 12247
+    }
+  },
+  {
+    "event": "actual_directory_profile_inspection_completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "successfulCommandCount": 1,
+    "resumedPhaseThread": true,
+    "implementationStarted": false
+  },
+  {
+    "event": "actual_phase_goal_registered",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "goal": {
+      "goal": {
+        "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+        "objective": "Complete Studio Suite R0 under the accepted infrastructure contract, with every build/test/review/integration/records/CI/GREEN/reset gate before product work.",
+        "status": "active",
+        "tokenBudget": null,
+        "tokensUsed": 62018,
+        "timeUsedSeconds": 443,
+        "createdAt": 1791417874,
+        "updatedAt": 1791425625
+      }
+    },
+    "explicitAuthority": "Activated user plan conditional Goal registration; no token budget supplied."
+  },
+  {
+    "event": "turn/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turn": {
+      "id": "01a11949-bf19-7a41-ad27-4e5e3365a23e",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1791425625,
+      "completedAt": 1791425761,
+      "durationMs": 135172
+    }
+  },
+  {
+    "event": "turn/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turn": {
+      "id": "01a1194b-cf2a-7443-a920-c8afb9d35a2c",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1791425761,
+      "completedAt": 1791425924,
+      "durationMs": 163899
+    }
+  }
+]

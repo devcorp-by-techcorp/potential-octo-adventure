@@ -1,0 +1,94 @@
+{
+  "$jsonSchema": {
+    "title": "luma_sessions",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "booking_state": {
+        "bsonType": "string",
+        "enum": [
+          "collecting",
+          "awaiting_studio_confirmation"
+        ]
+      },
+      "history": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "role": {
+              "bsonType": "string",
+              "enum": [
+                "user",
+                "assistant"
+              ]
+            },
+            "content": {
+              "bsonType": "string"
+            }
+          },
+          "required": [
+            "role",
+            "content"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "draft": {
+        "bsonType": "object",
+        "properties": {
+          "name": {
+            "bsonType": "string"
+          },
+          "email": {
+            "bsonType": "string"
+          },
+          "phone": {
+            "bsonType": "string"
+          },
+          "event_type": {
+            "bsonType": "string"
+          },
+          "preferred_date": {
+            "bsonType": "string"
+          },
+          "collection": {
+            "bsonType": "string"
+          },
+          "venue": {
+            "bsonType": "string"
+          },
+          "message": {
+            "bsonType": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "expires_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "booking_id": {
+        "bsonType": "string"
+      }
+    },
+    "required": [
+      "_id",
+      "booking_state",
+      "history",
+      "draft",
+      "revision",
+      "expires_at"
+    ],
+    "additionalProperties": true
+  }
+}

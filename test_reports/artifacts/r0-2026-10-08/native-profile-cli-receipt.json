@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/home/techcorp2024/.local/bin/codex",
+    "-c",
+    "permissions.r0_probe.filesystem={ \":root\"=\"deny\", \":minimal\"=\"read\", \"/tmp/studio-suite-r0-isolation-4uvvipkz/packet\"=\"read\", \"/tmp/studio-suite-r0-isolation-4uvvipkz/review-output\"=\"write\", \"/home/techcorp2024/.codex\"=\"deny\", \"/home/techcorp2024/studio-suite_v2\"=\"deny\" }",
+    "-c",
+    "permissions.r0_probe.network.enabled=false",
+    "sandbox",
+    "-P",
+    "r0_probe",
+    "-C",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/review-output",
+    "--",
+    "/usr/bin/python3",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/packet/native-probe.py"
+  ],
+  "exit": 1,
+  "stdout": "",
+  "stderr": "bwrap: execvp codex-linux-sandbox: Permission denied\n",
+  "host_sentinel_unchanged": true,
+  "source_unchanged": true
+}

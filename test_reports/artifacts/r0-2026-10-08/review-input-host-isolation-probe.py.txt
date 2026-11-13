@@ -1,0 +1,22 @@
+import os,pathlib,json,socket
+r={}
+p=pathlib.Path('/proc/1/cmdline')
+try:
+ parts=p.read_bytes().split(b'\0');r['proc1_is_sandbox_helper']=any(b'codex-linux-sandbox' in v or b'--apply-seccomp-then-exec' in v for v in parts)
+ r['proc1_argument_count']=len(parts)
+except OSError as e:r['proc1_access_errno']=e.errno
+for key,path in [('host_sentinel','/home/techcorp2024/studio-suite-r0-host-sentinel-20261008.txt'),('credential_path','/home/techcorp2024/.codex/auth.json'),('builder_config','/home/techcorp2024/.codex/config.toml'),('transcript_path','/home/techcorp2024/.codex/sessions/2026/10/08/rollout-2026-10-08T08-19-28-01a1183c-51db-7032-a7c4-dcff42a47b18.jsonl')]:
+ try:
+  with open(path,'rb'):pass
+  r[key]='UNEXPECTED_READ'
+ except OSError as e:r[key]={'denied':True,'errno':e.errno}
+try:pathlib.Path('/home/techcorp2024/studio-suite-r0-host-sentinel-20261008.txt').write_text('unauthorized');r['host_write']='UNEXPECTED_WRITE'
+except OSError as e:r['host_write']={'denied':True,'errno':e.errno}
+r['own_pid']=os.getpid();r['source_read']=pathlib.Path('/tmp/studio-suite-r0-isolation-4uvvipkz/packet/authority.txt').read_text()=='disposable frozen source\n'
+try:pathlib.Path('/tmp/studio-suite-r0-isolation-4uvvipkz/packet/authority.txt').write_text('unauthorized');r['source_write']='UNEXPECTED_WRITE'
+except OSError as e:r['source_write']={'denied':True,'errno':e.errno}
+pathlib.Path('/tmp/studio-suite-r0-isolation-4uvvipkz/review-output/classified-output').write_text('temporary output');r['temporary_write']='success'
+try:
+ s=socket.create_connection(('1.1.1.1',443),timeout=2);s.close();r['external_network']='UNEXPECTED_SUCCESS'
+except OSError as e:r['external_network']={'denied':True,'errno':e.errno}
+r['environment_keys']=sorted(os.environ);print(json.dumps(r))

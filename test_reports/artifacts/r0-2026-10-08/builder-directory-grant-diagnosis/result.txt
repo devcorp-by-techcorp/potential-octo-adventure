@@ -1,0 +1,32 @@
+{
+  "changed_paths": [],
+  "commands": [
+    {
+      "command": "/bin/cat <candidate>/docs/development/phases/R0/{checkpoint.md,execution-contract.md,execution-state.json}",
+      "exit_code": 1,
+      "result": "All three paths unavailable: No such file or directory."
+    },
+    {
+      "command": "/bin/ls -ld /tmp/studio-r0-builder-persistent-dq18efrc/input /home/techcorp2024/scratch/studio-suite-r0-candidate-20261008",
+      "exit_code": 2,
+      "result": "Both directories unavailable in the execution sandbox."
+    }
+  ],
+  "tests": {
+    "run": false,
+    "reason": "Approved sources and schemas are not accessible."
+  },
+  "findings": [
+    "Memory bootstrap succeeded.",
+    "Configuration receipt lists the intended builder grants, but actual shell access does not expose those paths.",
+    "No files changed; no publication or memory writes performed."
+  ],
+  "missing_live_checks": [
+    "Build and contract tests",
+    "Live protocol/model/memory qualification",
+    "Independent review, integration, records, publication and exact-head CI",
+    "GREEN and actual controller reset"
+  ],
+  "next_action": "Host must activate the scoped builder filesystem profile for this existing controller, then resume contract inspection and implementation.",
+  "full_phase_goal": "active; not completed"
+}

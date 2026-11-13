@@ -1,0 +1,13 @@
+{
+  "name": "illuminate-my-gallery",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Illuminate Studios — Studio Suite. Cross-platform design tokens + Expo React Native mobile app.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "mobile": "npm run start --workspace @illuminate/mobile"
+  }
+}

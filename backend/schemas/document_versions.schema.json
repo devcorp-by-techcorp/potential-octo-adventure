@@ -1,0 +1,152 @@
+{
+  "$jsonSchema": {
+    "title": "document_versions",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "document_id": {
+        "bsonType": "string"
+      },
+      "title": {
+        "bsonType": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "filename": {
+        "bsonType": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "content_type": {
+        "bsonType": "string",
+        "enum": [
+          "application/pdf",
+          "image/png",
+          "image/jpeg"
+        ]
+      },
+      "size": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 1,
+        "maximum": 104857600
+      },
+      "sha256": {
+        "bsonType": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "grant_id": {
+        "bsonType": "string"
+      },
+      "enquiry_id": {
+        "bsonType": "string"
+      },
+      "client_id": {
+        "bsonType": "string"
+      },
+      "version": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "sequence": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "storage_backend": {
+        "bsonType": "string"
+      },
+      "object_key": {
+        "bsonType": "string"
+      },
+      "status": {
+        "bsonType": "string",
+        "enum": [
+          "uploading",
+          "ready",
+          "failed"
+        ]
+      },
+      "published": {
+        "bsonType": "bool"
+      },
+      "revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "created_by": {
+        "bsonType": "string"
+      },
+      "history": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "action": {
+              "bsonType": "string"
+            },
+            "actor_id": {
+              "bsonType": "string"
+            },
+            "at": {
+              "bsonType": "date",
+              "description": "UTC instant stored as a BSON date, with millisecond precision."
+            }
+          },
+          "required": [
+            "action",
+            "actor_id",
+            "at"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "lease": {
+        "bsonType": "string"
+      },
+      "lease_until": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      }
+    },
+    "required": [
+      "_id",
+      "document_id",
+      "title",
+      "filename",
+      "content_type",
+      "size",
+      "sha256",
+      "grant_id",
+      "enquiry_id",
+      "client_id",
+      "version",
+      "sequence",
+      "storage_backend",
+      "object_key",
+      "status",
+      "published",
+      "revision",
+      "created_at",
+      "created_by",
+      "history"
+    ],
+    "additionalProperties": true
+  }
+}

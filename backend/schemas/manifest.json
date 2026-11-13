@@ -1,0 +1,753 @@
+{
+  "schemaVersion": 1,
+  "database": "studio_suite",
+  "validationApplied": false,
+  "collections": {
+    "booking_draft_commands": {
+      "schema": "booking_draft_commands.schema.json",
+      "sources": [
+        "backend/booking_drafts.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "actor_id_1_command_id_1",
+          "key": {
+            "actor_id": 1,
+            "command_id": 1
+          }
+        }
+      ]
+    },
+    "booking_draft_history": {
+      "schema": "booking_draft_history.schema.json",
+      "sources": [
+        "backend/booking_drafts.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "draft_id_1_revision_1",
+          "key": {
+            "draft_id": 1,
+            "revision": 1
+          }
+        }
+      ]
+    },
+    "booking_drafts": {
+      "schema": "booking_drafts.schema.json",
+      "sources": [
+        "backend/booking_drafts.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "enquiry_id_1",
+          "key": {
+            "enquiry_id": 1
+          }
+        },
+        {
+          "name": "starts_at_1__id_1",
+          "key": {
+            "starts_at": 1,
+            "_id": 1
+          }
+        }
+      ]
+    },
+    "booking_requests": {
+      "schema": "booking_requests.schema.json",
+      "sources": [
+        "backend/entry.py",
+        "backend/studio_enquiries.py",
+        "backend/notifications.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "name": "studio_enquiries_created_id",
+          "key": {
+            "created_at": -1,
+            "_id": -1
+          }
+        },
+        {
+          "name": "studio_enquiries_status_created_id",
+          "key": {
+            "studio_status": 1,
+            "created_at": -1,
+            "_id": -1
+          }
+        },
+        {
+          "name": "studio_enquiry_search",
+          "default_language": "none",
+          "language_override": "studio_search_language",
+          "key": {
+            "reference": "text",
+            "name": "text",
+            "event_type": "text",
+            "venue": "text",
+            "message": "text"
+          }
+        }
+      ]
+    },
+    "booking_resources": {
+      "schema": "booking_resources.schema.json",
+      "sources": [
+        "backend/booking_resources.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        }
+      ]
+    },
+    "bookings": {
+      "schema": "bookings.schema.json",
+      "sources": [
+        "backend/bookings.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "source_enquiry_id_1",
+          "key": {
+            "source_enquiry_id": 1
+          }
+        },
+        {
+          "name": "state_1_updated_at_-1__id_-1",
+          "key": {
+            "state": 1,
+            "updated_at": -1,
+            "_id": -1
+          }
+        },
+        {
+          "name": "updated_at_-1__id_-1",
+          "key": {
+            "updated_at": -1,
+            "_id": -1
+          }
+        }
+      ]
+    },
+    "client_access": {
+      "schema": "client_access.schema.json",
+      "sources": [
+        "backend/client_access.py",
+        "backend/conversations.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "client_id_1_enquiry_id_1",
+          "key": {
+            "client_id": 1,
+            "enquiry_id": 1
+          }
+        },
+        {
+          "name": "client_access_page",
+          "key": {
+            "client_id": 1,
+            "created_at": -1,
+            "_id": -1
+          }
+        },
+        {
+          "name": "enquiry_access_page",
+          "key": {
+            "enquiry_id": 1,
+            "granted_at": -1,
+            "_id": -1
+          }
+        },
+        {
+          "name": "client_id_1__id_1",
+          "key": {
+            "client_id": 1,
+            "_id": 1
+          }
+        },
+        {
+          "name": "studio_reporting_active_grants",
+          "key": {
+            "revoked_at": 1,
+            "client_id": 1
+          }
+        }
+      ]
+    },
+    "client_identities": {
+      "schema": "client_identities.schema.json",
+      "sources": [
+        "backend/client_access.py",
+        "backend/clients.py",
+        "backend/client_recovery.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "email_1",
+          "key": {
+            "email": 1
+          }
+        },
+        {
+          "name": "role_1__id_1",
+          "key": {
+            "role": 1,
+            "_id": 1
+          }
+        },
+        {
+          "name": "studio_reporting_enabled_clients",
+          "key": {
+            "role": 1,
+            "enabled": 1
+          }
+        }
+      ]
+    },
+    "client_invitation_heads": {
+      "schema": "client_invitation_heads.schema.json",
+      "sources": [
+        "backend/client_access.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        }
+      ]
+    },
+    "client_invitations": {
+      "schema": "client_invitations.schema.json",
+      "sources": [
+        "backend/client_access.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "token_hash_1",
+          "key": {
+            "token_hash": 1
+          }
+        },
+        {
+          "unique": true,
+          "name": "enquiry_id_1_generation_-1",
+          "key": {
+            "enquiry_id": 1,
+            "generation": -1
+          }
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "cleanup_at_1",
+          "key": {
+            "cleanup_at": 1
+          }
+        }
+      ]
+    },
+    "client_login_limits": {
+      "schema": "client_login_limits.schema.json",
+      "sources": [
+        "backend/client_auth.py",
+        "backend/auth.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        }
+      ]
+    },
+    "client_recovery_limits": {
+      "schema": "client_recovery_limits.schema.json",
+      "sources": [
+        "backend/client_recovery.py",
+        "backend/auth.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        }
+      ]
+    },
+    "client_recovery_outbox": {
+      "schema": "client_recovery_outbox.schema.json",
+      "sources": [
+        "backend/client_recovery.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        },
+        {
+          "name": "state_1_expires_at_1",
+          "key": {
+            "state": 1,
+            "expires_at": 1
+          }
+        }
+      ]
+    },
+    "client_recovery_tokens": {
+      "schema": "client_recovery_tokens.schema.json",
+      "sources": [
+        "backend/client_recovery.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        }
+      ]
+    },
+    "client_sessions": {
+      "schema": "client_sessions.schema.json",
+      "sources": [
+        "backend/client_auth.py",
+        "backend/client_access.py",
+        "backend/account_sessions.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        },
+        {
+          "name": "identity_id_1",
+          "key": {
+            "identity_id": 1
+          }
+        }
+      ]
+    },
+    "conversation_messages": {
+      "schema": "conversation_messages.schema.json",
+      "sources": [
+        "backend/conversations.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "conversation_id_1_sequence_1",
+          "key": {
+            "conversation_id": 1,
+            "sequence": 1
+          }
+        },
+        {
+          "unique": true,
+          "name": "conversation_id_1_message_id_1",
+          "key": {
+            "conversation_id": 1,
+            "message_id": 1
+          }
+        },
+        {
+          "name": "conversation_id_1_sender_scope_1_sequence_1",
+          "key": {
+            "conversation_id": 1,
+            "sender_scope": 1,
+            "sequence": 1
+          }
+        }
+      ]
+    },
+    "conversations": {
+      "schema": "conversations.schema.json",
+      "sources": [
+        "backend/conversations.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        }
+      ]
+    },
+    "document_upload_heads": {
+      "schema": "document_upload_heads.schema.json",
+      "sources": [
+        "backend/documents.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        }
+      ]
+    },
+    "document_version_heads": {
+      "schema": "document_version_heads.schema.json",
+      "sources": [
+        "backend/documents.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        }
+      ]
+    },
+    "document_versions": {
+      "schema": "document_versions.schema.json",
+      "sources": [
+        "backend/documents.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "grant_id_1_sequence_1",
+          "key": {
+            "grant_id": 1,
+            "sequence": 1
+          }
+        },
+        {
+          "unique": true,
+          "name": "grant_id_1_document_id_1_version_1",
+          "key": {
+            "grant_id": 1,
+            "document_id": 1,
+            "version": 1
+          }
+        },
+        {
+          "name": "grant_id_1_published_1_status_1_sequence_1",
+          "key": {
+            "grant_id": 1,
+            "published": 1,
+            "status": 1,
+            "sequence": 1
+          }
+        }
+      ]
+    },
+    "luma_sessions": {
+      "schema": "luma_sessions.schema.json",
+      "sources": [
+        "backend/entry.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        }
+      ]
+    },
+    "public_content": {
+      "schema": "public_content.schema.json",
+      "sources": [
+        "backend/public_content.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        }
+      ]
+    },
+    "public_content_commands": {
+      "schema": "public_content_commands.schema.json",
+      "sources": [
+        "backend/public_content.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "actor_id_1_command_id_1",
+          "key": {
+            "actor_id": 1,
+            "command_id": 1
+          }
+        }
+      ]
+    },
+    "public_content_history": {
+      "schema": "public_content_history.schema.json",
+      "sources": [
+        "backend/public_content.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "revision_1",
+          "key": {
+            "revision": 1
+          }
+        }
+      ]
+    },
+    "session_commands": {
+      "schema": "session_commands.schema.json",
+      "sources": [
+        "backend/account_sessions.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        }
+      ]
+    },
+    "staff_identities": {
+      "schema": "staff_identities.schema.json",
+      "sources": [
+        "backend/staff.py",
+        "backend/auth.py",
+        "backend/account_sessions.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "unique": true,
+          "name": "email_1",
+          "key": {
+            "email": 1
+          }
+        }
+      ]
+    },
+    "staff_login_limits": {
+      "schema": "staff_login_limits.schema.json",
+      "sources": [
+        "backend/auth.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        }
+      ]
+    },
+    "staff_sessions": {
+      "schema": "staff_sessions.schema.json",
+      "sources": [
+        "backend/auth.py",
+        "backend/account_sessions.py"
+      ],
+      "indexes": [
+        {
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_",
+          "unique": true
+        },
+        {
+          "expireAfterSeconds": 0,
+          "name": "expires_at_1",
+          "key": {
+            "expires_at": 1
+          }
+        },
+        {
+          "name": "identity_id_1",
+          "key": {
+            "identity_id": 1
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "status": "blocked",
+  "reason": "The execution tool is disabled, so I could not read contract.md or authority.md or determine the specified JSON schema.",
+  "qualification_checks_performed": [],
+  "grants_requested": false,
+  "credentials_requested": false,
+  "external_writes_performed": false
+}
