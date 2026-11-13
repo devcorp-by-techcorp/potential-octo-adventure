@@ -51,7 +51,9 @@ jobs:
 
   web:
     name: web (eslint + build + browser regressions)
-    runs-on: ubuntu-latest
+    # Pinned: the browser fixtures use Playwright 1.58.0, which supports Chromium
+    # on Ubuntu 24.04 but not on the 26.04 image ubuntu-latest now resolves to.
+    runs-on: ubuntu-24.04
     env:
       BROWSER_MONGODB_URI: mongodb://127.0.0.1:27017/?replicaSet=phase3
     # Runs from the repo ROOT: this is now a pnpm workspace, so the install must
