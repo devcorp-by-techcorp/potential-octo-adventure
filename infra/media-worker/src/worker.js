@@ -9,10 +9,19 @@
  * validated, so a valid token is always required even for cached objects. The cache
  * key is the URL path only (never the token), so one cached object serves all
  * authorized viewers — which is what makes a burst release cheap.
+ *
+ * Two sets of cache headers, deliberately different:
+ *  - the copy stored in the edge cache is long-lived and immutable (keys are versioned);
+ *  - the response sent to the viewer is "private, no-cache", so no browser or
+ *    downstream shared cache may reuse an image without coming back through the token
+ *    check. A browser revalidates with If-None-Match and gets a bodyless 304.
  */
 
 const TOKEN_COOKIE = "gallery_token";
-const IMMUTABLE_CACHE = "public, max-age=31536000, immutable";
+// Stored with the object in the Worker's edge cache only; never sent to a viewer.
+const EDGE_CACHE = "public, max-age=31536000, immutable";
+// Sent to viewers: may be kept by the browser, but must be revalidated here every time.
+const CLIENT_CACHE = "private, no-cache";
 // Only versioned thumbnail/preview derivatives may be served. Originals excluded.
 const ALLOWED_FILE = /^(thumb|preview)-v\d+\.webp$/;
 
@@ -67,7 +76,7 @@ export default {
     const cache = caches.default;
     const cacheKey = new Request(url.origin + url.pathname, { method: "GET" });
     const cached = await cache.match(cacheKey);
-    if (cached) return withCacheStatus(cached, "HIT");
+    if (cached) return toClient(request, cached, "HIT");
 
     // 4. Cache miss => fetch from the private derivatives bucket via R2 binding.
     const object = await env.DERIVATIVES_BUCKET.get(objectKey);
@@ -76,13 +85,13 @@ export default {
     const headers = new Headers();
     object.writeHttpMetadata(headers);           // Content-Type etc. from R2 metadata
     headers.set("etag", object.httpEtag);
-    headers.set("Cache-Control", IMMUTABLE_CACHE);
+    headers.set("Cache-Control", EDGE_CACHE);
     headers.set("X-Content-Type-Options", "nosniff");
     if (!headers.has("Content-Type")) headers.set("Content-Type", "image/webp");
 
     const response = new Response(object.body, { status: 200, headers });
     ctx.waitUntil(cache.put(cacheKey, response.clone()));   // populate edge cache
-    return withCacheStatus(response, "MISS");
+    return toClient(request, response, "MISS");
   },
 };
 
@@ -93,10 +102,26 @@ function forbidden() {
   });
 }
 
-function withCacheStatus(response, status) {
-  const r = new Response(response.body, response);
-  r.headers.set("X-Worker-Cache", status);
-  return r;
+// Rewrites the edge copy's headers for the viewer. Only reached after the token check.
+function toClient(request, response, status) {
+  const headers = new Headers(response.headers);
+  headers.set("Cache-Control", CLIENT_CACHE);
+  headers.set("Vary", "Cookie");
+  headers.set("X-Worker-Cache", status);
+
+  const etag = headers.get("etag");
+  if (etag && etagMatches(request.headers.get("If-None-Match"), etag)) {
+    if (response.body) response.body.cancel();
+    headers.delete("Content-Length");
+    return new Response(null, { status: 304, headers });
+  }
+  return new Response(response.body, { status: 200, headers });
+}
+
+function etagMatches(ifNoneMatch, etag) {
+  if (!ifNoneMatch) return false;
+  const bare = (t) => t.trim().replace(/^W\//, "");
+  return ifNoneMatch.split(",").some((t) => t.trim() === "*" || bare(t) === bare(etag));
 }
 
 function readCookie(request, name) {

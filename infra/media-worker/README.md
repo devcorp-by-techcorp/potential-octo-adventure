@@ -21,13 +21,19 @@ been created or changed. Deployment needs the owner's account (see "Before you d
   the gallery in the URL is in the token's `gallery_ids`. Otherwise 403.
 - After the token check, serves from the edge cache; on a miss it reads R2 once and caches
   the object (key is the URL path only, so one cached object serves every authorised viewer).
-- Responds `Cache-Control: public, max-age=31536000, immutable`. This is safe only because
+- The edge copy is stored `public, max-age=31536000, immutable`. This is safe only because
   object keys are versioned and never overwritten: regenerate as `thumb-v2.webp`, never
   rewrite `thumb-v1.webp`.
+- The viewer gets `Cache-Control: private, no-cache` and `Vary: Cookie` instead, so no
+  browser or downstream shared cache reuses an image without coming back through the token
+  check. A browser revalidates with `If-None-Match` and gets a bodyless 304; after the token
+  expires or the cookie is cleared it gets a 403.
 
-Two small hardenings beyond the handoff brief's listing: a malformed percent-encoded path
-returns 404 instead of throwing, and the query string is dropped from the cache key so it
-cannot be used to force repeated R2 reads.
+Three changes from the handoff brief's listing: a malformed percent-encoded path returns 404
+instead of throwing; the query string is dropped from the cache key so it cannot be used to
+force repeated R2 reads; and the year-long immutable header stays on the edge copy only (the
+brief's listing sent it to the viewer too, which would let a browser keep showing images
+after the token expired, with no request reaching the Worker).
 
 ## Token contract (backend ⇄ Worker)
 
@@ -109,10 +115,18 @@ Trust the `X-Worker-Cache` header the Worker sets, not `cf-cache-status`, which 
 ## Revocation
 
 - Routine: the backend stops issuing tokens; existing ones expire within 4 hours.
-- Archived gallery: the backend stops naming it in tokens; its derivatives become unreachable.
-- Immediate takedown: the backend purges the URLs with the Cloudflare Cache Purge API, then
-  archives the gallery.
-- Rotating the secret invalidates every live token at once. Do it in a quiet window.
+- Archived gallery: the backend stops naming it in new tokens. Tokens already issued still
+  open it until they expire, so its derivatives become unreachable within 4 hours, not at once.
+- Immediate takedown: the Worker checks only the token's signature, expiry and gallery list,
+  so a live token keeps working and a purged URL is simply re-read from R2. To cut access now:
+  1. delete (or move out of `prod/galleries/{gallery_id}/`) the gallery's derivatives in R2;
+  2. then purge those URLs with the Cloudflare Cache Purge API, in that order, so nothing
+     can refill the cache;
+  3. archive the gallery in the backend so no new token names it.
+  After that every request is a 404 whatever token it carries. A browser that already holds
+  a copy cannot show it without revalidating here, which now fails.
+- Rotating the secret invalidates every live token for every gallery at once, and takes
+  effect without touching R2. Do it in a quiet window; viewers must sign in again.
 
 ## Backend environment (for the backend session)
 
