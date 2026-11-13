@@ -1,0 +1,48 @@
+[
+  {
+    "event": "turn/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turn": {
+      "id": "01a118e8-83ad-7633-ab19-2d52dee3e438",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1791419253,
+      "completedAt": 1791419324,
+      "durationMs": 71188
+    }
+  },
+  {
+    "event": "turn/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turn": {
+      "id": "01a118e9-99f8-7651-ad50-c33fd51d195b",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1791419324,
+      "completedAt": 1791419342,
+      "durationMs": 17400
+    }
+  },
+  {
+    "event": "turn/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turn": {
+      "id": "01a118e9-de4f-7d73-b115-e19376df23c6",
+      "status": "failed",
+      "error": {
+        "message": "You\u2019ve hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/settings/usage to purchase more credits or try again at 1:06 PM.",
+        "codexErrorInfo": "usageLimitExceeded",
+        "additionalDetails": null,
+        "misalignment": null
+      },
+      "startedAt": 1791419342,
+      "completedAt": 1791419762,
+      "durationMs": 420475
+    }
+  },
+  {
+    "event": "builder-host-failed",
+    "error": "Controller turn did not complete",
+    "type": "RuntimeError"
+  }
+]

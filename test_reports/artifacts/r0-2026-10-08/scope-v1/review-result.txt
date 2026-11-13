@@ -1,0 +1,252 @@
+{
+  "phase_id": "R0",
+  "review_kind": "scope",
+  "verdict": "REWORK",
+  "contract_sha256": "d7f714a6e3b14d3a5f25be51df77836de3cd97b2a54724dd024e8cea28e09d81",
+  "packet_sha256": "452ed507941895f93e5642a99232ea8d40be0d0ee88244b7145c5e4bb4d1d005",
+  "packet_encoding": "SHA-256 of UTF-8 JSON mapping every supplied input filename to its independently calculated file SHA-256; keys sorted; separators comma and colon without spaces; no trailing newline. Includes manifest.json and host-probe-source.py.",
+  "instance": "4a98ffe1a47a0f57e2d3f639480c7692",
+  "thread_id": "01a118ae-2953-7201-b19b-898fd570e353",
+  "candidate_commit": null,
+  "candidate_tree": null,
+  "disposition_basis": "Contract source fidelity and observable acceptance before implementation. A pass disposition below does not establish implemented behavior.",
+  "digest_verification": {
+    "all_six_manifest_pins_match": true,
+    "contract_authority_table_pins_match": true,
+    "manifest_json_sha256": "b1affceb79afc3b51dfa8b814dbdeaf7ac8ab482b36d9b93e66c38d5cac6cbfa",
+    "source_manifest_inventory": {
+      "files": 86,
+      "archive_members": 115,
+      "underlying_source_bytes_verified": false
+    }
+  },
+  "sandbox_receipts": {
+    "challenge": "r0-scope-20261008-4a98ffe1-01",
+    "configuration_receipt_sha256": "bf49fb6351e354fc50e6a3c468fc787ef72b3858b40edb7bdfe51615e7273b27",
+    "transport_receipt_sha256": "b8c5dded88e80e5c913a214d189266b44214d048a3acac76a54eb93f3264a057",
+    "initial_sentinel_receipt_sha256": "f955b765693dfdbb38db4574d1aed80585f0f93e57e890b68e847b81a6d9ee19",
+    "packet_receipt_sha256": "a29a192cc7ec2e8e47d3e04552fe910b9f4729f8ed88e4b4b35e4c9a7fc761b6",
+    "post_probe_challenge": "r0-scope-20261008-4a98ffe1-post",
+    "post_probe_sentinel_receipt_sha256": "0e7f4f75f98d18a8c5c43f66260be4cda231521f0783558105c2f806aed5f613",
+    "effective_model": "gpt-6.1-sol",
+    "effective_effort": "medium",
+    "permission_profile": "r0_qualified",
+    "approval_policy": "never",
+    "fresh_thread_initial_turns": [],
+    "host_pid_namespace": "pid:[4026532604]",
+    "observed_tool_pid_namespaces": [
+      "pid:[4026532776]",
+      "pid:[4026532877]"
+    ],
+    "observations": [
+      "Configuration receipt reports root deny, frozen-input read access, separate writable output and disabled network.",
+      "Enumerated integration, plugin, hook, memory, browser and multi-agent features were disabled.",
+      "Transport callback exposes fixed metadata, not caller-selected paths or commands.",
+      "Host callback rejected extra path, command, wrong-thread and invalid-probe inputs.",
+      "Independent input creation failed with EROFS.",
+      "Outside sentinel was absent from the tool filesystem; host receipt confirmed its existence and unchanged digest.",
+      "Host PIDs and their environment files were absent from the tool PID namespace.",
+      "IPv4, IPv6, loopback, private-network and metadata connection attempts failed with EPERM.",
+      "Private user/mount namespace creation and temporary mounting succeeded; attempts to remount frozen input writable failed with EPERM, and subsequent input creation still failed with EROFS.",
+      "Post-probe host receipt confirmed unchanged sentinel and every frozen packet file."
+    ],
+    "observed_host_or_source_escape": false
+  },
+  "criteria": [
+    {
+      "id": "AC-1",
+      "result": "fail",
+      "disposition": "Pre-build review, model selection and memory-first ordering are explicit and testable. Mandatory memory retrieval protocol is incompletely specified.",
+      "evidence": [
+        "contract.md:35-40,81",
+        "authority.md:28-34",
+        "F-1"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "result": "fail",
+      "disposition": "Transition binding and failure-state preservation are testable. Conditional Goal-tool lifecycle requirements are absent, and reset ordering conflicts with later contract prose.",
+      "evidence": [
+        "contract.md:82,107-113",
+        "authority.md:68-83,256",
+        "F-2",
+        "F-3"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "result": "pass",
+      "disposition": "Explicit packet allowlisting, contamination rejection, legitimate authority text and prohibited reasoning exports are covered with negative fixtures.",
+      "evidence": [
+        "contract.md:83",
+        "authority.md:Review isolation and non-contamination / Input packet allowlist"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "result": "pass",
+      "disposition": "Contract requires instance-specific effective grants, restricted transport and independent escape probes. Actual reviewer checks established a read-only input boundary and isolated host process visibility without an observed host/source escape.",
+      "evidence": [
+        "contract.md:84,97-105",
+        "authority.md:Review isolation and non-contamination / Enforced environment",
+        "sandbox_receipts"
+      ]
+    },
+    {
+      "id": "AC-5",
+      "result": "pass",
+      "disposition": "Independent dispositions, exact candidate/source binding, unavailable-evidence rejection and material negative gate tests are explicit.",
+      "evidence": [
+        "contract.md:85",
+        "authority.md:Phase state machine",
+        "authority.md:Result contract"
+      ]
+    },
+    {
+      "id": "AC-6",
+      "result": "pass",
+      "disposition": "Atomic branch lease, duplicate rejection, interruption reconciliation, bounded observation and owned-process cleanup have observable tests.",
+      "evidence": [
+        "contract.md:86",
+        "authority.md:Self-compaction and fresh bootstrap"
+      ]
+    },
+    {
+      "id": "AC-7",
+      "result": "fail",
+      "disposition": "Disposable qualification and synthetic/live provenance boundaries are explicit. The concluding qualification paragraph imposes conflicting GREEN/reset sequencing.",
+      "evidence": [
+        "contract.md:87,107-113",
+        "authority.md:Bootstrap exception without bypassing acceptance",
+        "authority.md:Phase state machine",
+        "F-3"
+      ]
+    },
+    {
+      "id": "AC-8",
+      "result": "pass",
+      "disposition": "Separate executable/authority and records manifests, reviewed-byte integration, fresh records review and final-commit binding avoid self-hash recursion.",
+      "evidence": [
+        "contract.md:59-67,88",
+        "authority.md:Phase state machine / two-manifest requirements"
+      ]
+    },
+    {
+      "id": "AC-9",
+      "result": "pass",
+      "disposition": "Live remote equality, both exact-head CI gates, preserved existing jobs and a new draft PR are mandatory; synthetic or pending jobs cannot substitute.",
+      "evidence": [
+        "contract.md:54-57,89,93-96",
+        "base-ci.yml:jobs",
+        "assessment.md:Verified baseline",
+        "authority.md:INTEGRATED and RECORDED"
+      ]
+    },
+    {
+      "id": "AC-10",
+      "result": "fail",
+      "disposition": "Document reconciliation, meaningful-unit recording and readback gates are explicit. Exact memory identity, workspace and metadata-policy acceptance requirements need completion.",
+      "evidence": [
+        "contract.md:90,101-105",
+        "authority.md:Documentation and Empirical gate",
+        "F-1"
+      ]
+    },
+    {
+      "id": "AC-11",
+      "result": "fail",
+      "disposition": "Actual controller compaction, matching completion, fresh empty-history bootstrap and stale-source rejection are explicit. Contradictory prose leaves the required GREEN/reset order unresolved.",
+      "evidence": [
+        "contract.md:82,91,107-113",
+        "authority.md:Self-compaction and fresh bootstrap",
+        "F-3"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-1",
+      "severity": "blocking",
+      "requirement": "Mandatory memory retrieval and recording protocol",
+      "source": "authority.md:28-34; Documentation and Empirical gate",
+      "location": "contract.md:35-40,81,90,101-105,120-125",
+      "reproduction": "Compare the contract's memory dependencies and AC-1/AC-10 assertions against the authority's knowledge and memory gate requirements.",
+      "observed": "The contract requires live recall, policy access, agent work-history and readback, but does not expressly require workspace studio_suite_v2 verification, installed skill use, full retrieval of truncated relevant records, relaxed filters on empty results, one retry and the documented alternative on failure. AC-10 also leaves the exact authorType/work-history/mass/project-tag values and applicable metadata approval boundaries implicit.",
+      "expected": "Make these mandatory controller behaviors explicit and observably checked. Specify authorType agent, work-history, mass 1 and project tag studio-suite_v2, with workspace verification, policy-bound metadata and failure handling."
+    },
+    {
+      "id": "F-2",
+      "severity": "blocking",
+      "requirement": "Conditional active-objective lifecycle",
+      "source": "authority.md:256",
+      "location": "contract.md:Frozen scope; AC-2; AC-6",
+      "reproduction": "Search the complete contract for Goal-tool registration and lifecycle requirements; compare with authority.md:256.",
+      "observed": "The authority requires registration of the active phase objective after activation when Goal tools exist, correct lifecycle handling, no invented token budget and ledger preservation across interruption. The contract contains no corresponding assertion or acceptance evidence. Goal tools are exposed in this reviewer environment.",
+      "expected": "Add conditional Goal-tool lifecycle acceptance for the controller without registering a goal during this pre-activation scope review."
+    },
+    {
+      "id": "F-3",
+      "severity": "blocking",
+      "requirement": "Coherent GREEN and actual reset ordering",
+      "source": "authority.md:Phase state machine; Self-compaction and fresh bootstrap",
+      "location": "contract.md:82,91,107-113",
+      "reproduction": "Compare AC-2 and AC-11 with the paragraph ending 'must all pass before R0 GREEN/RESET_CONFIRMED'.",
+      "observed": "AC-2 places GREEN before RESET_CONFIRMED, and AC-11 requires a factual GREEN checkpoint before compaction/bootstrap. The later paragraph requires the actual boundary reset to pass before R0 GREEN/RESET_CONFIRMED.",
+      "expected": "State separately that live integration/publication/records/final-gate validation precede GREEN, and actual compaction plus fresh bootstrap precede RESET_CONFIRMED and product activation."
+    },
+    {
+      "id": "A-1",
+      "severity": "advisory",
+      "requirement": "Interpret escape probes against original-host integrity",
+      "source": "authority.md:Enforced environment",
+      "location": "contract.md:84",
+      "reproduction": "Create a harmless file in the tool-visible parent temporary directory; create a private user/mount namespace; then attempt writable remount of frozen input and compare host sentinel/packet receipts.",
+      "observed": "Tool-private temporary-directory creation and private mounting succeeded. Frozen-input remount and writes failed; host sentinel and packet remained unchanged. These successes alone do not establish an original-host escape.",
+      "expected": "Keep private-namespace activity distinct from successful access or mutation of excluded original-host resources in future qualification reports."
+    }
+  ],
+  "independent_checks": [
+    {
+      "check": "Read all requested authority inputs and parse the complete source manifest",
+      "result": "Completed."
+    },
+    {
+      "check": "Independent hashlib SHA-256 verification",
+      "result": "All manifest pins and contract authority pins matched supplied bytes."
+    },
+    {
+      "check": "Effective configuration and transport metadata",
+      "result": "Same-instance challenge-bound receipts obtained; model and effort matched."
+    },
+    {
+      "check": "Harmless output/input and excluded-host probes",
+      "result": "Output creation succeeded and was removed; frozen input denied writes; excluded sentinel and host process files were inaccessible."
+    },
+    {
+      "check": "Environment inspection",
+      "result": "Only environment key names and byte counts were reported; no credential values were printed."
+    },
+    {
+      "check": "Network probes",
+      "result": "Six IPv4/IPv6/local/private/metadata connection attempts failed with EPERM."
+    },
+    {
+      "check": "Namespace, mount and PID-root probes",
+      "result": "Private namespace/mount operations succeeded; frozen-input writable remount failed; excluded files through PID-root paths remained inaccessible."
+    },
+    {
+      "check": "Post-probe host integrity",
+      "result": "Host sentinel and every frozen packet digest remained unchanged."
+    }
+  ],
+  "limitations": [
+    "No supervisor implementation exists; no implementation success is claimed.",
+    "No application code, authority bytes or remote resources were changed.",
+    "Original Git ancestry, current GitHub CI, publication, controller memory writes and final reset were not executed during this source-only review.",
+    "Underlying _ds files and archive bytes were not supplied; only the pinned source-manifest bytes and inventory were independently verified.",
+    "The installed Empirical skill path was inaccessible. Broad memory/history retrieval was not attempted: reviewer authority forbids builder-history access, and integrations were disabled.",
+    "Host receipts are metadata evidence, not a cryptographic attestation of every possible isolation path.",
+    "This verdict requires contract revision and a fresh scope review; it does not authorize implementation."
+  ]
+}

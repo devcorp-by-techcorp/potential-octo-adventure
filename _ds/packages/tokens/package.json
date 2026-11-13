@@ -1,0 +1,9 @@
+{
+  "name": "@illuminate/tokens",
+  "version": "0.1.0",
+  "description": "Illuminate Studios — cross-platform design tokens (source of truth for web + native).",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "sideEffects": false,
+  "files": ["src", "illuminate-design-spec.json"]
+}

@@ -1,4 +1,3 @@
-// @illuminate/tokens — public entry.
-// Re-exports the full token system so consumers import from "@illuminate/tokens".
 export * from "./tokens";
-export { default } from "./tokens";
+export { ThemeProvider, useTheme, useThemeMode } from "./ThemeProvider";
+export { themeToCSSVars, palette, shadow, shadowToCSS, shadowToRN, tokens } from "./compatibility";

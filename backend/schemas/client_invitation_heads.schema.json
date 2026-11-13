@@ -1,0 +1,23 @@
+{
+  "$jsonSchema": {
+    "title": "client_invitation_heads",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "generation": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      }
+    },
+    "required": [
+      "_id",
+      "generation"
+    ],
+    "additionalProperties": true
+  }
+}

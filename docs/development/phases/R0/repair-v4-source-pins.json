@@ -1,0 +1,19 @@
+{
+  "source": {
+    "scripts/autonomous/gate.py": "a658b30dba588a24016893ccea58b16188a7366a70ed5926f3cad2dcb806a5e7",
+    "scripts/autonomous/supervisor.py": "2c1fcfec45fb559b82393c79cb61e63c6ef269ea33330494c43d9529f8120f2c",
+    "scripts/autonomous/review_host.py": "c75d43b630f564e25a48b0e6d3ce5ff966c150d8dc01e3fad7284f394e2ffb52",
+    "scripts/autonomous/tests/test_gate.py": "9b2d4b5539365d184665e0ad5de278ee7fa98e0f39a37b18d4160dffff9940f2",
+    "scripts/autonomous/tests/test_supervisor.py": "1949e10a05b20ec1ee54d62869f0308d92fa9c1cfae659da91df5ba7521c541f",
+    "scripts/autonomous/tests/test_review_host.py": "f9d51b7c03788d368029368937a6beb51f147ab9115303a3ab71c8d1234520ae"
+  },
+  "authority": {
+    "docs/development/long-running-session-plan.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+    "docs/development/readiness-assessment-2026-10-07.md": "ebef319b9b0cd3f5122749bd597661118a667e326a3020edeecbd0e448ac0c50",
+    "docs/development/design-system-source-manifest.json": "abbcc51be2b6f4c3e381134d14732da4192257e27cde37a3f4a4ec8ae48f292f",
+    "docs/development/phases/R0/execution-contract.md": "e8472eba2f0ea0dc6ab9bda2ab52011540841b8e6763c467eec80809345e0337"
+  },
+  "actual_unittest_output_admitted": true,
+  "git_diff_check_status": "blocked_git_metadata_not_mounted",
+  "live_phase_gate_claim": false
+}

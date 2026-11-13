@@ -1,0 +1,43 @@
+{
+  "$jsonSchema": {
+    "title": "session_commands",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string",
+        "description": "scope:session-token-digest:command-UUID composite key."
+      },
+      "result": {
+        "bsonType": "object",
+        "properties": {
+          "revoked_count": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 0
+          }
+        },
+        "required": [
+          "revoked_count"
+        ],
+        "additionalProperties": true
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "expires_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      }
+    },
+    "required": [
+      "_id",
+      "result",
+      "created_at",
+      "expires_at"
+    ],
+    "additionalProperties": true
+  }
+}

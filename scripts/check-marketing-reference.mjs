@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
+import { collections, experience } from '../web/src/data/studio.js';
+const reference = readFileSync('_ds/StudioSuite-Mobile.dc.html', 'utf8');
+const literal = reference.match(/this\.PACKAGES = (\[[\s\S]*?\n    \]);/)[1];
+const packages = runInNewContext(`(${literal})`, Object.create(null), { timeout: 100 });
+const plain = JSON.parse(JSON.stringify(packages));
+assert.deepEqual(collections.map(({ name, price, forWhom, includes }) => ({ name, price, forWhom, includes })), plain.map(({ name, price, forWhom, includes }) => ({ name, price, forWhom, includes })));
+assert.deepEqual(experience.map(x => x.title), ['Enquire', 'Book', 'Prepare', 'Receive']);
+const landing = readFileSync('web/src/pages/Landing.jsx', 'utf8');
+for (const heading of ['Recent work', 'From first note to delivered gallery', 'Three ways to work together', 'Frames off the screen']) assert.ok(landing.includes(heading));
+assert.ok(!landing.includes('chapter-divider') && !landing.includes('studio-philosophy'));
+assert.ok(!experience.some(x => /30%|secures the date|signed in-portal|intake questionnaire/i.test(x.text)));
+console.log('marketing-reference: reference section headings, four process stages and exact collection catalog; prototype-only confirmation claims excluded.');

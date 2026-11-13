@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
 import { useColorScheme } from "react-native";
-import { themes, type Theme, type ThemeName } from "@illuminate/tokens";
+import { themes, type Theme, type ThemeName } from "@is/tokens";
 
 /**
- * Binds the shared @illuminate/tokens `themes` object to React Native.
+ * Binds the shared @is/tokens `themes` object to React Native.
  * Web mirrors these same tokens into CSS custom properties (styles.css);
  * here they are consumed directly as JS values.
  *

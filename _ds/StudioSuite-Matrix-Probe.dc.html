@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#eef1f4}
+button{font-family:'Inter',system-ui,sans-serif}
+a{color:#a8884f;text-decoration:none}
+a:hover{color:#826737}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(14,23,48,.22);border-radius:8px}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#eef1f4;color:#0e1730;font-family:'Inter',system-ui,sans-serif;padding:clamp(16px,3vw,32px)">
+  <div style="max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(14px,2.4vw,22px)">
+
+    <header style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;justify-content:space-between;border-bottom:1px solid #e1e7ed;padding-bottom:16px">
+      <div style="min-width:0">
+        <div style="text-transform:uppercase;letter-spacing:.2em;font-size:10px;font-weight:600;color:#a8884f">Studio Suite · load-bearing acceptance gate</div>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.05;margin:6px 0 4px">Universal Responsive Matrix Probe</h1>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#5a6378;margin:0;line-height:1.5">Measures StudioSuite-Mobile.dc.html at every checkpoint in the Viewport Matrix — horizontal overflow, silent clipping, sub-44px tap targets.</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button onClick="{{ measure }}" style="text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;min-height:44px;padding:0 16px;border:1px solid #c4cdd6;background:#fff;color:#0e1730;border-radius:3px;cursor:pointer">Re-measure grid</button>
+        <button onClick="{{ sweepWidths }}" style="text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;min-height:44px;padding:0 16px;border:1px solid #c4cdd6;background:#fff;color:#0e1730;border-radius:3px;cursor:pointer">Sweep widths · this screen</button>
+        <button onClick="{{ fullSweep }}" style="text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;min-height:44px;padding:0 18px;border:none;background:#a8884f;color:#fdf8ee;border-radius:3px;cursor:pointer">Run full matrix</button>
+      </div>
+    </header>
+
+    <section style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <div style="display:flex;gap:6px;border:1px solid #c4cdd6;border-radius:3px;padding:3px;background:#fff">
+        <button onClick="{{ setNative }}" style="{{ tabNative }}">Native · 19 checkpoints</button>
+        <button onClick="{{ setWeb }}" style="{{ tabWeb }}">Web · 16 checkpoints</button>
+      </div>
+      <button onClick="{{ toggleThumbs }}" style="{{ thumbBtn }}">{{ thumbLabel }}</button>
+      <div style="flex:1"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#0e1730">{{ summary }}</div>
+    </section>
+
+    <section>
+      <div style="text-transform:uppercase;letter-spacing:.18em;font-size:10px;font-weight:600;color:#a8884f;margin-bottom:10px">Surface under test</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ screens }}" as="s" hint-placeholder-count="6">
+          <button onClick="{{ s.pick }}" style="{{ s.style }}">{{ s.label }}</button>
+        </sc-for>
+      </div>
+    </section>
+
+    <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px solid rgba(168,136,79,.4);background:rgba(168,136,79,.12);color:#826737;border-radius:4px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px">{{ busyText }}</div>
+    </sc-if>
+
+    <sc-if value="{{ hasLog }}" hint-placeholder-val="{{ false }}">
+    <section>
+      <div style="text-transform:uppercase;letter-spacing:.18em;font-size:10px;font-weight:600;color:#a8884f;margin-bottom:10px">Sweep report</div>
+      <div style="border:1px solid #e1e7ed;border-radius:4px;background:#fff;max-height:320px;overflow:auto">
+        <sc-for list="{{ log }}" as="l" hint-placeholder-count="3">
+          <div style="{{ l.style }}">{{ l.t }}</div>
+        </sc-for>
+      </div>
+    </section>
+    </sc-if>
+
+    <section>
+      <div style="text-transform:uppercase;letter-spacing:.18em;font-size:10px;font-weight:600;color:#a8884f;margin-bottom:10px">Checkpoint grid · {{ screenLabel }}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:14px;align-items:start">
+        <sc-for list="{{ cells }}" as="c" hint-placeholder-count="8">
+          <div style="border:1px solid {{ c.border }};border-radius:4px;background:#fff;overflow:hidden;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #e1e7ed">
+              <div style="min-width:0;flex:1">
+                <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.label }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5a6378">{{ c.dims }}</div>
+              </div>
+              <span style="{{ c.badge }}">{{ c.verdict }}</span>
+            </div>
+            <sc-if value="{{ c.thumbs }}" hint-placeholder-val="{{ true }}">
+              <div style="position:relative;width:100%;height:{{ c.boxH }}px;background:#dfe4ea;overflow:hidden">
+                <iframe src="{{ c.src }}" ref="{{ c.ref }}" onLoad="{{ onFrameLoad }}" title="{{ c.label }}" style="position:absolute;top:0;left:50%;margin-left:{{ c.shift }}px;width:{{ c.w }}px;height:{{ c.h }}px;border:0;background:#fff;transform:scale({{ c.s }});transform-origin:top center"></iframe>
+              </div>
+            </sc-if>
+            <div style="padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.45;color:{{ c.noteColor }};border-top:1px solid #e1e7ed">{{ c.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6378;line-height:1.6;margin:14px 0 0">Matrix rows 20–21 (largest OS font scale) are a native-only axis — not simulable in a browser harness; verify on device with Dynamic Type at max.<br>Split View / Slide Over / split-screen rows are modelled by their logical widths; keyboard-raised landscape is modelled as 812×250.</p>
+    </section>
+
+    <iframe ref="{{ sweepRef }}" title="sweep" style="position:fixed;left:-4000px;top:0;width:375px;height:812px;border:0"></iframe>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  constructor(p){
+    super(p);
+    this.NATIVE=[
+      [375,812,'iPhone 13 mini · SMALL-END GATE'],[812,375,'iPhone 13 mini · landscape'],
+      [390,844,'iPhone 14'],[844,390,'iPhone 14 · landscape'],
+      [428,926,'iPhone 14 Pro Max'],[926,428,'iPhone 14 Pro Max · landscape'],
+      [412,915,'Pixel 7 Pro'],[915,412,'Pixel 7 Pro · landscape'],
+      [744,1133,'iPad mini'],[1133,744,'iPad mini · landscape'],
+      [834,1194,'iPad Pro 11"'],[1194,834,'iPad Pro 11" · landscape'],
+      [1024,1366,'iPad Pro 12.9"'],[1366,1024,'iPad Pro 12.9" · landscape'],
+      [372,1194,'iPad Split View ½'],[275,1194,'iPad Split View ⅓'],[320,1194,'iPad Slide Over'],
+      [360,780,'Android split-screen ½'],[812,250,'Landscape + keyboard raised'],
+    ];
+    this.WEB=[
+      [375,812,'iPhone 13 mini · SMALL-END GATE'],[812,375,'iPhone 13 mini · landscape'],
+      [390,844,'Standard handset'],[844,390,'Standard handset · landscape'],
+      [428,926,'Large handset'],[926,428,'Large handset · landscape'],
+      [744,1133,'iPad mini'],[1133,744,'iPad mini · landscape'],
+      [834,1194,'iPad Pro 11"'],[1194,834,'iPad Pro 11" · landscape'],
+      [1152,900,'Nav fit floor'],[1152,760,'Nav fit floor · short'],
+      [1280,700,'Constrained height'],[1440,900,'Standard desktop'],
+      [1920,1080,'Wide desktop'],[2560,1080,'Ultrawide'],
+    ];
+    this.SCREENS=[
+      {label:'Public · Marketing',q:'?authed=0'},
+      {label:'Public · Marketing Luma',q:'?authed=0&sheet=luma'},
+      {label:'Sign-in · client',q:'?authed=0&view=signin'},
+      {label:'Sign-in · admin',q:'?authed=0&view=signin&role=admin'},
+      {label:'Client · Home',q:'?authed=1&route=home'},
+      {label:'Client · Gallery',q:'?authed=1&route=gallery'},
+      {label:'Client · Selections',q:'?authed=1&route=gallery&tab=sel'},
+      {label:'Client · Intake 1',q:'?authed=1&route=intake'},
+      {label:'Client · Intake chips',q:'?authed=1&route=intake&step=2'},
+      {label:'Client · Intake done',q:'?authed=1&route=intake&q=done'},
+      {label:'Client · Profile',q:'?authed=1&route=profile'},
+      {label:'Client · Luma drawer',q:'?authed=1&route=home&sheet=luma'},
+      {label:'Admin · Dashboard',q:'?authed=1&role=admin&route=dashboard'},
+      {label:'Admin · Bookings',q:'?authed=1&role=admin&route=bookings'},
+      {label:'Admin · Booking detail',q:'?authed=1&role=admin&route=bookings&booking=b2'},
+      {label:'Admin · Intake',q:'?authed=1&role=admin&route=intake'},
+      {label:'Admin · Luma',q:'?authed=1&role=admin&route=luma'},
+    ];
+    this.state={set:'native',screen:2,results:{},log:[],busy:'',thumbs:true};
+    this.frames={};
+    this.sweepRef=(el)=>{ if(el) this.sweep=el; };
+    this.onFrameLoad=()=>{
+      clearTimeout(this._t); this._t=setTimeout(()=>this.measure(),420);
+      clearTimeout(this._hard);
+      this._hard=setTimeout(()=>this.measure(),1600);
+    };
+  }
+  componentWillUnmount(){ clearTimeout(this._t); clearTimeout(this._hard); clearTimeout(this._retry); this._cancel=true; }
+  ck(){ return this.state.set==='web' ? this.WEB : this.NATIVE; }
+  sweepFrame(){ return this.sweep || document.querySelector('iframe[title="sweep"]'); }
+  gridFrames(){
+    const keys=Object.keys(this.frames);
+    if(keys.length) return this.frames;
+    const out={};
+    [...document.querySelectorAll('iframe')].filter(f=>f.title!=='sweep').forEach((f,i)=>{ out[i]=f; });
+    return out;
+  }
+  url(i){ return 'StudioSuite-Mobile.dc.html'+this.SCREENS[i].q; }
+  wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+  // Layout settle: 3 animation frames guarantees the ResizeObserver → React re-render
+  // has landed at the new geometry. Frames are not clamped the way background timers are.
+  settle(){ return new Promise(r=>{ let done=false; const fin=()=>{ if(!done){ done=true; r(); } };
+    requestAnimationFrame(()=>requestAnimationFrame(fin)); setTimeout(fin,180); }); }
+  load(fr,url){ return new Promise(r=>{ fr.onload=()=>r(); fr.src=url; setTimeout(r,4000); }); }
+
+  // Entry animations (sm-pane translateX, sm-sheet translateY) would be read as overflow
+  // if a frame is measured mid-transition — freeze them before measuring.
+  freeze(doc){
+    if(!doc || doc.getElementById('__probe_freeze')) return;
+    const st=doc.createElement('style');
+    st.id='__probe_freeze';
+    st.textContent='*,*::before,*::after{animation:none!important;transition:none!important}';
+    (doc.head||doc.documentElement).appendChild(st);
+  }
+  probe(fr,w,h){
+    try{
+      const doc=fr.contentDocument, win=fr.contentWindow;
+      if(!doc||!doc.body||!doc.body.firstElementChild) return null;
+      this.freeze(doc);
+      const over=Math.max(doc.documentElement.scrollWidth,doc.body.scrollWidth)-w;
+      const all=doc.querySelectorAll('*');
+      let clipped=0; const off=[];
+      for(let i=0;i<all.length;i++){
+        const el=all[i], d=el.scrollWidth-el.clientWidth;
+        if(d<=2) continue;
+        // Zero-box nodes are not layout: browser password managers inject 0×0
+        // !important-styled divs beside credential fields, and they report a
+        // scrollWidth inherited from the line box.
+        if(el.clientWidth===0 || el.clientHeight===0) continue;
+        // form fields scroll their own value by definition — not silent clipping
+        if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT') continue;
+        const ox=win.getComputedStyle(el).overflowX;
+        if(ox==='auto'||ox==='scroll'||ox==='hidden') continue;
+        clipped++;
+        if(off.length<3) off.push(el.tagName.toLowerCase()+'+'+d+'px');
+      }
+      let taps=0;
+      const ctl=doc.querySelectorAll('button,input,textarea,a,[role=button]');
+      for(let i=0;i<ctl.length;i++){
+        const r=ctl[i].getBoundingClientRect();
+        if(r.width<2||r.height<2) continue;
+        if(r.height<43.5||r.width<43.5) taps++;
+      }
+      return {ok: over<=1 && clipped===0, over:Math.round(over), clipped, off, taps};
+    }catch(e){ return {ok:false,note:'probe error · '+(e&&e.message||e)}; }
+  }
+
+  // Frames still loading return null, not a verdict — a slow iframe is not a layout defect.
+  // Retry until every checkpoint has actually been measured.
+  measure(){
+    const res={}; const frames=this.gridFrames(); const cks=this.ck();
+    let pending=0;
+    cks.forEach((c,i)=>{
+      const fr=frames[i]; if(!fr){ pending++; return; }
+      const r=this.probe(fr,c[0],c[1]);
+      if(r) res[i]=r; else pending++;
+    });
+    this.setState({results:res});
+    clearTimeout(this._retry);
+    if(pending && (this._tries=(this._tries||0)+1)<300) this._retry=setTimeout(()=>this.measure(),500);
+    else this._tries=0;
+  }
+
+  async sweepWidths(){
+    const fr=this.sweepFrame(); if(!fr) return;
+    const web=this.state.set==='web';
+    const from=web?375:275, to=web?2560:1366, step=web?25:20;
+    const screen=this.state.screen;
+    const hadThumbs=this.state.thumbs;
+    this.frames={};
+    this.setState({busy:'Sweeping '+from+'→'+to+'px · '+this.SCREENS[screen].label,log:[],results:{},thumbs:false});
+    await this.wait(120);
+    fr.style.height=(web?900:812)+'px';
+    await this.load(fr,this.url(screen));
+    const fails=[];
+    for(let w=from;w<=to;w+=step){
+      if(this._cancel) return;
+      fr.style.width=w+'px';
+      await this.settle();
+      const r=this.probe(fr,w,fr.clientHeight);
+      if(r && !r.ok) fails.push(w+'px · '+(r.note||('overflow '+r.over+'px, clipped '+r.clipped+' ['+(r.off||[]).join(' ')+']')));
+      if(w%200<step) this.setState({busy:'Sweeping · at '+w+'px · '+fails.length+' failures so far'});
+    }
+    const log=[{t:this.SCREENS[screen].label+' · continuous sweep '+from+'→'+to+'px, step '+step+'px',ok:true}]
+      .concat(fails.length?fails.map(f=>({t:'FAIL  '+f,ok:false})):[{t:'PASS  no dead-zones across the continuous range',ok:true}]);
+    this.setState({busy:'',log,thumbs:hadThumbs});
+  }
+
+  async fullSweep(){
+    try{ await this._fullSweep(); }
+    catch(e){ this.setState({busy:'',log:[{t:'HARNESS ERROR · '+(e&&e.stack||e),ok:false}]}); }
+  }
+  // The matrix runs SURFACE-serial, CHECKPOINT-parallel: every checkpoint is its own
+  // grid iframe at its own real geometry, so one surface costs one page load, not N
+  // resize-and-settle cycles. A single hidden frame resized 240 times is ~30× slower
+  // here, because each resize has to wait out a clamped animation frame.
+  async _fullSweep(){
+    const cks=this.ck(), N=this.SCREENS.length;
+    const log=[]; let fails=0;
+    this._cancel=false;
+    this.setState({busy:'Running full matrix · '+N+' surfaces × '+cks.length+' checkpoints',log:[],thumbs:true});
+    for(let s=0;s<N;s++){
+      if(this._cancel) return;
+      this.frames={}; this._tries=0;
+      clearTimeout(this._t); clearTimeout(this._hard); clearTimeout(this._retry);
+      this.setState({screen:s,results:{},busy:'Surface '+(s+1)+'/'+N+' · '+this.SCREENS[s].label+' · loading '+cks.length+' frames · '+fails+' failures so far'});
+      let rs=cks.map(()=>null);
+      for(let k=0;k<70;k++){
+        await this.wait(200);
+        const frames=this.gridFrames();
+        rs=cks.map((c,i)=>frames[i]?this.probe(frames[i],c[0],c[1]):null);
+        if(rs.every(Boolean)) { await this.wait(250); rs=cks.map((c,i)=>this.probe(this.gridFrames()[i],c[0],c[1])); break; }
+      }
+      const res={}; const bad=[];
+      rs.forEach((r,i)=>{
+        const [w,h]=cks[i];
+        if(r) res[i]=r;
+        if(!r) bad.push(w+'×'+h+' · frame never loaded (harness fault, not a layout defect)');
+        else if(!r.ok) bad.push(w+'×'+h+' · '+(r.note||('overflow '+r.over+'px, clipped '+r.clipped+' ['+(r.off||[]).join(' ')+']')));
+      });
+      fails+=bad.length;
+      log.push({t:(bad.length?'FAIL  ':'PASS  ')+this.SCREENS[s].label+' · '+(cks.length-bad.length)+'/'+cks.length+' checkpoints',ok:!bad.length});
+      bad.forEach(b=>log.push({t:'        '+b,ok:false}));
+      this.setState({results:res,log:log.slice(),busy:'Surface '+(s+1)+'/'+N+' · '+fails+' failures'});
+    }
+    log.unshift({t:(fails?'GATE FAILED · ':'GATE PASSED · ')+(N*cks.length-fails)+'/'+(N*cks.length)+' checkpoints clean · '+this.state.set+' matrix',ok:!fails});
+    this.setState({busy:'',log});
+  }
+
+  // Frames that keep the same src (set switch, cached reload) fire no load event,
+  // so the load-driven auto-measure needs a scheduled backstop.
+  remeasureSoon(){
+    clearTimeout(this._t); clearTimeout(this._hard);
+    this._t=setTimeout(()=>this.measure(),700);
+    this._hard=setTimeout(()=>this.measure(),1800);
+  }
+  pick(i){ this.frames={}; this._tries=0; this.setState({screen:i,results:{}}); this.remeasureSoon(); }
+  setSet(v){ this.frames={}; this._tries=0; this.setState({set:v,results:{}}); this.remeasureSoon(); }
+
+  renderVals(){
+    const {set,screen,results,log,busy,thumbs}=this.state;
+    const cks=this.ck();
+    const src=this.url(screen);
+    const chip=(on)=>`text-transform:uppercase;letter-spacing:.1em;font-size:10.5px;font-weight:600;min-height:44px;padding:0 14px;border-radius:3px;cursor:pointer;`+(on?'background:#a8884f;color:#fdf8ee;border:1px solid #a8884f':'background:#fff;color:#34405a;border:1px solid #c4cdd6');
+    const cells=cks.map((c,i)=>{
+      const [w,h,label]=c;
+      const s=Math.min(1,238/w,300/h);
+      const r=results[i];
+      const ok=r&&r.ok, fail=r&&!r.ok;
+      return {
+        label, dims:w+' × '+h+' · '+(w>=h?'landscape':'portrait'), w, h, src,
+        s:s.toFixed(4), boxH:Math.round(h*s), shift:Math.round(-w/2),
+        thumbs,
+        ref:(el)=>{ if(el) this.frames[i]=el; },
+        verdict: ok?'PASS':fail?'FAIL':'—',
+        border: fail?'#a8564a':ok?'#e1e7ed':'#e1e7ed',
+        badge:`text-transform:uppercase;letter-spacing:.1em;font-size:9px;font-weight:600;padding:4px 7px;border-radius:3px;white-space:nowrap;`+(ok?'color:#5b7a52;background:rgba(91,122,82,.14)':fail?'color:#a8564a;background:rgba(168,86,74,.14)':'color:#5a6378;background:#f1f4f7'),
+        noteColor: fail?'#a8564a':(r&&r.taps?'#a9803a':'#5a6378'),
+        note: !r ? (thumbs?'awaiting measurement':'thumbnails off — grid measurement needs them on') : r.note ? r.note
+          : (r.ok?'no overflow · no clipping':'overflow '+r.over+'px · '+r.clipped+' clipped ['+(r.off||[]).join(' ')+']')
+            + (r.taps?' · '+r.taps+' sub-44px targets':' · tap targets ok'),
+      };
+    });
+    const passes=Object.keys(results).filter(k=>results[k].ok).length;
+    const measured=Object.keys(results).length;
+    return {
+      cells, onFrameLoad:this.onFrameLoad, sweepRef:this.sweepRef,
+      screens:this.SCREENS.map((s,i)=>({label:s.label,style:chip(i===screen),pick:()=>this.pick(i)})),
+      screenLabel:this.SCREENS[screen].label,
+      tabNative:chip(set==='native'), tabWeb:chip(set==='web'),
+      setNative:()=>this.setSet('native'), setWeb:()=>this.setSet('web'),
+      thumbBtn:chip(thumbs), thumbLabel: thumbs?'Thumbnails on':'Thumbnails off',
+      toggleThumbs:()=>{ this.frames={}; this.setState(st=>({thumbs:!st.thumbs,results:{}})); this.remeasureSoon(); },
+      summary: measured? passes+' / '+measured+' checkpoints clean · '+(set==='web'?'web':'native')+' matrix' : 'grid loading…',
+      measure:()=>this.measure(), sweepWidths:()=>this.sweepWidths(), fullSweep:()=>this.fullSweep(),
+      busy:!!busy, busyText:busy,
+      hasLog: log.length>0,
+      log: log.map(l=>({t:l.t,style:'padding:8px 12px;border-bottom:1px solid #f1f4f7;font-family:\'JetBrains Mono\',monospace;font-size:11.5px;white-space:pre-wrap;color:'+(l.ok?'#0e1730':'#a8564a')})),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

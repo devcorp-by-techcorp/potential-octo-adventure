@@ -1,0 +1,21 @@
+{
+  "exactBytePreservation": true,
+  "historicalSourceManifestsPreserved": true,
+  "files": [
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/scope-v1/input/base-ci.yml",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/scope-v1/input/base-ci.yml.txt",
+      "sha256": "642722fe0d30bfeced712cbcec8f21d03fa148d6b557e9527580c46f63a6364d"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/scope-v2/input/base-ci.yml",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/scope-v2/input/base-ci.yml.txt",
+      "sha256": "642722fe0d30bfeced712cbcec8f21d03fa148d6b557e9527580c46f63a6364d"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/scope-v3/input/base-ci.yml",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/scope-v3/input/base-ci.yml.txt",
+      "sha256": "642722fe0d30bfeced712cbcec8f21d03fa148d6b557e9527580c46f63a6364d"
+    }
+  ]
+}

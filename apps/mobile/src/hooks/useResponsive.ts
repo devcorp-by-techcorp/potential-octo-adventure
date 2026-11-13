@@ -6,7 +6,7 @@
  *   1. Layout is driven by MEASURED runtime geometry (useWindowDimensions —
  *      a subscribed, re-rendering source), never by device identification.
  *   2. Device-class branches are refinements, never the sole mechanism.
- *   3. Type + spacing interpolate from the shared @illuminate/tokens scale
+ *   3. Type + spacing interpolate from the shared @is/tokens scale
  *      against available space, not hard-coded per device.
  *   6. Orientation is an independent axis; it updates instantly on rotation
  *      because useWindowDimensions re-renders with fresh width/height.
@@ -14,7 +14,7 @@
  * Everything a screen needs to reflow comes from here.
  */
 import { useWindowDimensions } from "react-native";
-import { space as SPACE } from "@illuminate/tokens";
+import { space as SPACE } from "@is/tokens";
 
 export type Orientation = "portrait" | "landscape";
 export type DeviceClass = "handset" | "handsetPlus" | "tablet" | "largeTablet";

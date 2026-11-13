@@ -1,0 +1,192 @@
+{
+  "phase_id": "R0",
+  "review_kind": "scope",
+  "verdict": "PASS",
+  "disposition_scope": "Pre-build contract source fidelity and testability only. This does not certify implementation, R0 GREEN, reset completion or product acceptance.",
+  "contract_sha256": "f46f07f6bcc7974082323b0443893aed130f8f10f7c42142324fc69e1d492aef",
+  "packet_sha256": "269139433983ed8c7a17b84ad21d42e5e0840f47d212a89a2d2b8d880db01331",
+  "packet_encoding": "SHA-256 of UTF-8 compact JSON mapping all seven input filenames to independently computed SHA-256 values; keys sorted, separators comma/colon, no trailing newline. Includes manifest.json and host-probe-source.py.",
+  "instance": "3057f8b74e638fa8ff294283ee983038",
+  "thread": "01a118b8-1e4d-7fa3-a980-45ebdaf1b375",
+  "candidate_commit": null,
+  "candidate_tree": null,
+  "digest_verification": {
+    "all_manifest_pins_match": true,
+    "all_contract_authority_pins_match": true,
+    "independently_computed": {
+      "contract.md": "f46f07f6bcc7974082323b0443893aed130f8f10f7c42142324fc69e1d492aef",
+      "authority.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+      "assessment.md": "ebef319b9b0cd3f5122749bd597661118a667e326a3020edeecbd0e448ac0c50",
+      "design-system-source-manifest.json": "abbcc51be2b6f4c3e381134d14732da4192257e27cde37a3f4a4ec8ae48f292f",
+      "base-ci.yml": "642722fe0d30bfeced712cbcec8f21d03fa148d6b557e9527580c46f63a6364d",
+      "host-probe-source.py": "aca5aa3964cb6b0606c35a2eacb5efd69ddc0aa6c74827fe85ea2c26ec5037bd",
+      "manifest.json": "3fcdd59196bc3e83b55d53fa9fa883d80c506e4cca0b389a002e23dec6ab0590"
+    }
+  },
+  "sandbox_receipts": {
+    "challenge": "r0-scope-d2xm8h75-20261008-a1",
+    "configuration": {
+      "receipt_sha256": "8c6440657d4ef7b4cf67ebe8ea493d0c37efb31851178b34f7f20fa2a7cc5340",
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium",
+      "approval_policy": "never",
+      "profile": "r0_qualified",
+      "root_access": "deny",
+      "input_access": "read",
+      "output_access": "write",
+      "network_enabled": false,
+      "history_exposing_features": "disabled",
+      "empirical_connector": "disabled",
+      "callback_negative_checks": {
+        "extra_path": "unexpected-fields",
+        "command": "unexpected-fields",
+        "wrong_thread": "wrong-thread",
+        "invalid_probe": "invalid-probe"
+      }
+    },
+    "transport": {
+      "receipt_sha256": "8fe8a9a6d0fe166a6ea1b63b22ea39e548ea8c6171f99520a38082f04aea5cc0",
+      "fresh_thread_initial_turns": [],
+      "reviewer_environment_policy": "none",
+      "callback_keys": ["probe", "challenge"],
+      "caller_selected_paths_or_commands": false,
+      "credential_values_exported": false,
+      "host_pid_namespace": "pid:[4026532604]",
+      "reviewer_tool_pid_namespace": "pid:[4026532877]"
+    },
+    "packet": {
+      "receipt_sha256": "117fe4a67e051b12dba707d99d9daf2204bfe4d458061ac92e1043be68e3211d",
+      "unchanged": true
+    },
+    "sentinel_before": {
+      "receipt_sha256": "48e9701bff2aa1683c508725bc046cb3cfa0c3be360a3ee40c17f9ffd42e5674",
+      "exists": true,
+      "unchanged": true
+    },
+    "sentinel_after": {
+      "challenge": "r0-scope-d2xm8h75-20261008-a1-final",
+      "receipt_sha256": "d1d1a8f4f230ca66138ad0c17096054f3927c07fc61db98dd438fc53144500bc",
+      "exists": true,
+      "unchanged": true,
+      "packet_unchanged": true
+    }
+  },
+  "criteria": [
+    {
+      "id": "AC-1",
+      "result": "pass",
+      "disposition": "Requires fresh scope approval before code, effective controller model/effort and live memory-first activation without substitution.",
+      "evidence": ["contract.md:35-60,100", "authority.md:Mandate and activation; Knowledge and authority; Task contract before editing"]
+    },
+    {
+      "id": "AC-2",
+      "result": "pass",
+      "disposition": "Covers every phase state, evidence-bound promotion, failure preservation, dependent-work denial and conditional actual Goal-tool lifecycle.",
+      "evidence": ["contract.md:55-60,101", "authority.md:Phase state machine; Continuation and stops"]
+    },
+    {
+      "id": "AC-3",
+      "result": "pass",
+      "disposition": "Specifies allowlisted neutral packets, frozen manifests, hostile payload rejection and no reasoning export while retaining legitimate source authority.",
+      "evidence": ["contract.md:102", "authority.md:Input packet allowlist"]
+    },
+    {
+      "id": "AC-4",
+      "result": "pass",
+      "disposition": "Requires exact-instance enforced isolation and observable negative probes, not historical qualification. This review obtained matching configuration/transport receipts and independently tested restricted capabilities.",
+      "evidence": ["contract.md:39-40,103,118-127", "authority.md:Enforced environment", "sandbox_receipts", "independent_checks"]
+    },
+    {
+      "id": "AC-5",
+      "result": "pass",
+      "disposition": "Requires every mandatory disposition and independently produced receipts; rejects missing evidence, changed candidates, stale authority, reasoning leakage and unresolved blockers.",
+      "evidence": ["contract.md:104", "authority.md:Phase state machine; Result contract"]
+    },
+    {
+      "id": "AC-6",
+      "result": "pass",
+      "disposition": "Makes branch lease concurrency, interrupted-owner reconciliation, non-replay and owned-process cleanup observably testable.",
+      "evidence": ["contract.md:105,165-168", "authority.md:Self-compaction and fresh bootstrap"]
+    },
+    {
+      "id": "AC-7",
+      "result": "pass",
+      "disposition": "Requires a harmless complete qualification path with fresh review contexts and actual runtime reset capabilities. Explicitly prevents synthetic memory/publication/CI fixtures from satisfying live R0 gates.",
+      "evidence": ["contract.md:106,129-137", "authority.md:Bootstrap exception without bypassing acceptance; Ordered bounded backlog R0-B"]
+    },
+    {
+      "id": "AC-8",
+      "result": "pass",
+      "disposition": "Separates immutable executable/authority inputs from records, requires reviewed-byte integration and fresh records review, and binds final manifests without self-hash recursion.",
+      "evidence": ["contract.md:78-87,107", "authority.md:Phase state machine"]
+    },
+    {
+      "id": "AC-9",
+      "result": "pass",
+      "disposition": "Requires non-overwriting dedicated-branch publication, exact remote equality, all retained aggregate jobs plus infrastructure CI on integration and final records heads, and a new draft PR.",
+      "evidence": ["contract.md:74-76,108,112-116", "authority.md:Phase state machine", "assessment.md:Verified baseline; First execution action", "base-ci.yml:jobs"]
+    },
+    {
+      "id": "AC-10",
+      "result": "pass",
+      "disposition": "Covers affected records and open product parents, installed memory protocol, coding-record attribution/metadata authorization, existing todo/scar updates and verified persistence/readback before advancement.",
+      "evidence": ["contract.md:43-53,78-87,109", "authority.md:Documentation and Empirical gate"]
+    },
+    {
+      "id": "AC-11",
+      "result": "pass",
+      "disposition": "Requires the actual final R0 compaction and distinct memory-first bootstrap after independently validated GREEN. Covers terminal, failed closing bootstrap, blocked-required-goal and null-next denial paths without claiming C11 acceptance.",
+      "evidence": ["contract.md:110,129-152", "authority.md:Self-compaction and fresh bootstrap"]
+    }
+  ],
+  "findings": {
+    "blocking": [],
+    "advisory": []
+  },
+  "independent_checks": [
+    {
+      "check": "Read frozen contract and original authority, assessment, CI and source inventory; hash all input files using Python hashlib.",
+      "result": "All six manifest pins and four contract authority pins matched; source inventory contains 86 files."
+    },
+    {
+      "check": "Open contract.md with r+b without writing.",
+      "result": "Denied with EROFS."
+    },
+    {
+      "check": "Open outside sentinel for read and read/write; attempt excluded builder README, home Codex configuration and host process root/environment reads.",
+      "result": "All denied with ENOENT; sentinel existence independently confirmed by host receipt. No contents printed or mutations performed."
+    },
+    {
+      "check": "Attempt IPv4, IPv6, cloud-metadata and loopback TCP access.",
+      "result": "Socket operations denied with EPERM."
+    },
+    {
+      "check": "Inspect namespace links and environment key names only.",
+      "result": "Reviewer PID namespace differs from host; host process namespace paths inaccessible. No credential values printed. Reading the reviewer's own environment is not host-environment access."
+    },
+    {
+      "check": "Run unshare --user --map-root-user --mount and repeat excluded-host, input-write and socket probes.",
+      "result": "Private namespace creation succeeded; excluded paths remained inaccessible, input remained read-only and sockets remained denied."
+    },
+    {
+      "check": "Attempt tmpfs mount on reviewer output.",
+      "result": "Denied; mount exited 32."
+    },
+    {
+      "check": "Obtain final challenge-bound sentinel and packet receipt after probes.",
+      "result": "Original sentinel and all frozen packet bytes remained unchanged."
+    },
+    {
+      "check": "Compare complete R0 scope against active-plan bootstrap, transitions, boundaries, publication, memory, continuation and terminal/reset requirements.",
+      "result": "No mandatory active-plan R0 omission identified."
+    }
+  ],
+  "limitations": [
+    "No supervisor implementation, candidate tree, outcome tests, integration, publication or live controller memory/reset success is certified.",
+    "The supplied source manifest was read and hashed; underlying _ds files and archives were not supplied for independent content verification.",
+    "Baseline Git/CI statements remain source evidence, not newly queried remote facts. The contract requires live reconciliation and exact-head CI during execution.",
+    "Controller Empirical skills/policy and live persistence were not available to this isolated reviewer. No builder-history query or remote memory write was performed.",
+    "Private namespace creation succeeded but did not expose original excluded host objects. These checks establish the tested instance boundary, not absence of every conceivable sandbox vulnerability.",
+    "PASS authorizes only progression beyond this scope gate under the frozen contract; every later mandatory gate remains required."
+  ]
+}

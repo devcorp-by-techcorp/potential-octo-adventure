@@ -1,0 +1,55 @@
+{
+  "instance": "85db873f575aac44a2dfebba0c911a1c",
+  "positiveThread": "01a118a6-da88-7023-92f8-0c50a77cc650",
+  "negativeThread": "01a118a5-b996-7db3-bf77-1ba4b58f55ae",
+  "compactedThread": "01a118a5-1174-73d3-8e1d-73c95ae10d8f",
+  "compactionItemId": "01a118a5-6905-7033-818c-0e54f0d0ace5",
+  "completedPriorTurnIds": [
+    "01a118a5-14b5-7803-9d7d-f50afd28b022",
+    "01a118a5-68ff-7970-8b5f-67853e8c220d"
+  ],
+  "allSixBQPass": true,
+  "memoryBeforeSourceCommands": true,
+  "liveReceiptHashesVerified": [
+    {
+      "threadId": "01a118a5-b996-7db3-bf77-1ba4b58f55ae",
+      "probe": "empirical",
+      "sha256": "bd88a5b0f911597c031e633a58c0a284ac35bb3c1ea1f6d447f85492294f439c"
+    },
+    {
+      "threadId": "01a118a5-b996-7db3-bf77-1ba4b58f55ae",
+      "probe": "source_lifecycle",
+      "sha256": "7cb6b3f5b17df99b9d2b53d51f8a3d0225a01344b174dd1d14e4a968242bdb66"
+    },
+    {
+      "threadId": "01a118a5-b996-7db3-bf77-1ba4b58f55ae",
+      "probe": "git_ci",
+      "sha256": "3691d348d0a7f515cf900eac8486ae8ddadba453581299925b61d040bd542a7e"
+    },
+    {
+      "threadId": "01a118a6-da88-7023-92f8-0c50a77cc650",
+      "probe": "empirical",
+      "sha256": "a07944a56dc343c887102f9545bde1b1df1efab399f21452609e86d5081f9061"
+    },
+    {
+      "threadId": "01a118a6-da88-7023-92f8-0c50a77cc650",
+      "probe": "source_lifecycle",
+      "sha256": "2b0246b03a4d4f532278a80a7b482507398f97f0263cd82b743e110b82d71bde"
+    },
+    {
+      "threadId": "01a118a6-da88-7023-92f8-0c50a77cc650",
+      "probe": "git_ci",
+      "sha256": "ee776ca969e725650bbb437849a91e4f0c3b409b8f845ec539b6a52fdeb1d762"
+    },
+    {
+      "threadId": "01a118a6-da88-7023-92f8-0c50a77cc650",
+      "probe": "empirical",
+      "sha256": "38cb453bf742c50db47b88b146155039a2ad6efb1fc983554f411c6db767eca3"
+    }
+  ],
+  "negativeMismatchBlocks": true,
+  "hostAndPacketUnchanged": true,
+  "R0Green": false,
+  "resetConfirmed": false,
+  "productAdvancement": false
+}

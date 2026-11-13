@@ -1,0 +1,135 @@
+{
+  "$jsonSchema": {
+    "title": "booking_requests",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "name": {
+        "bsonType": "string"
+      },
+      "email": {
+        "bsonType": "string"
+      },
+      "phone": {
+        "bsonType": "string"
+      },
+      "event_type": {
+        "bsonType": "string",
+        "enum": [
+          "Wedding",
+          "Editorial",
+          "Family",
+          "Portrait",
+          "Brand / Commercial",
+          "Other"
+        ]
+      },
+      "preferred_date": {
+        "bsonType": "string",
+        "description": "Calendar date stored as YYYY-MM-DD text.",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+      },
+      "collection": {
+        "bsonType": "string",
+        "enum": [
+          "essentials",
+          "signature",
+          "atelier",
+          "undecided"
+        ]
+      },
+      "venue": {
+        "bsonType": "string"
+      },
+      "message": {
+        "bsonType": "string"
+      },
+      "consent": {
+        "bsonType": "bool",
+        "enum": [
+          true
+        ]
+      },
+      "payload_hash": {
+        "bsonType": "string"
+      },
+      "state": {
+        "bsonType": "string",
+        "enum": [
+          "awaiting_studio_confirmation"
+        ]
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "reference": {
+        "bsonType": "string"
+      },
+      "notification_state": {
+        "bsonType": "string",
+        "enum": [
+          "pending",
+          "not_configured",
+          "sending",
+          "sent",
+          "failed"
+        ]
+      },
+      "notification_attempted_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "studio_status": {
+        "bsonType": "string",
+        "enum": [
+          "new",
+          "in_review",
+          "archived"
+        ]
+      },
+      "studio_note": {
+        "bsonType": "string"
+      },
+      "studio_revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "studio_updated_at": {
+        "bsonType": [
+          "date",
+          "null"
+        ]
+      },
+      "studio_updated_by": {
+        "bsonType": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "_id",
+      "name",
+      "email",
+      "phone",
+      "event_type",
+      "preferred_date",
+      "collection",
+      "venue",
+      "message",
+      "consent",
+      "payload_hash",
+      "state",
+      "created_at",
+      "reference",
+      "notification_state"
+    ],
+    "additionalProperties": true
+  }
+}

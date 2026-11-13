@@ -1,0 +1,90 @@
+{
+  "$jsonSchema": {
+    "title": "client_access",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "client_id": {
+        "bsonType": "string"
+      },
+      "enquiry_id": {
+        "bsonType": "string"
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "granted_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "invitation_id": {
+        "bsonType": "string"
+      },
+      "revoked_at": {
+        "bsonType": [
+          "date",
+          "null"
+        ]
+      },
+      "revoked_by": {
+        "bsonType": [
+          "string",
+          "null"
+        ]
+      },
+      "access_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "conversation_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "history": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "action": {
+              "bsonType": "string"
+            },
+            "actor_id": {
+              "bsonType": "string"
+            },
+            "at": {
+              "bsonType": "date",
+              "description": "UTC instant stored as a BSON date, with millisecond precision."
+            },
+            "invitation_id": {
+              "bsonType": "string"
+            }
+          },
+          "required": [
+            "action",
+            "actor_id",
+            "at"
+          ],
+          "additionalProperties": true
+        }
+      }
+    },
+    "required": [
+      "_id",
+      "client_id",
+      "enquiry_id",
+      "created_at",
+      "granted_at",
+      "invitation_id"
+    ],
+    "additionalProperties": true
+  }
+}

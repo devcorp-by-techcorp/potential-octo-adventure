@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-10-07T22:33:36.430783+00:00",
+  "head": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+  "headTree": "3e212b16ab94df4ae705dbd17392d42e66de36c8",
+  "main": "5c2fe515b0eba4b0d89492305a21f9548c2dd853",
+  "preview": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+  "pr18": {
+    "merged": true,
+    "mergeCommit": "5c2fe515b0eba4b0d89492305a21f9548c2dd853",
+    "headAtMerge": "c8761e133c7fc9ae21c9e5bd8e766685200467b9"
+  },
+  "mergeBase": "c8761e133c7fc9ae21c9e5bd8e766685200467b9",
+  "divergence": "1\t4",
+  "diffPaths": [
+    "backend/deploy_server.py",
+    "backend/railway.toml",
+    "backend/tests/test_deploy_server.py",
+    "deploy/railway/backend.env.example",
+    "deploy/railway/preview.json",
+    "deploy/railway/web.env.example",
+    "docs/deployment.md",
+    "web/railway.toml"
+  ],
+  "ci": {
+    "run": 37443377221,
+    "head": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "event": "push",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "web (eslint + build + browser regressions)",
+        "id": 112202251063,
+        "conclusion": "success"
+      },
+      {
+        "name": "production web image and routing",
+        "id": 112202251329,
+        "conclusion": "success"
+      },
+      {
+        "name": "backend (ruff + pytest)",
+        "id": 112202251588,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "sources": {
+    "docs/development/long-running-session-plan.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+    "docs/development/next-session-prompt.md": "c8c3cbd4c10a604cebc1cd276e8982e405d2e3acb2a70f31a5e9212be5d76331",
+    "docs/development/readiness-assessment-2026-10-07.md": "ebef319b9b0cd3f5122749bd597661118a667e326a3020edeecbd0e448ac0c50",
+    "docs/development/design-system-source-manifest.json": "abbcc51be2b6f4c3e381134d14732da4192257e27cde37a3f4a4ec8ae48f292f",
+    "_ds/uploads/Studio-Suit_Project-Defintion.md": "1d665b698ae42a578b88fa631b443a857f9fc28ddfcaf364895313d379abe2e5",
+    "_ds/uploads/Studio-Suite_Universal-Responsive-Design-Requirements.md": "68c95f57bb5f386f9d730c8eb6baed3ea6eb5a2065f74ebc349d65309c03adec",
+    "_ds/uploads/Studio-Suite_Universal-Responsive-Viewport-Matrix.md": "c940be44c401f3b2a3a7da761c883bb0e98f5b641fdd32cb1013b88c60d15381"
+  }
+}

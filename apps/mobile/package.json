@@ -2,7 +2,7 @@
   "name": "@illuminate/mobile",
   "version": "0.1.0",
   "private": true,
-  "description": "Illuminate Studios — Studio Suite mobile app (Expo React Native, Expo Router).",
+  "description": "Illuminate Studios \u2014 Studio Suite mobile app (Expo React Native, Expo Router).",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
@@ -18,7 +18,7 @@
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo-google-fonts/jetbrains-mono": "^0.2.3",
     "@expo/metro-runtime": "~3.2.3",
-    "@illuminate/tokens": "*",
+    "@is/tokens": "workspace:*",
     "expo": "~51.0.0",
     "expo-clipboard": "~6.0.3",
     "expo-constants": "~16.0.0",

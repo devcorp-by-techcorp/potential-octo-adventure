@@ -1,0 +1,11 @@
+{
+  "instance": "3057f8b74e638fa8ff294283ee983038",
+  "sha256": {
+    "contract.md": "f46f07f6bcc7974082323b0443893aed130f8f10f7c42142324fc69e1d492aef",
+    "authority.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+    "host-probe-source.py": "aca5aa3964cb6b0606c35a2eacb5efd69ddc0aa6c74827fe85ea2c26ec5037bd",
+    "assessment.md": "ebef319b9b0cd3f5122749bd597661118a667e326a3020edeecbd0e448ac0c50",
+    "design-system-source-manifest.json": "abbcc51be2b6f4c3e381134d14732da4192257e27cde37a3f4a4ec8ae48f292f",
+    "base-ci.yml": "642722fe0d30bfeced712cbcec8f21d03fa148d6b557e9527580c46f63a6364d"
+  }
+}

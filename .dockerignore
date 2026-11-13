@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/build
+**/dist
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.env
+**/.env.*
+!**/.env.example
+test_reports
+design-system
+_ds
+apps
+infra

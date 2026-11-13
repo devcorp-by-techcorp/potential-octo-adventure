@@ -1,0 +1,9 @@
+{
+  "capturedAt": "2026-10-07T22:45:11.171813+00:00",
+  "sentinelPath": "/tmp/studio-suite-r0-review-20261008/host-sentinel",
+  "sentinelSha256": "a3abc8d597f66cc7cba4c4ad26cc9186132f5555568af667642eeb4713aeab8d",
+  "packetSha256": {
+    "authority.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+    "contract.md": "08590c5d1344f49a4188fbe2b55e14c7efb64fac5993920563cf46bf870f9d19"
+  }
+}

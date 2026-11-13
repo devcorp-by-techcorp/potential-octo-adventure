@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#eef1f4}
+button{font-family:'Inter',system-ui,sans-serif}
+a{color:#a8884f;text-decoration:none}
+a:hover{color:#826737}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(14,23,48,.22);border-radius:8px}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#eef1f4;color:#0e1730;font-family:'Inter',system-ui,sans-serif;padding:clamp(16px,3vw,32px)">
+  <div style="max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
+
+    <header style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;justify-content:space-between;border-bottom:1px solid #e1e7ed;padding-bottom:16px">
+      <div style="min-width:0">
+        <div style="text-transform:uppercase;letter-spacing:.2em;font-size:10px;font-weight:600;color:#a8884f">Studio Suite · functional acceptance gate</div>
+        <h1 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.05;margin:6px 0 4px">End-to-end interaction crawl</h1>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#5a6378;margin:0;line-height:1.5">Walks every surface at handset and desktop width, reads each control's bound React handler, clicks it, and records thrown errors, inert controls and unbound inputs.</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button onClick="{{ runPhone }}" style="text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;min-height:44px;padding:0 16px;border:1px solid #c4cdd6;background:#fff;color:#0e1730;border-radius:3px;cursor:pointer">Crawl · 390px</button>
+        <button onClick="{{ runDesktop }}" style="text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;min-height:44px;padding:0 16px;border:1px solid #c4cdd6;background:#fff;color:#0e1730;border-radius:3px;cursor:pointer">Crawl · 1280px</button>
+        <button onClick="{{ runNew }}" style="text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;min-height:44px;padding:0 16px;border:1px solid #a8884f;background:#fff;color:#826737;border-radius:3px;cursor:pointer">Crawl new surfaces</button>
+        <button onClick="{{ runAll }}" style="text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:600;min-height:44px;padding:0 18px;border:none;background:#a8884f;color:#fdf8ee;border-radius:3px;cursor:pointer">Run full crawl</button>
+      </div>
+    </header>
+
+    <section style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#0e1730">{{ summary }}</div>
+      <div style="flex:1"></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6378">{{ progress }}</div>
+    </section>
+
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start">
+      <section style="border:1px solid #e1e7ed;background:#fff;border-radius:4px;overflow:hidden;min-height:200px">
+        <div style="padding:10px 14px;border-bottom:1px solid #e1e7ed;text-transform:uppercase;letter-spacing:.18em;font-size:10px;font-weight:600;color:#a8884f">Findings</div>
+        <div style="max-height:70vh;overflow:auto">
+        <sc-for list="{{ log }}" as="l" hint-placeholder-count="4">
+          <div style="{{ l.style }}">{{ l.t }}</div>
+        </sc-for>
+        </div>
+      </section>
+
+      <section style="border:1px solid #e1e7ed;background:#fff;border-radius:4px;padding:10px">
+        <div style="text-transform:uppercase;letter-spacing:.18em;font-size:10px;font-weight:600;color:#a8884f;margin-bottom:8px">Surface under crawl</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6378;margin-bottom:8px">{{ frameLabel }}</div>
+        <div style="width:100%;height:420px;overflow:hidden;border:1px solid #e1e7ed;background:#fff;position:relative">
+          <iframe ref="{{ frameRef }}" title="crawl" style="{{ frameStyle }}"></iframe>
+        </div>
+      </section>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { log:[], busy:'', progress:'', width:390, frameLabel:'idle', done:0, total:0, fails:0 };
+    this.frameRef = (el)=>{ if(el) this.fr = el; };
+    // Viewport matrix checkpoints, widest-relevant handset → desktop.
+    this.WIDTHS = [320,360,375,390,412,428,768,834,1024,1280,1440,1920];
+    this.SURFACES = [
+      ['Public · marketing', '?view=marketing'],
+      ['Public · sign-in', '?view=signin'],
+      ['Client · overview', '?authed=1&role=client&route=home'],
+      ['Client · gallery', '?authed=1&role=client&route=gallery'],
+      ['Client · inbox', '?authed=1&role=client&route=inbox'],
+      ['Client · documents', '?authed=1&role=client&route=documents'],
+      ['Client · prints', '?authed=1&role=client&route=prints'],
+      ['Client · profile', '?authed=1&role=client&route=profile'],
+      ['Client · intake', '?authed=1&role=client&route=intake'],
+      ['Client · Luma', '?authed=1&role=client&route=luma'],
+      ['Admin · dashboard', '?authed=1&role=admin&route=dashboard'],
+      ['Admin · bookings', '?authed=1&role=admin&route=bookings'],
+      ['Admin · inquiries', '?authed=1&role=admin&route=inquiries'],
+      ['Admin · tracker', '?authed=1&role=admin&route=tracker'],
+      ['Admin · contacts', '?authed=1&role=admin&route=contacts'],
+      ['Admin · documents', '?authed=1&role=admin&route=doccenter'],
+      ['Admin · finance', '?authed=1&role=admin&route=finance'],
+      ['Admin · site content', '?authed=1&role=admin&route=content'],
+      ['Admin · Luma', '?authed=1&role=admin&route=luma'],
+      ['Admin · staff roster', '?authed=1&role=admin&route=staff'],
+      ['Admin · staff contracts', '?authed=1&role=admin&route=staff&seg=contracts'],
+      ['Admin · fin invoices', '?authed=1&role=admin&route=finance&fin=invoices'],
+      ['Admin · fin expenses', '?authed=1&role=admin&route=finance&fin=expenses'],
+      ['Admin · fin suppliers', '?authed=1&role=admin&route=finance&fin=suppliers'],
+      ['Admin · fin GST & BAS', '?authed=1&role=admin&route=finance&fin=bas'],
+      ['Admin · fin reports', '?authed=1&role=admin&route=finance&fin=reports'],
+      ['Admin · fin accounts', '?authed=1&role=admin&route=finance&fin=accounts'],
+    ];
+    // Surfaces added since the last full gate run — crawled on their own so a
+    // re-check after new work does not cost a 27-surface pass.
+    this.NEW_SURFACE_KEYS = ['Public · marketing','Admin · bookings','Admin · contacts'];
+  }
+  componentWillUnmount(){ this._cancel = true; if(this._running) try{ console.warn('E2E: crawl cancelled by unmount'); }catch(e){} }
+  // Background tabs clamp setTimeout and suspend rAF, which turned a 30-second
+  // surface crawl into a 20-minute one. MessageChannel ticks are not throttled,
+  // so every wait races a real timer against a tick budget; animations and
+  // transitions are frozen by freeze(), so elapsed time is not what we need —
+  // only a chance for React to flush and layout to settle.
+  ticks(n){ return new Promise(res=>{ let i=0; const mc=new MessageChannel();
+    mc.port1.onmessage=()=>{ if(++i>=n) res(); else mc.port2.postMessage(0); };
+    mc.port2.postMessage(0); }); }
+  wait(ms){ return new Promise(r=>{ let done=false; const f=()=>{ if(!done){done=true;r();} };
+    setTimeout(f, ms); this.ticks(Math.max(6, Math.min(40, Math.round(ms/8)))).then(f); }); }
+  settle(){ return new Promise(r=>{ let d=false; const f=()=>{ if(!d){d=true;r();} };
+    requestAnimationFrame(()=>requestAnimationFrame(f)); setTimeout(f,140); this.ticks(8).then(f); }); }
+  load(url){ return new Promise(r=>{ const fr=this.fr; if(!fr) return r(); let done=false;
+    fr.onload=()=>{ if(!done){done=true;r();} }; fr.src=url; setTimeout(()=>{ if(!done){done=true;r();} },6000); }); }
+
+  freeze(doc){
+    if(!doc || doc.getElementById('__e2e_freeze')) return;
+    const st=doc.createElement('style');
+    st.id='__e2e_freeze';
+    st.textContent='*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}';
+    (doc.head||doc.documentElement).appendChild(st);
+  }
+  // React 17+ attaches its prop bag to the host node under a hashed key.
+  reactProps(el){
+    for(const k in el){ if(k.indexOf('__reactProps$')===0) return el[k]; }
+    return null;
+  }
+  label(el){
+    const t=(el.getAttribute('aria-label')||el.getAttribute('title')||el.textContent||'').replace(/\s+/g,' ').trim();
+    return t ? t.slice(0,46) : '<'+el.tagName.toLowerCase()+' unlabelled>';
+  }
+  path(el){
+    const p=[]; let n=el;
+    while(n && n.parentElement){ p.push([...n.parentElement.children].indexOf(n)); n=n.parentElement; if(p.length>14) break; }
+    return p.join('.');
+  }
+  visible(el){
+    const r=el.getBoundingClientRect();
+    return r.width>1 && r.height>1;
+  }
+
+  // Waits until the app reports it has laid out for this width (data-vw on its
+  // root). ResizeObserver only delivers at a rendering opportunity, which a
+  // throttled preview grants slowly — polling the app's own signal is both
+  // faster when it is quick and honest when it never happens.
+  // A real (clamped, but real) timer: rendering opportunities — and with them
+  // ResizeObserver deliveries — only happen between real timer turns.
+  sleepReal(ms){ return new Promise(r=>setTimeout(r,ms)); }
+  async settleWidth(doc, lw){
+    const root=doc.querySelector('[data-vw]');
+    for(let i=0;i<12;i++){
+      const got=root && Number(root.getAttribute('data-vw'));
+      if(got && Math.abs(got-lw)<=17) { await this.settle(); return true; }
+      await this.sleepReal(60);
+    }
+    return false;
+  }
+  async crawlSurface(label, q, w, widths){
+    const out={label, w, controls:0, clicked:0, unwired:[], threw:[], inert:[], inputs:0, unbound:[], small:[], collapsed:[], empty:false};
+    this.setState({frameLabel:label+' · '+w+'px'});
+    if(this.fr){ this.fr.style.width=w+'px'; this.fr.style.height=(w<700?844:860)+'px';
+      this.fr.style.transform='scale('+Math.min(1,290/w)+')'; }
+    // nopersist: the crawl's synthetic clicks must not land in stored studio data.
+    await this.load('StudioSuite-Mobile.dc.html'+q+'&nopersist=1');
+    await this.wait(500);
+    const doc=this.fr && this.fr.contentDocument, win=this.fr && this.fr.contentWindow;
+    if(!doc || !doc.body){ out.threw.push('frame never loaded'); return out; }
+    this.freeze(doc);
+    const errs=[];
+    win.addEventListener('error', e=>errs.push('uncaught · '+(e.message||e.type)));
+    win.addEventListener('unhandledrejection', e=>errs.push('promise · '+((e.reason&&e.reason.message)||e.reason)));
+    const ce=win.console.error;
+    win.console.error=function(){ errs.push('console.error · '+[].slice.call(arguments).map(String).join(' ').slice(0,160)); ce.apply(win.console, arguments); };
+
+    const root=doc.body.firstElementChild;
+    if(!root || root.querySelectorAll('*').length < 12){ out.empty=true; return out; }
+
+    // ---- layout: one frame, resized through the viewport matrix ----
+    // Sequential by design: the grid probe's 19 simultaneous frames starve each
+    // other and report "never loaded" as though it were a layout defect.
+    out.layout=[];
+    // An empty width list skips the matrix: ResizeObserver deliveries need a real
+    // rendering opportunity, and a background/throttled preview grants those about
+    // once every ten seconds, which makes a 12-width sweep a quarter-hour job.
+    // Layout is measured by StudioSuite-Matrix-Probe.dc.html with the tab focused.
+    const LW = widths===undefined ? this.WIDTHS : widths;
+    if(!LW.length) out.layout.push('layout matrix skipped — run the matrix probe with the tab focused');
+    for(const lw of LW){
+      // Guard: a resize that lands mid-remount can leave doc/win detached.
+      if(!this.fr || !this.fr.contentWindow) { out.threw.push('frame detached at '+lw+'px'); break; }
+      this.fr.style.width=lw+'px';
+      const laid=await this.settleWidth(doc, lw);
+      if(!laid){ out.layout.push(lw+'px · not measured — app never reported this width'); continue; }
+      await this.settle();
+      const over=Math.max(doc.documentElement.scrollWidth, doc.body.scrollWidth)-lw;
+      let clipped=0; const off=[];
+      const all=doc.querySelectorAll('*');
+      for(let i=0;i<all.length;i++){
+        const el=all[i], dd=el.scrollWidth-el.clientWidth;
+        // 4px slack: tracked uppercase labels carry a trailing letter-space that
+        // lands in scrollWidth without anything being visually cut.
+        if(dd<=4) continue;
+        if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT') continue;
+        if(el.clientWidth===0||el.clientHeight===0) continue; // password-manager 0×0 injections
+        if(!el.firstChild) continue; // empty decorative box — inherited letter-spacing, nothing to clip
+        const ox=win.getComputedStyle(el).overflowX;
+        if(ox==='auto'||ox==='scroll'||ox==='hidden') continue;
+        // Content held by a scrolling ancestor is reachable, not clipped: a grid rail
+        // inside an overflow-x:auto strip legitimately measures wider than its box.
+        let anc=el.parentElement, scrolled=false;
+        while(anc && anc!==doc.body){ const ao=win.getComputedStyle(anc).overflowX;
+          if(ao==='auto'||ao==='scroll'){ scrolled=true; break; }
+          if(ao==='hidden') break;
+          anc=anc.parentElement; }
+        if(scrolled) continue;
+        clipped++;
+        if(off.length<3) off.push(el.tagName.toLowerCase()+'+'+dd+'px'+(el.textContent?' “'+el.textContent.trim().slice(0,18)+'”':''));
+      }
+      if(over>1||clipped>0) out.layout.push(lw+'px · overflow '+Math.round(over)+'px · '+clipped+' clipped ['+off.join(' ')+']');
+    }
+    this.fr.style.width=w+'px';
+    await this.settleWidth(doc, w);
+    await this.settle();
+
+    // ---- inputs: are they bound to state? ----
+    const fields=[...doc.querySelectorAll('input,textarea')].filter(el=>this.visible(el) && el.type!=='checkbox' && el.type!=='radio' && el.type!=='range');
+    for(const el of fields){
+      out.inputs++;
+      const props=this.reactProps(el);
+      if(!props || (props.onChange===undefined && props.onInput===undefined && !el.readOnly && !el.disabled)){
+        out.unbound.push(this.label(el.closest('label')||el)+' · no onChange');
+        continue;
+      }
+      if(el.readOnly || el.disabled) continue;
+      const proto = el.tagName==='TEXTAREA' ? win.HTMLTextAreaElement.prototype : win.HTMLInputElement.prototype;
+      const setter = Object.getOwnPropertyDescriptor(proto,'value').set;
+      const probe = el.type==='email' ? 'probe@e2e.test' : 'e2e probe';
+      try{
+        setter.call(el, probe);
+        el.dispatchEvent(new win.Event('input',{bubbles:true}));
+        await this.settle();
+        if(props.value!==undefined && el.value!==probe && el.value!=='') out.unbound.push(this.label(el)+' · value not held ("'+el.value.slice(0,18)+'")');
+      }catch(e){ out.unbound.push(this.label(el)+' · threw · '+(e.message||e)); }
+    }
+
+    // ---- controls: wired? clickable without throwing? does anything change? ----
+    // Tap size is re-measured over EVERY visible control after each click, not just
+    // the ones the walk reaches: a chip rail revealed by a later segment click would
+    // otherwise never be sized.
+    const smallSeen=new Set();
+    const sizeAll=()=>{
+      doc.querySelectorAll('button,[role=button],input,textarea,a[href]').forEach(el=>{
+        const r=el.getBoundingClientRect();
+        if(r.width<2||r.height<2) return;
+        if(r.height>=43.5 && r.width>=43.5) return;
+        // WCAG 2.5.8 exempts a link inside a sentence of running text: it is a
+        // word, not a target, and padding it to 44px would wreck the line box.
+        // Anchors laid out as blocks or flex boxes are still measured.
+        if(el.tagName==='A' && win.getComputedStyle(el).display==='inline') return;
+        const k=this.label(el)+'·'+Math.round(r.width)+'×'+Math.round(r.height);
+        if(smallSeen.has(k)) return;
+        smallSeen.add(k); out.small.push(k.replace('·',' · '));
+      });
+    };
+    // A scroll container is a flex item with min-height:auto, which resolves to 0
+    // instead of min-content — inside a height-constrained column it can shrink
+    // past its content to nothing. Tap-target and wiring checks both read such a
+    // grid as clean, so the collapse has to be measured on its own.
+    const collapsedSeen=new Set();
+    const collapseAll=()=>{
+      doc.querySelectorAll('*').forEach(el=>{
+        const ov=win.getComputedStyle(el);
+        if(ov.overflowY!=='auto'&&ov.overflowY!=='scroll'&&ov.overflowX!=='auto'&&ov.overflowX!=='scroll') return;
+        if(el.clientHeight>=8 || el.scrollHeight<40) return;
+        if(!el.getBoundingClientRect().width) return;
+        const k=(el.className||el.tagName)+' · '+el.clientHeight+'px box holding '+el.scrollHeight+'px of content';
+        if(collapsedSeen.has(k)) return;
+        collapsedSeen.add(k); out.collapsed.push(k);
+      });
+    };
+    sizeAll(); collapseAll();
+    const seen=new Set();
+    let budget=90;
+    while(budget-- > 0){
+      if(this._cancel) return out;
+      const all=[...doc.querySelectorAll('button,[role=button]')].filter(el=>this.visible(el));
+      const next=all.find(el=>!seen.has(this.path(el)+'|'+this.label(el)));
+      if(!next) break;
+      const key=this.path(next)+'|'+this.label(next);
+      seen.add(key);
+      const lbl=this.label(next);
+      out.controls++;
+      const props=this.reactProps(next);
+      const wired = props && (props.onClick||props.onPointerDown||props.onMouseDown||props.onChange||props.disabled||props.type==='submit');
+      if(!wired){ out.unwired.push(lbl); continue; }
+      if(props.disabled) continue;
+      if(/sign out/i.test(lbl)) continue;
+      const before=doc.body.innerHTML.length;
+      const errBefore=errs.length;
+      out.clicked++;
+      try{ next.click(); }catch(e){ out.threw.push(lbl+' · '+(e.message||e)); continue; }
+      await this.settle();
+      sizeAll(); collapseAll();
+      if(errs.length>errBefore) out.threw.push(lbl+' · '+errs.slice(errBefore).join(' | ').slice(0,200));
+      const after=doc.body.innerHTML.length;
+      if(after===before && out.inert.length<10){
+        // a toggle that lands back on the same markup is legitimate; only flag
+        // controls whose entire subtree is byte-identical AND that own no state role
+        out.inert.push(lbl);
+      }
+    }
+    if(errs.length && !out.threw.length) out.threw.push('load-time · '+errs.slice(0,3).join(' | ').slice(0,200));
+    return out;
+  }
+
+  push(t, ok){ this.setState(s=>({log:s.log.concat([{t,ok}])})); }
+
+  async run(widths, only, layoutWidths){
+    if(this._running) return;
+    this._running=true; this._cancel=false;
+    const surf = only ? this.SURFACES.filter(s=>only.indexOf(s[0])>=0) : this.SURFACES;
+    const total=surf.length*widths.length;
+    this.setState({log:[],fails:0,total,done:0,busy:'running'});
+    let fails=0, done=0;
+    const started=Date.now();
+    for(const w of widths){
+      for(const [label,q] of surf){
+        if(this._cancel){ this.push('CANCELLED · run stopped after '+done+' surface runs', false); this._running=false; return; }
+        let r;
+        try{
+          r=await this.crawlSurface(label,q,w,layoutWidths);
+        }catch(e){
+          // A throw inside the crawl used to freeze the run with no output; report it.
+          this.push('FAIL  '+label+' @'+w+'px · crawler threw · '+((e&&e.message)||e), false);
+          fails++; done++;
+          this.setState({done, fails, progress:done+'/'+total+' surfaces · '+Math.round((Date.now()-started)/1000)+'s'});
+          continue;
+        }
+        done++;
+        const bad=[];
+        if(r.empty) bad.push('SURFACE RENDERED EMPTY');
+        r.threw.forEach(t=>bad.push('error · '+t));
+        r.unwired.forEach(t=>bad.push('unwired control · '+t));
+        r.unbound.forEach(t=>bad.push('unbound field · '+t));
+        r.inert.forEach(t=>bad.push('inert click (no DOM change) · '+t));
+        r.small.forEach(t=>bad.push('sub-44px target · '+t));
+        (r.collapsed||[]).forEach(t=>bad.push('collapsed scroll container · '+t));
+        (r.layout||[]).filter(t=>!/^layout matrix skipped/.test(t)).forEach(t=>bad.push('layout · '+t));
+        fails+=bad.filter(b=>!/^inert/.test(b)).length;
+        this.push((bad.length?'FAIL  ':'PASS  ')+label+' @'+w+'px · '+r.controls+' controls, '+r.clicked+' clicked, '+r.inputs+' fields', !bad.length);
+        bad.forEach(b=>this.push('        '+b, false));
+        this.setState({done, fails, progress:done+'/'+total+' surfaces · '+Math.round((Date.now()-started)/1000)+'s'});
+      }
+    }
+    this.setState({busy:''});
+    this.push((fails?'GATE FAILED · ':'GATE PASSED · ')+fails+' blocking findings across '+total+' surface runs', !fails);
+    this._running=false;
+  }
+
+  renderVals(){
+    const {log,done,total,fails,frameLabel,progress,width}=this.state;
+    return {
+      log: log.map(l=>({t:l.t, style:'padding:7px 12px;border-bottom:1px solid #f1f4f7;font-family:\'JetBrains Mono\',monospace;font-size:11.5px;white-space:pre-wrap;line-height:1.5;color:'+(l.ok?'#0e1730':'#a8564a')})),
+      summary: total? (done+' / '+total+' surface runs · '+fails+' blocking findings') : 'idle — choose a crawl',
+      progress, frameLabel,
+      frameStyle:'width:'+width+'px;height:844px;border:0;transform-origin:0 0;background:#fff',
+      frameRef:this.frameRef,
+      runPhone:()=>this.run([390]),
+      runDesktop:()=>this.run([1280]),
+      runAll:()=>this.run([390,1280]),
+      runNew:()=>this.run([390,1280], this.NEW_SURFACE_KEYS, []),
+    };
+  }
+}
+</script>
+</body>
+</html>

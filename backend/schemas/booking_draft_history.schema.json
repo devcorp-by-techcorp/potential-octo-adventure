@@ -1,0 +1,102 @@
+{
+  "$jsonSchema": {
+    "title": "booking_draft_history",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "draft_id": {
+        "bsonType": "string"
+      },
+      "revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "actor_id": {
+        "bsonType": "string"
+      },
+      "at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "action": {
+        "bsonType": "string",
+        "enum": [
+          "created",
+          "reschedule",
+          "cancel"
+        ]
+      },
+      "snapshot": {
+        "bsonType": "object",
+        "properties": {
+          "enquiry_id": {
+            "bsonType": "string"
+          },
+          "reference": {
+            "bsonType": "string"
+          },
+          "state": {
+            "bsonType": "string",
+            "enum": [
+              "draft",
+              "cancelled"
+            ]
+          },
+          "starts_at": {
+            "bsonType": "date",
+            "description": "UTC instant stored as a BSON date, with millisecond precision."
+          },
+          "ends_at": {
+            "bsonType": "date",
+            "description": "UTC instant stored as a BSON date, with millisecond precision."
+          },
+          "timezone": {
+            "bsonType": "string"
+          },
+          "revision": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 0
+          },
+          "created_at": {
+            "bsonType": "date",
+            "description": "UTC instant stored as a BSON date, with millisecond precision."
+          },
+          "updated_at": {
+            "bsonType": "date",
+            "description": "UTC instant stored as a BSON date, with millisecond precision."
+          }
+        },
+        "required": [
+          "enquiry_id",
+          "reference",
+          "state",
+          "starts_at",
+          "ends_at",
+          "timezone",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "required": [
+      "_id",
+      "draft_id",
+      "revision",
+      "actor_id",
+      "at",
+      "action",
+      "snapshot"
+    ],
+    "additionalProperties": true
+  }
+}

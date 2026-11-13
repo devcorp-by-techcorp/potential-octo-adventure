@@ -1,0 +1,19 @@
+unittest exit 0
+est_reconciliation_failed_bytes_and_repaired_gate_reuse_denied (test_supervisor.SupervisorTests.test_reconciliation_failed_bytes_and_repaired_gate_reuse_denied) ... ok
+test_reconciliation_journal_failure_association_revalidated_on_reload (test_supervisor.SupervisorTests.test_reconciliation_journal_failure_association_revalidated_on_reload) ... ok
+test_reconciliation_rejects_reused_arbitrary_untrusted_and_wrong_bound_evidence (test_supervisor.SupervisorTests.test_reconciliation_rejects_reused_arbitrary_untrusted_and_wrong_bound_evidence) ... ok
+test_recovered_repaired_failure_matches_live_state (test_supervisor.SupervisorTests.test_recovered_repaired_failure_matches_live_state) ... ok
+test_recovery_revalidates_committed_receipts_not_only_hash_chain (test_supervisor.SupervisorTests.test_recovery_revalidates_committed_receipts_not_only_hash_chain) ... ok
+test_stale_journal_snapshot_cannot_append_after_restart (test_supervisor.SupervisorTests.test_stale_journal_snapshot_cannot_append_after_restart) ... ok
+test_tested_rejects_generic_true_and_missing_duplicate_or_substituted_commands (test_supervisor.SupervisorTests.test_tested_rejects_generic_true_and_missing_duplicate_or_substituted_commands) ... ok
+test_unittest_contradictory_multiple_malformed_error_summaries_rejected (test_supervisor.SupervisorTests.test_unittest_contradictory_multiple_malformed_error_summaries_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 58 tests in 0.838s
+
+OK
+
+diffcheck exit 128
+fatal: not a git repository: /home/techcorp2024/studio-suite_v2/.git/worktrees/studio-suite-r0-candidate-20261008
+
+execution-contract.md e8472eba2f0ea0dc6ab9bda2ab52011540841b8e6763c467eec80809345e0337

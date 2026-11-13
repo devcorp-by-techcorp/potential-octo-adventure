@@ -1,0 +1,19 @@
+{
+  "capturedAt": "2026-10-07T22:33:36.422444+00:00",
+  "status": " M README.md\n M docs/development/autonomous-session-plan.md\n M docs/development/decisions.md\n M docs/development/design-system-compliance-audit.md\n M docs/development/feature-status.md\n M docs/development/next-session-prompt.md\n M docs/development/session-handoff.md\n M goals/GOALS.md\n?? docs/development/history/autonomous-session-plan-pre-2026-10-07.md\n?? docs/development/history/next-session-prompt-pre-2026-10-07.md\n?? docs/development/long-running-session-plan.md\n?? docs/development/readiness-assessment-2026-10-07.md\n?? test_reports/2026-10-07-readiness-and-autonomous-plan.md\n",
+  "sha256": {
+    "README.md": "2257a1df215f6892d44c495153386f48b203615712488e0b5dabfe7698bfaf48",
+    "docs/development/autonomous-session-plan.md": "5ad7a6d45c76c3a5bd629f6b6663f57b6b8a09b57f5c0a2d1b7e44f57dabb6be",
+    "docs/development/decisions.md": "28e0d86ed7cc4c6a95063d035d62aeeabb1d711538765fedfbb9b8f107c5e7f1",
+    "docs/development/design-system-compliance-audit.md": "9beac057b1806829209d0534d976282ac6d83a45a934212af64577f5e7741eea",
+    "docs/development/feature-status.md": "b5ae5bed01699bd5ae3983b49535cc02738b7379108a13adc945683921de046f",
+    "docs/development/next-session-prompt.md": "c8c3cbd4c10a604cebc1cd276e8982e405d2e3acb2a70f31a5e9212be5d76331",
+    "docs/development/session-handoff.md": "b8dab3331637d13b63f4285e2546c82ff7ecf683f81644104c63a763a940c173",
+    "goals/GOALS.md": "012811c29a03bc34b60c88257916adf02b10f6c28109d1102e48368b57d9a654",
+    "docs/development/history/autonomous-session-plan-pre-2026-10-07.md": "abab02c8d2d0f6349080caf7a9cd73d68c613e351d86735bc2f183d561cc5af7",
+    "docs/development/history/next-session-prompt-pre-2026-10-07.md": "6c6873040f98c63c0785108c1ba8e61c85117dce9a43f5721c0253d4467f0697",
+    "docs/development/long-running-session-plan.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+    "docs/development/readiness-assessment-2026-10-07.md": "ebef319b9b0cd3f5122749bd597661118a667e326a3020edeecbd0e448ac0c50",
+    "test_reports/2026-10-07-readiness-and-autonomous-plan.md": "721f07ff2331686e7210643437fad9ba77f359a728d95cf8395176d72749c2ff"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$jsonSchema": {
+    "title": "booking_drafts",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "enquiry_id": {
+        "bsonType": "string"
+      },
+      "reference": {
+        "bsonType": "string"
+      },
+      "state": {
+        "bsonType": "string",
+        "enum": [
+          "draft",
+          "cancelled"
+        ]
+      },
+      "starts_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "ends_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "timezone": {
+        "bsonType": "string"
+      },
+      "revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "updated_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      }
+    },
+    "required": [
+      "_id",
+      "enquiry_id",
+      "reference",
+      "state",
+      "starts_at",
+      "ends_at",
+      "timezone",
+      "revision",
+      "created_at",
+      "updated_at"
+    ],
+    "additionalProperties": true
+  }
+}

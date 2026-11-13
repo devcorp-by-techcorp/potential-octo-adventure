@@ -1,0 +1,96 @@
+{
+  "verdict": "BLOCKED",
+  "contract_id": "R0 preparatory bootstrap qualification",
+  "instance": "bdf207c1f98583d616593287502eb012",
+  "thread_id": "01a118a1-c8c4-7331-b9fe-2221447c208c",
+  "prior_gate_state": {
+    "R0": "PREPARATION_ONLY",
+    "R0_A": "baseline evidence collected",
+    "R0_B_host": "qualification PASS verified by live memory readback",
+    "GREEN": false,
+    "RESET_CONFIRMED": false
+  },
+  "BQ": [
+    {
+      "id": "BQ-1",
+      "disposition": "pass",
+      "evidence": "Lifecycle receipt shows completed disposable controller turn, completed contextCompaction item and completed compaction turn on prior thread 01a118a0-f640-7511-8b46-b35c126ba722."
+    },
+    {
+      "id": "BQ-2",
+      "disposition": "pass",
+      "evidence": "Host receipt identifies a distinct fresh thread, empty initial turns and effective gpt-6.1-sol/medium. Supplied initial conversation contains no predecessor messages or compacted items."
+    },
+    {
+      "id": "BQ-3",
+      "disposition": "fail",
+      "evidence": "First Empirical probe returned invalid-request. Successful live retrieval occurred only after checkpoint and source reads; required retrieval ordering was not satisfied.",
+      "subchecks": {
+        "workspace": "studio_suite_v2",
+        "policy_stopOnMemoryFailure": true,
+        "required_records_read_back": [
+          "6ac6d00d6705457911c73200",
+          "6ac6c8f46705457911c723b2",
+          "6ac6c9446705457911c724ab",
+          "6ac6c94b6705457911c724fa"
+        ]
+      }
+    },
+    {
+      "id": "BQ-4",
+      "disposition": "pass",
+      "evidence": "Independent local SHA-256 checks match frozen manifest and live-source receipt. Current branch, HEAD, tree, remote refs, merged PR and all three exact-head CI jobs agree with checkpoint."
+    },
+    {
+      "id": "BQ-5",
+      "disposition": "pass",
+      "evidence": "This receipt binds current thread, memory, source and Git/CI facts, retains PREPARATION_ONLY and denies reset/product advancement."
+    },
+    {
+      "id": "BQ-6",
+      "disposition": "unverified",
+      "evidence": "No distinct fresh negative-bootstrap result was available. Presence of a negative-checkpoint file does not prove execution or rejection."
+    }
+  ],
+  "hashes": {
+    "authority_sha256": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+    "bootstrap_contract_sha256": "230f87cd0b47aa5c4fa11e23bdd6d342a8ef506017233c9a45c122d9fd6a7cd1",
+    "checkpoint_sha256": "d19d6659f58e2c8b87c94912b4fe7faa56cc7e7ddb696fd289c7249c82febdb1",
+    "manifest_sha256": "361ad7d41edf8d8ac2608a43eb3fecfd5e4911e3bd32a466a32049e64e5eec07"
+  },
+  "git_ci": {
+    "branch": "codex/prerequisite-reconciliation-20261006",
+    "head": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "tree": "3e212b16ab94df4ae705dbd17392d42e66de36c8",
+    "remote_preview": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "remote_main": "5c2fe515b0eba4b0d89492305a21f9548c2dd853",
+    "pr_18": "merged",
+    "run_37443377221": "completed/success",
+    "required_jobs": {
+      "112202251063": "completed/success",
+      "112202251329": "completed/success",
+      "112202251588": "completed/success"
+    }
+  },
+  "evidence_receipt_sha256": {
+    "empirical": "a88377748000425333f559cfd9db32750576a560c496d7e48bb957613b59958a",
+    "git_ci": "b747ce001686738f3757ef437c5a7ceb2b6838e93b0327120e47fa29e751bd22",
+    "source_lifecycle": "2116e75bda19de285e23b5857adef479c7862fef77943819f7a5d8396fa1e9d9"
+  },
+  "next_contract_id": "R0 preparatory bootstrap qualification",
+  "exact_next_scope": "Repeat fresh read-only bootstrap with successful live Empirical retrieval before any file/source reads, and obtain the distinct fresh negative authority-hash mismatch rejection.",
+  "after_qualification_only": "Freeze the full R0 supervisor/gate contract and obtain its fresh source-fidelity scope audit before implementation.",
+  "advancement_permission": {
+    "phase_advancement": false,
+    "RESET_CONFIRMED": false,
+    "product_activation": false,
+    "supervisor_gate_implementation": false,
+    "read_only_qualification_retry": true
+  },
+  "limits": [
+    "Git/CI, live memory and lifecycle facts were obtained through fixed read-only host callbacks.",
+    "Application-head CI is not final R0 integration-head CI.",
+    "No application changes, memory writes, remote writes or product phases were performed.",
+    "Full R0 scope, implementation, outcome/records reviews, publication and final gate/reset remain required."
+  ]
+}

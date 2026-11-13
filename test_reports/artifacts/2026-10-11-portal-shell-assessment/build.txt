@@ -1,0 +1,32 @@
+
+> studio-suite@ build /workspace/studio-suite_v2
+> pnpm build:tokens && pnpm -F studio-suite-web build
+
+$ pnpm -F @is/tokens build
+$ tsup && node scripts/build-css.mjs
+CLI Building entry: src/index.native.ts, src/index.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v8.5.1
+CLI Using tsup config: /workspace/studio-suite_v2/packages/tokens/tsup.config.ts
+CLI Target: es2020
+CLI Cleaning output folder
+ESM Build start
+ESM dist/index.js        10.61 KB
+ESM dist/index.native.js 10.25 KB
+ESM ⚡️ Build success in 20ms
+DTS Build start
+DTS ⚡️ Build success in 1612ms
+DTS dist/index.native.d.ts           1.03 KB
+DTS dist/index.d.ts                  1.25 KB
+DTS dist/compatibility-BnnziQpv.d.ts 12.54 KB
+build-css: wrote dist/css/index.css
+$ vite build
+vite v6.4.3 building for production...
+transforming...
+✓ 1669 modules transformed.
+rendering chunks...
+computing gzip size...
+build/index.html                   0.82 kB │ gzip:   0.46 kB
+build/assets/index-CZDgTfc3.css   54.91 kB │ gzip:  11.64 kB
+build/assets/index-0g2vN5bt.js   362.60 kB │ gzip: 108.68 kB
+✓ built in 3.48s

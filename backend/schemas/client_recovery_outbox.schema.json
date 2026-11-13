@@ -1,0 +1,70 @@
+{
+  "$jsonSchema": {
+    "title": "client_recovery_outbox",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "token_hash": {
+        "bsonType": "string"
+      },
+      "identity_id": {
+        "bsonType": "string"
+      },
+      "auth_version": {
+        "bsonType": "string"
+      },
+      "ciphertext": {
+        "bsonType": "string"
+      },
+      "state": {
+        "bsonType": "string",
+        "enum": [
+          "pending",
+          "sending",
+          "failed",
+          "sent",
+          "cancelled"
+        ]
+      },
+      "attempts": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "expires_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "claim": {
+        "bsonType": "string"
+      },
+      "attempted_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "sent_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      }
+    },
+    "required": [
+      "_id",
+      "token_hash",
+      "identity_id",
+      "auth_version",
+      "state",
+      "attempts",
+      "created_at",
+      "expires_at"
+    ],
+    "additionalProperties": true
+  }
+}

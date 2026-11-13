@@ -1,0 +1,1456 @@
+{
+  "schema_version": 1,
+  "source": "_ds (local source of truth)",
+  "files": [
+    {
+      "path": "_ds/Archive.zip",
+      "bytes": 2408263,
+      "sha256": "2241368d4c584068125f30f82a82ed1d03d11a396b9923d2d21b1eb6f0187bc0",
+      "role": "preserved source archive"
+    },
+    {
+      "path": "_ds/Mobile-first app design system build.zip",
+      "bytes": 2672883,
+      "sha256": "bdb2f15fe2179ed1b85649367cfeec79af4068f4d7816875eb0709eab75a77cf",
+      "role": "preserved source archive"
+    },
+    {
+      "path": "_ds/StudioSuite-E2E.dc.html",
+      "bytes": 22554,
+      "sha256": "27bd35dfd5f23d299f628bf2b832df2608a9f1c76286282cd939dce67530e723",
+      "role": "prototype verification; not shipped-app evidence"
+    },
+    {
+      "path": "_ds/StudioSuite-Matrix-Probe.dc.html",
+      "bytes": 20845,
+      "sha256": "139b300d6bf38ea1ba34e6860c73c0f37b4d9274f68d9061796652da9dac9eb5",
+      "role": "prototype verification; not shipped-app evidence"
+    },
+    {
+      "path": "_ds/StudioSuite-Mobile.dc.html",
+      "bytes": 520894,
+      "sha256": "d97ba5ca4ce09259f371fa660165654a5b853d6de7ee4fef759c96d5fa7bb710",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/StudioSuite-Parity-Audit.dc.html",
+      "bytes": 21247,
+      "sha256": "5bbb5b1172aab20b62d9b82f9824005f3cd2251acc99cdf70a23fe28dd2bcb57",
+      "role": "prototype verification; not shipped-app evidence"
+    },
+    {
+      "path": "_ds/apps/mobile/README.md",
+      "bytes": 10678,
+      "sha256": "51f26549ccb00a412107689445821bba0fe0f80f60a437ed39fad308f83e3669",
+      "role": "requirements or historical handoff"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/_layout.tsx",
+      "bytes": 1439,
+      "sha256": "cb72598d52010b62693db330d7d08838bde5c09b307ca23f45e0f85fc09b2256",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/bookings.tsx",
+      "bytes": 3927,
+      "sha256": "afdbcce83e29cf8823f8339414ea2c0149448dd63327aa6b5f707869528e0a81",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/contacts.tsx",
+      "bytes": 4667,
+      "sha256": "0968dacb583596646af708afcc4ff128ac83c55d35323edec3f3b6c4a48c21a9",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/content.tsx",
+      "bytes": 8663,
+      "sha256": "853ed3646624a667e58516d4d098b3224ad2ae52b785ef3caa8c2d087fdcd135",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/dashboard.tsx",
+      "bytes": 7269,
+      "sha256": "5c1d9942e6c6ad346873d5bf23089fdb75a7f89707eeabd2a261670845f6acba",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/documents.tsx",
+      "bytes": 6136,
+      "sha256": "baa8a13c9a273841c225c01a45aa7434031c1417d811b5ee340d45361cd9058f",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/finance.tsx",
+      "bytes": 11781,
+      "sha256": "4fe04eebaf0f3eedce965ca137870942127d55ab063a3f1182b20932bdbbcda8",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/inquiries.tsx",
+      "bytes": 5815,
+      "sha256": "92c0cf788358b5e39b05f4c2e2af7e93602b9aa3a1a1e8bc51ab6b02aac28b2a",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/staff.tsx",
+      "bytes": 20681,
+      "sha256": "2a2ffe0e9c9d580c19f6561d092c609200b2aa8a62788d5387691f418528ea4d",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(admin)/tracker.tsx",
+      "bytes": 6130,
+      "sha256": "0230d34b79444ad5825930c9eaf942e642c95177565b6f16d9219ad9074069d3",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/_layout.tsx",
+      "bytes": 703,
+      "sha256": "f222d719cfa0c175e8c63fba98af51f17efc57f483afc75bb7c02873fd52358d",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/documents.tsx",
+      "bytes": 2764,
+      "sha256": "c7dbc9fa9e483c60b9090ab13a28b1099dae815e15d33a9d674f866f9496eadd",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/gallery.tsx",
+      "bytes": 8876,
+      "sha256": "72852b09a8db61b80ec4d61aa7c107e673a68045cd08c24386bf70267f1bc251",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/home.tsx",
+      "bytes": 5106,
+      "sha256": "cf37c07d6cc90971db579680e3e4458774678a880c17ccdb01c3b9581558faa5",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/inbox.tsx",
+      "bytes": 9249,
+      "sha256": "a83a2ac5ba43da7a58db28b5966d22554b88d746ffba2eb1202d0f0bf8b7d58c",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/intake.tsx",
+      "bytes": 126,
+      "sha256": "f9ab354d8536d316033ad42e1ccecdbc9d508ef1ed0dc10d623826b951be3f6b",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/prints.tsx",
+      "bytes": 4531,
+      "sha256": "e0d290571d541188c7b697f426bc66ddf0fa36d70efb6f270c3c8489bd68b77f",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/(client)/profile.tsx",
+      "bytes": 2769,
+      "sha256": "7b121c6d3eb3c04e2d97ba6a5c6c4bea8b0f6957b49783135ee3d350c47c6885",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/+not-found.tsx",
+      "bytes": 685,
+      "sha256": "7f9cd46646e588922eeff34c492fe2a186b98e5bc4ff9540178139e9bae301b2",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/_layout.tsx",
+      "bytes": 2016,
+      "sha256": "1057deec0762972f5b54461e70c1f029016e8e625930b9dcb33bdf33f02d4417",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/index.tsx",
+      "bytes": 477,
+      "sha256": "55f1e2e502a72d82f4475410bafacf52f26ccc05ddb540f1856c32269504241f",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/marketing.tsx",
+      "bytes": 12103,
+      "sha256": "fd5bb430caa02c5b096b62beddf276a589a1b287cd414180d08ee43e501389c7",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app/sign-in.tsx",
+      "bytes": 5231,
+      "sha256": "e5be29b0a2babaaed7e2e88edb8ad24b2607676df1ecb3735babe1e55e3c8996",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/app.json",
+      "bytes": 595,
+      "sha256": "5c6da9950f4347f0e4efd3c531143d29ecf3abd853a99f15b7a1a42ec015755b",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/assets/images/lens-dark.png",
+      "bytes": 127583,
+      "sha256": "49e29f422e20a5c00e8abe3275366783133f32c41f385179f3acf06303a243f1",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/apps/mobile/assets/images/lens-gold.png",
+      "bytes": 161086,
+      "sha256": "462bb86ad9e21737ea011a8d1bfbfa11db7f63f9c5dd110fc2a1836a6d5ca69c",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/apps/mobile/assets/images/logo-banner-dark.png",
+      "bytes": 365138,
+      "sha256": "651b9539adc26ccc7aaf17ba394986e51a7a1cf055cfab3f62b111fced4158a1",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/apps/mobile/assets/images/logo-banner-gold.png",
+      "bytes": 461173,
+      "sha256": "345c3cbdc6a26162ecf91378fc59d68de5e0c80d1d7976cade99145e3c436081",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/apps/mobile/babel.config.js",
+      "bytes": 182,
+      "sha256": "e0b64e5d2c40dabcefff37bdf783cbaa8ee010065b29aa8478774aac483db82b",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/expo-env.d.ts",
+      "bytes": 44,
+      "sha256": "64070f077511ee694d2f8756c9314284cd056f208443b294777c4a72a51855f3",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/metro.config.js",
+      "bytes": 601,
+      "sha256": "cb1e281f49541a20e3f8004e5bf8dfd71f66f4fb627154a292f8a182d45f060e",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/package.json",
+      "bytes": 1237,
+      "sha256": "519f57584578f4767931271b89f072fa66a47b83a4e015fe3cbfbd7ea46a1421",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/AppShell.tsx",
+      "bytes": 13588,
+      "sha256": "49084b5a3d9a60c412360f258b9b7dd7d71160de83d8a578a330ffb9e0eceb44",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/BookingDetail.tsx",
+      "bytes": 3565,
+      "sha256": "ed6c3968f8c8f6c45f5fdc6f6a11cbe7fdee2e1e920e5be9444ae8a2de8b2053",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/Icon.tsx",
+      "bytes": 3433,
+      "sha256": "f627c825efbe57aeb6e4cc8f284b945bd743b833dfbee46b23f748a1ca20763a",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/IntakeScreen.tsx",
+      "bytes": 5768,
+      "sha256": "81979d61f9a9a923441f386cc34548191ce7921f30d00aabaabc2c2a8815fe0e",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/Logo.tsx",
+      "bytes": 1871,
+      "sha256": "888d7de7253dbe851e6959eb94e7348bd397d7cd640b96dad6520ae7b7120826",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/Luma.tsx",
+      "bytes": 7050,
+      "sha256": "4a167975af8256dbbd9fd0fc8a6d6bbcb0cb2740d5a9341f7119e846003c8d6f",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/Accounts.tsx",
+      "bytes": 4278,
+      "sha256": "19cb6d00014a60332c1e8bf08f8e54703960e390ef2931d294fd1c7e6f9434df",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/AuditTrail.tsx",
+      "bytes": 4499,
+      "sha256": "a607ced34d1f6cd7b5d3532f15246e4326c827d4a168b7d0fffd42636b21c2cd",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/Bas.tsx",
+      "bytes": 5105,
+      "sha256": "491e22055042e80d98783e41e9e6507179654073166b5422c4987c5320f490c2",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/ExpenseRegister.tsx",
+      "bytes": 17735,
+      "sha256": "8e1345e708843878472ebf61ad203dc8b959f03e3754ded0524b8cdfbf85b5dd",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/ReauthModal.tsx",
+      "bytes": 5063,
+      "sha256": "c1366b41066b7f38d68411ff618108ad77365d55ea49b1d985da662d06aeace2",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/Reports.tsx",
+      "bytes": 6345,
+      "sha256": "067399208eaa1397c9076183040316d90d57e3f56e25df947c91391f06643c9c",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/Suppliers.tsx",
+      "bytes": 19720,
+      "sha256": "fab35b2ec1925f179fb273052b8e74ebe83e213924be1ede928487ddee4989dc",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/finance/parts.tsx",
+      "bytes": 7041,
+      "sha256": "bf8e377ae54dcbe995e28c33e9be84a6417b8d8eef0bb61a4ff7f1f89101996b",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/components/ui.tsx",
+      "bytes": 4302,
+      "sha256": "ddd05302fd868f54118feb3632cf0a2ab86395485c81484418685dc9c1ac2a5e",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/data/finance.ts",
+      "bytes": 22858,
+      "sha256": "e32dd550817482c55c2d9b35776b052b1c3506b665a3ef4d06d2d66a796d02e8",
+      "role": "prototype data or state; not application persistence"
+    },
+    {
+      "path": "_ds/apps/mobile/src/data/seed.ts",
+      "bytes": 24149,
+      "sha256": "1b2a262a038b0a5eb6eaa8be571cdb282d3d05517b9fb6322d40fc695deb066e",
+      "role": "prototype data or state; not application persistence"
+    },
+    {
+      "path": "_ds/apps/mobile/src/data/studio.ts",
+      "bytes": 15365,
+      "sha256": "6dac4aa9867f5ef3cf64bad7588e57be862a560da5936a30f1d921f56a74aa93",
+      "role": "prototype data or state; not application persistence"
+    },
+    {
+      "path": "_ds/apps/mobile/src/hooks/useResponsive.ts",
+      "bytes": 2577,
+      "sha256": "b04e0bce7df8a4aca71486dc679047e0cfd21c4d5f34f20062c25e5ae511d3eb",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/state/finance.tsx",
+      "bytes": 5958,
+      "sha256": "96b06b5600b34fbbb5a423d51c85f22e57ac4b6b2e7d412c8e5ff8c2d75ba5c4",
+      "role": "prototype data or state; not application persistence"
+    },
+    {
+      "path": "_ds/apps/mobile/src/state/portal.tsx",
+      "bytes": 2360,
+      "sha256": "b764f18c4a81a64f2f22b502f270561af8a1e0c63de0205459825d4801dc634f",
+      "role": "prototype data or state; not application persistence"
+    },
+    {
+      "path": "_ds/apps/mobile/src/state/session.tsx",
+      "bytes": 1045,
+      "sha256": "db79f571a8eb458e72e8bf1c687cb1c9878cb04d2ad05d8fb8f8ffa3136c6080",
+      "role": "prototype data or state; not application persistence"
+    },
+    {
+      "path": "_ds/apps/mobile/src/state/studio.tsx",
+      "bytes": 4373,
+      "sha256": "fece49f8a853ff73c6b5c4776e041a92e235a1001c0b654814b6dbe4ad000e01",
+      "role": "prototype data or state; not application persistence"
+    },
+    {
+      "path": "_ds/apps/mobile/src/theme/ThemeProvider.tsx",
+      "bytes": 1360,
+      "sha256": "240f6f1cb80724929e992257731773f15e6edea07bfc5c4e93eb58c12dd66181",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/src/theme/useTokens.ts",
+      "bytes": 574,
+      "sha256": "880e43277ca8bcb308505c1bc16e67e58d2670511ca1e8bb156921ce2c3ce5ae",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/apps/mobile/tsconfig.json",
+      "bytes": 309,
+      "sha256": "660810772ac282bb14cfaaaabe6638218ef5ea38baac3386df9f3a3c7e39ee42",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/assets/lens-dark.png",
+      "bytes": 127583,
+      "sha256": "49e29f422e20a5c00e8abe3275366783133f32c41f385179f3acf06303a243f1",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/assets/lens-gold.png",
+      "bytes": 161086,
+      "sha256": "462bb86ad9e21737ea011a8d1bfbfa11db7f63f9c5dd110fc2a1836a6d5ca69c",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/assets/logo-banner-dark.png",
+      "bytes": 365138,
+      "sha256": "651b9539adc26ccc7aaf17ba394986e51a7a1cf055cfab3f62b111fced4158a1",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/assets/logo-banner-gold.png",
+      "bytes": 461173,
+      "sha256": "345c3cbdc6a26162ecf91378fc59d68de5e0c80d1d7976cade99145e3c436081",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/doc-page.js",
+      "bytes": 37185,
+      "sha256": "371bab66f42db6ce490e1c2babff78ce4d47535728aec738f5a3e6b22c15bf91",
+      "role": "prototype document runtime"
+    },
+    {
+      "path": "_ds/github.md",
+      "bytes": 14342,
+      "sha256": "f7c8d69199156013347908fdbc7b8b6f4bef4463af7ee6ee81441471b1b6e364",
+      "role": "requirements or historical handoff"
+    },
+    {
+      "path": "_ds/package.json",
+      "bytes": 332,
+      "sha256": "acf46364c3ec7892876f5ff993275419163f6615ce06508b47e192959df23c4b",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/packages/tokens/package.json",
+      "bytes": 293,
+      "sha256": "212945ff004e74ee62cf3e506239026d8eca61d50e555878377e3fa86f25b67f",
+      "role": "design token contract"
+    },
+    {
+      "path": "_ds/packages/tokens/src/index.ts",
+      "bytes": 185,
+      "sha256": "e7e4f4af1635e61624b243e255ab6df306387b1ba127e85ee6cbabc403a3c8c2",
+      "role": "design token contract"
+    },
+    {
+      "path": "_ds/packages/tokens/src/tokens.ts",
+      "bytes": 14678,
+      "sha256": "cdbef450126aacfdd5ad7ca216671db12816831b1396a8fa112a99283a1da9e6",
+      "role": "design token contract"
+    },
+    {
+      "path": "_ds/screenshots/e2e-1.png",
+      "bytes": 18605,
+      "sha256": "f987616fa676f4569904dd95769ead884d4c4bc6a6ba018d9740acf7a8490f84",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/screenshots/fin-overview.png",
+      "bytes": 21445,
+      "sha256": "1be670d9f8aee79ab5a639d9e8cbac8592da6a8b22d35f1e4ee76de53e04a839",
+      "role": "reference asset or historical screenshot"
+    },
+    {
+      "path": "_ds/support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+      "role": "prototype document runtime"
+    },
+    {
+      "path": "_ds/uploads/Studio-Suit_Project-Defintion.md",
+      "bytes": 13680,
+      "sha256": "1d665b698ae42a578b88fa631b443a857f9fc28ddfcaf364895313d379abe2e5",
+      "role": "requirements or historical handoff"
+    },
+    {
+      "path": "_ds/uploads/Studio-Suite_Universal-Responsive-Design-Requirements.md",
+      "bytes": 10441,
+      "sha256": "68c95f57bb5f386f9d730c8eb6baed3ea6eb5a2065f74ebc349d65309c03adec",
+      "role": "requirements or historical handoff"
+    },
+    {
+      "path": "_ds/uploads/Studio-Suite_Universal-Responsive-Viewport-Matrix.md",
+      "bytes": 6538,
+      "sha256": "c940be44c401f3b2a3a7da761c883bb0e98f5b641fdd32cb1013b88c60d15381",
+      "role": "requirements or historical handoff"
+    },
+    {
+      "path": "_ds/uploads/design-system.html",
+      "bytes": 2880,
+      "sha256": "be3d92847ced940baca715f22e074f08e9f8c60f2b368a4ccd3d1da68bfb75ba",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/uploads/finance-audit.jsx",
+      "bytes": 13356,
+      "sha256": "3ee280c972a83a81fc846ef3633e454902b97c918a7f41549f4f1c64751d4ea8",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/uploads/finance-core.jsx",
+      "bytes": 26478,
+      "sha256": "be1d52bbb66505807c6c2ac74e29373d510014c6f06ff55a042c8edf735fe539",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/uploads/finance-tabs.jsx",
+      "bytes": 34947,
+      "sha256": "e1ba496edfbb7002e75aea66935fcd8640eafdbecc4f65d10b1c47ab9882840e",
+      "role": "design reference implementation"
+    },
+    {
+      "path": "_ds/uploads/finance.jsx",
+      "bytes": 30612,
+      "sha256": "90f4708c3391f558b49131116167b42c596533f8aaf9312060ef40ca022017c0",
+      "role": "design reference implementation"
+    }
+  ],
+  "archives": [
+    {
+      "path": "_ds/Archive.zip",
+      "crc_valid": true,
+      "members": [
+        {
+          "path": "Illuminate Studios Portal.html",
+          "bytes": 2519,
+          "sha256": "0a46535c390e2a51957f84af3945429b3d5239e5d55b2c4926fccdf2b842a841",
+          "crc32": "98bd8dc3",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "Design System.html",
+          "bytes": 2104,
+          "sha256": "835cb37da822c92ab2c598e65bb4c699450bf7c20d365ec1ef18a05f3ff25ea1",
+          "crc32": "0b517a89",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "Design System (bundled-src).html",
+          "bytes": 2104,
+          "sha256": "835cb37da822c92ab2c598e65bb4c699450bf7c20d365ec1ef18a05f3ff25ea1",
+          "crc32": "0b517a89",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "styles/ds-styles.css",
+          "bytes": 14780,
+          "sha256": "0cdbc4e936933523f8809cbcf5e5c0a3f61c4039fd169e5fee625a5412cda295",
+          "crc32": "a5169ca6",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "styles/styles.css",
+          "bytes": 15201,
+          "sha256": "80d2ed403504bdbc636a9447689cebf9b36ab28fc553944752309e2c55312a4b",
+          "crc32": "447f25c1",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "scripts/tokens.ts",
+          "bytes": 9123,
+          "sha256": "aef17b4843cc0da7ce5f5e02bab56243d25d368e58d3be23562f76fc652cb7ee",
+          "crc32": "3974db09",
+          "local_state": "archive_only",
+          "role": "design token contract"
+        },
+        {
+          "path": "data/illuminate-design-spec.json",
+          "bytes": 17745,
+          "sha256": "ca829660e60cdb5a1e9bec6366d7f701cfe065d8e70776d4a9c742a7428f0ae0",
+          "crc32": "d62bf235",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/admin.jsx",
+          "bytes": 35976,
+          "sha256": "a47a36494d6088eab3f947913387a8f154de79ae19c752a5c9bcd555900a45da",
+          "crc32": "925ff963",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/app.jsx",
+          "bytes": 11126,
+          "sha256": "78a7436ffb2c77b116ba863ec1decb1c2c231aa5d30dc687c590590a8c184f39",
+          "crc32": "b0103e08",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/client.jsx",
+          "bytes": 39875,
+          "sha256": "2b8bf1a68af7152d2a00561dac0f7f1d4315efb9cf3684a241c4181e60eb6e1e",
+          "crc32": "9a56ba06",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/data.jsx",
+          "bytes": 10543,
+          "sha256": "216f0712f61cd87d9b6ec309013ccf3f17d8dbd3c5de4d4edad8179ef77ee11f",
+          "crc32": "46e38f62",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/ds-app.jsx",
+          "bytes": 8163,
+          "sha256": "a1c3006c3fbb9a13234f08034c646ad127c21491cec7da3eae4862170f60ea99",
+          "crc32": "8fa62889",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/ds-components.jsx",
+          "bytes": 20271,
+          "sha256": "85b284b28f9280e00c0ad0e268ffe03288863adc3b5a580506ea304d356a8f97",
+          "crc32": "635ac1aa",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/ds-foundations.jsx",
+          "bytes": 23464,
+          "sha256": "29bc546cd1c5a8452d7d318e62aa4f1a84304a444ef94c21b2fa2b3400af30e7",
+          "crc32": "dba52816",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/ds-handoff.jsx",
+          "bytes": 13730,
+          "sha256": "12bfacde32068afe98b567a8816eb06e04a99f301e4fc1cd8d6468f81600f9a8",
+          "crc32": "28d5aad4",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/ds-patterns-bundled.jsx",
+          "bytes": 16720,
+          "sha256": "6c91a037b6e7d9cfd896448de5bbf683dc68f50b83dd2e1f19ea44940b60176e",
+          "crc32": "a44e672f",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/ds-patterns.jsx",
+          "bytes": 17120,
+          "sha256": "d7f58554db2663f8ec61e354a51e1ceea84c73590334fe4418396894f13e61af",
+          "crc32": "20480dcf",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/ds-shell.jsx",
+          "bytes": 6052,
+          "sha256": "184d347322e0aef804a0e6c886628a5c7dc87d63c5303ac186fbd67aead228ed",
+          "crc32": "9a0c25ef",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/landing.jsx",
+          "bytes": 31755,
+          "sha256": "112558c56d6f18e1bdef7bf7f72a27baf745a8331c4e02aa7dacab5a84b5b199",
+          "crc32": "7551af1e",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/pricing.jsx",
+          "bytes": 9385,
+          "sha256": "07370dc38ec9d6929105bbb4ca78a0ad338c46d27bb4db68eb160302eefc0aab",
+          "crc32": "d5f2d700",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/tweaks-panel.jsx",
+          "bytes": 25802,
+          "sha256": "22c052960f83ac314fa6170384f19bbdeefda516fdddc6a917a5a72797171d8d",
+          "crc32": "9027c9cb",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "components/tweaks.jsx",
+          "bytes": 5248,
+          "sha256": "4e511f515e7d00dc67657a27c1569b00b259d8c5f437374578608e78ffe82f1d",
+          "crc32": "bef11fca",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "branding/gold_lens_logo.png",
+          "bytes": 197117,
+          "sha256": "e23f136b783235744965ce8703b49102518985c54923fa8377ede6a3f4c47d91",
+          "crc32": "f82a9a36",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "branding/lens_logo.png",
+          "bytes": 154827,
+          "sha256": "b2d5663b3886ab27817ce563195e72d5d2f7677744e75b546640f6132d1e9e0c",
+          "crc32": "c0769e72",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/README.md",
+          "bytes": 1,
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "crc32": "32d70693",
+          "local_state": "archive_only",
+          "role": "requirements or historical handoff"
+        },
+        {
+          "path": "assets/lens-dark.png",
+          "bytes": 127583,
+          "sha256": "49e29f422e20a5c00e8abe3275366783133f32c41f385179f3acf06303a243f1",
+          "crc32": "7c88d50a",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/lens-gold.png",
+          "bytes": 161086,
+          "sha256": "462bb86ad9e21737ea011a8d1bfbfa11db7f63f9c5dd110fc2a1836a6d5ca69c",
+          "crc32": "6bd885aa",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/logo-banner-dark.png",
+          "bytes": 365138,
+          "sha256": "651b9539adc26ccc7aaf17ba394986e51a7a1cf055cfab3f62b111fced4158a1",
+          "crc32": "39f6fd20",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/logo-banner-gold.png",
+          "bytes": 461173,
+          "sha256": "345c3cbdc6a26162ecf91378fc59d68de5e0c80d1d7976cade99145e3c436081",
+          "crc32": "b873c56f",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/logo-banner.png",
+          "bytes": 842043,
+          "sha256": "18cf6c7cd15b51eeabf15ebb4dafdeb15053d4a5a1b752a8d42655edc921ecaf",
+          "crc32": "0706f544",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        }
+      ]
+    },
+    {
+      "path": "_ds/Mobile-first app design system build.zip",
+      "crc_valid": true,
+      "members": [
+        {
+          "path": ".thumbnail",
+          "bytes": 48125,
+          "sha256": "90b7c2badadaeb52574e7a97538b2b4b6f0c208554a2f1f6ca09863ff37ba8c7",
+          "crc32": "25bfcba0",
+          "local_state": "archive_only",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "StudioSuite-E2E.dc.html",
+          "bytes": 22554,
+          "sha256": "27bd35dfd5f23d299f628bf2b832df2608a9f1c76286282cd939dce67530e723",
+          "crc32": "324eaf00",
+          "local_state": "identical",
+          "role": "prototype verification; not shipped-app evidence"
+        },
+        {
+          "path": "StudioSuite-Matrix-Probe.dc.html",
+          "bytes": 20845,
+          "sha256": "139b300d6bf38ea1ba34e6860c73c0f37b4d9274f68d9061796652da9dac9eb5",
+          "crc32": "ce05955f",
+          "local_state": "identical",
+          "role": "prototype verification; not shipped-app evidence"
+        },
+        {
+          "path": "StudioSuite-Mobile.dc.html",
+          "bytes": 520894,
+          "sha256": "d97ba5ca4ce09259f371fa660165654a5b853d6de7ee4fef759c96d5fa7bb710",
+          "crc32": "1e3593ea",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "StudioSuite-Parity-Audit.dc.html",
+          "bytes": 21247,
+          "sha256": "5bbb5b1172aab20b62d9b82f9824005f3cd2251acc99cdf70a23fe28dd2bcb57",
+          "crc32": "70c3f144",
+          "local_state": "identical",
+          "role": "prototype verification; not shipped-app evidence"
+        },
+        {
+          "path": "apps/mobile/README.md",
+          "bytes": 10678,
+          "sha256": "51f26549ccb00a412107689445821bba0fe0f80f60a437ed39fad308f83e3669",
+          "crc32": "d2692b1d",
+          "local_state": "identical",
+          "role": "requirements or historical handoff"
+        },
+        {
+          "path": "apps/mobile/app.json",
+          "bytes": 595,
+          "sha256": "5c6da9950f4347f0e4efd3c531143d29ecf3abd853a99f15b7a1a42ec015755b",
+          "crc32": "45f445d1",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/_layout.tsx",
+          "bytes": 1439,
+          "sha256": "cb72598d52010b62693db330d7d08838bde5c09b307ca23f45e0f85fc09b2256",
+          "crc32": "82dec9b5",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/bookings.tsx",
+          "bytes": 3927,
+          "sha256": "afdbcce83e29cf8823f8339414ea2c0149448dd63327aa6b5f707869528e0a81",
+          "crc32": "60b93b99",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/contacts.tsx",
+          "bytes": 4667,
+          "sha256": "0968dacb583596646af708afcc4ff128ac83c55d35323edec3f3b6c4a48c21a9",
+          "crc32": "ac0671ae",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/content.tsx",
+          "bytes": 8663,
+          "sha256": "853ed3646624a667e58516d4d098b3224ad2ae52b785ef3caa8c2d087fdcd135",
+          "crc32": "0face741",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/dashboard.tsx",
+          "bytes": 7269,
+          "sha256": "5c1d9942e6c6ad346873d5bf23089fdb75a7f89707eeabd2a261670845f6acba",
+          "crc32": "e369c4a8",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/documents.tsx",
+          "bytes": 6136,
+          "sha256": "baa8a13c9a273841c225c01a45aa7434031c1417d811b5ee340d45361cd9058f",
+          "crc32": "c612656b",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/finance.tsx",
+          "bytes": 11781,
+          "sha256": "4fe04eebaf0f3eedce965ca137870942127d55ab063a3f1182b20932bdbbcda8",
+          "crc32": "82fe7bfc",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/inquiries.tsx",
+          "bytes": 5815,
+          "sha256": "92c0cf788358b5e39b05f4c2e2af7e93602b9aa3a1a1e8bc51ab6b02aac28b2a",
+          "crc32": "f9a02571",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/staff.tsx",
+          "bytes": 20681,
+          "sha256": "2a2ffe0e9c9d580c19f6561d092c609200b2aa8a62788d5387691f418528ea4d",
+          "crc32": "4d8f275b",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(admin)/tracker.tsx",
+          "bytes": 6130,
+          "sha256": "0230d34b79444ad5825930c9eaf942e642c95177565b6f16d9219ad9074069d3",
+          "crc32": "01af9548",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/_layout.tsx",
+          "bytes": 703,
+          "sha256": "f222d719cfa0c175e8c63fba98af51f17efc57f483afc75bb7c02873fd52358d",
+          "crc32": "2ceefbea",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/documents.tsx",
+          "bytes": 2764,
+          "sha256": "c7dbc9fa9e483c60b9090ab13a28b1099dae815e15d33a9d674f866f9496eadd",
+          "crc32": "04be0e1c",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/gallery.tsx",
+          "bytes": 8876,
+          "sha256": "72852b09a8db61b80ec4d61aa7c107e673a68045cd08c24386bf70267f1bc251",
+          "crc32": "cec051a8",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/home.tsx",
+          "bytes": 5106,
+          "sha256": "cf37c07d6cc90971db579680e3e4458774678a880c17ccdb01c3b9581558faa5",
+          "crc32": "f6b42001",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/inbox.tsx",
+          "bytes": 9249,
+          "sha256": "a83a2ac5ba43da7a58db28b5966d22554b88d746ffba2eb1202d0f0bf8b7d58c",
+          "crc32": "36921765",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/intake.tsx",
+          "bytes": 126,
+          "sha256": "f9ab354d8536d316033ad42e1ccecdbc9d508ef1ed0dc10d623826b951be3f6b",
+          "crc32": "933a9fd9",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/prints.tsx",
+          "bytes": 4531,
+          "sha256": "e0d290571d541188c7b697f426bc66ddf0fa36d70efb6f270c3c8489bd68b77f",
+          "crc32": "e39d0f8e",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/(client)/profile.tsx",
+          "bytes": 2769,
+          "sha256": "7b121c6d3eb3c04e2d97ba6a5c6c4bea8b0f6957b49783135ee3d350c47c6885",
+          "crc32": "e6d62323",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/+not-found.tsx",
+          "bytes": 685,
+          "sha256": "7f9cd46646e588922eeff34c492fe2a186b98e5bc4ff9540178139e9bae301b2",
+          "crc32": "d9ebbad0",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/_layout.tsx",
+          "bytes": 2016,
+          "sha256": "1057deec0762972f5b54461e70c1f029016e8e625930b9dcb33bdf33f02d4417",
+          "crc32": "3b0771f9",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/index.tsx",
+          "bytes": 477,
+          "sha256": "55f1e2e502a72d82f4475410bafacf52f26ccc05ddb540f1856c32269504241f",
+          "crc32": "963f4b3a",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/marketing.tsx",
+          "bytes": 12103,
+          "sha256": "fd5bb430caa02c5b096b62beddf276a589a1b287cd414180d08ee43e501389c7",
+          "crc32": "94e2e073",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/app/sign-in.tsx",
+          "bytes": 5231,
+          "sha256": "e5be29b0a2babaaed7e2e88edb8ad24b2607676df1ecb3735babe1e55e3c8996",
+          "crc32": "c278e9b4",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/assets/images/lens-dark.png",
+          "bytes": 127583,
+          "sha256": "49e29f422e20a5c00e8abe3275366783133f32c41f385179f3acf06303a243f1",
+          "crc32": "7c88d50a",
+          "local_state": "identical",
+          "role": "reference asset or historical screenshot"
+        },
+        {
+          "path": "apps/mobile/assets/images/lens-gold.png",
+          "bytes": 161086,
+          "sha256": "462bb86ad9e21737ea011a8d1bfbfa11db7f63f9c5dd110fc2a1836a6d5ca69c",
+          "crc32": "6bd885aa",
+          "local_state": "identical",
+          "role": "reference asset or historical screenshot"
+        },
+        {
+          "path": "apps/mobile/assets/images/logo-banner-dark.png",
+          "bytes": 365138,
+          "sha256": "651b9539adc26ccc7aaf17ba394986e51a7a1cf055cfab3f62b111fced4158a1",
+          "crc32": "39f6fd20",
+          "local_state": "identical",
+          "role": "reference asset or historical screenshot"
+        },
+        {
+          "path": "apps/mobile/assets/images/logo-banner-gold.png",
+          "bytes": 461173,
+          "sha256": "345c3cbdc6a26162ecf91378fc59d68de5e0c80d1d7976cade99145e3c436081",
+          "crc32": "b873c56f",
+          "local_state": "identical",
+          "role": "reference asset or historical screenshot"
+        },
+        {
+          "path": "apps/mobile/babel.config.js",
+          "bytes": 182,
+          "sha256": "e0b64e5d2c40dabcefff37bdf783cbaa8ee010065b29aa8478774aac483db82b",
+          "crc32": "b78cecd0",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/expo-env.d.ts",
+          "bytes": 44,
+          "sha256": "64070f077511ee694d2f8756c9314284cd056f208443b294777c4a72a51855f3",
+          "crc32": "6c38fe53",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/metro.config.js",
+          "bytes": 601,
+          "sha256": "cb1e281f49541a20e3f8004e5bf8dfd71f66f4fb627154a292f8a182d45f060e",
+          "crc32": "3e2f4d50",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/package.json",
+          "bytes": 1237,
+          "sha256": "519f57584578f4767931271b89f072fa66a47b83a4e015fe3cbfbd7ea46a1421",
+          "crc32": "e7e03e10",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/AppShell.tsx",
+          "bytes": 13588,
+          "sha256": "49084b5a3d9a60c412360f258b9b7dd7d71160de83d8a578a330ffb9e0eceb44",
+          "crc32": "eb615d78",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/BookingDetail.tsx",
+          "bytes": 3565,
+          "sha256": "ed6c3968f8c8f6c45f5fdc6f6a11cbe7fdee2e1e920e5be9444ae8a2de8b2053",
+          "crc32": "fb638d81",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/Icon.tsx",
+          "bytes": 3433,
+          "sha256": "f627c825efbe57aeb6e4cc8f284b945bd743b833dfbee46b23f748a1ca20763a",
+          "crc32": "e0987d6a",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/IntakeScreen.tsx",
+          "bytes": 5768,
+          "sha256": "81979d61f9a9a923441f386cc34548191ce7921f30d00aabaabc2c2a8815fe0e",
+          "crc32": "4d13aa90",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/Logo.tsx",
+          "bytes": 1871,
+          "sha256": "888d7de7253dbe851e6959eb94e7348bd397d7cd640b96dad6520ae7b7120826",
+          "crc32": "d9e4978f",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/Luma.tsx",
+          "bytes": 7050,
+          "sha256": "4a167975af8256dbbd9fd0fc8a6d6bbcb0cb2740d5a9341f7119e846003c8d6f",
+          "crc32": "b932b9b3",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/Accounts.tsx",
+          "bytes": 4278,
+          "sha256": "19cb6d00014a60332c1e8bf08f8e54703960e390ef2931d294fd1c7e6f9434df",
+          "crc32": "54569cb2",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/AuditTrail.tsx",
+          "bytes": 4499,
+          "sha256": "a607ced34d1f6cd7b5d3532f15246e4326c827d4a168b7d0fffd42636b21c2cd",
+          "crc32": "bfc02d9c",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/Bas.tsx",
+          "bytes": 5105,
+          "sha256": "491e22055042e80d98783e41e9e6507179654073166b5422c4987c5320f490c2",
+          "crc32": "42389a32",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/ExpenseRegister.tsx",
+          "bytes": 17735,
+          "sha256": "8e1345e708843878472ebf61ad203dc8b959f03e3754ded0524b8cdfbf85b5dd",
+          "crc32": "0e7dda6f",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/ReauthModal.tsx",
+          "bytes": 5063,
+          "sha256": "c1366b41066b7f38d68411ff618108ad77365d55ea49b1d985da662d06aeace2",
+          "crc32": "c1614a49",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/Reports.tsx",
+          "bytes": 6345,
+          "sha256": "067399208eaa1397c9076183040316d90d57e3f56e25df947c91391f06643c9c",
+          "crc32": "5a852f77",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/Suppliers.tsx",
+          "bytes": 19720,
+          "sha256": "fab35b2ec1925f179fb273052b8e74ebe83e213924be1ede928487ddee4989dc",
+          "crc32": "45d54a54",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/finance/parts.tsx",
+          "bytes": 7041,
+          "sha256": "bf8e377ae54dcbe995e28c33e9be84a6417b8d8eef0bb61a4ff7f1f89101996b",
+          "crc32": "bb6f736b",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/components/ui.tsx",
+          "bytes": 4302,
+          "sha256": "ddd05302fd868f54118feb3632cf0a2ab86395485c81484418685dc9c1ac2a5e",
+          "crc32": "f9cc7556",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/data/finance.ts",
+          "bytes": 22858,
+          "sha256": "e32dd550817482c55c2d9b35776b052b1c3506b665a3ef4d06d2d66a796d02e8",
+          "crc32": "f4a470ac",
+          "local_state": "identical",
+          "role": "prototype data or state; not application persistence"
+        },
+        {
+          "path": "apps/mobile/src/data/seed.ts",
+          "bytes": 24149,
+          "sha256": "1b2a262a038b0a5eb6eaa8be571cdb282d3d05517b9fb6322d40fc695deb066e",
+          "crc32": "149ba198",
+          "local_state": "identical",
+          "role": "prototype data or state; not application persistence"
+        },
+        {
+          "path": "apps/mobile/src/data/studio.ts",
+          "bytes": 15365,
+          "sha256": "6dac4aa9867f5ef3cf64bad7588e57be862a560da5936a30f1d921f56a74aa93",
+          "crc32": "97cb29db",
+          "local_state": "identical",
+          "role": "prototype data or state; not application persistence"
+        },
+        {
+          "path": "apps/mobile/src/hooks/useResponsive.ts",
+          "bytes": 2577,
+          "sha256": "b04e0bce7df8a4aca71486dc679047e0cfd21c4d5f34f20062c25e5ae511d3eb",
+          "crc32": "5fd92193",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/state/finance.tsx",
+          "bytes": 5958,
+          "sha256": "96b06b5600b34fbbb5a423d51c85f22e57ac4b6b2e7d412c8e5ff8c2d75ba5c4",
+          "crc32": "439c80be",
+          "local_state": "identical",
+          "role": "prototype data or state; not application persistence"
+        },
+        {
+          "path": "apps/mobile/src/state/portal.tsx",
+          "bytes": 2360,
+          "sha256": "b764f18c4a81a64f2f22b502f270561af8a1e0c63de0205459825d4801dc634f",
+          "crc32": "5a942940",
+          "local_state": "identical",
+          "role": "prototype data or state; not application persistence"
+        },
+        {
+          "path": "apps/mobile/src/state/session.tsx",
+          "bytes": 1045,
+          "sha256": "db79f571a8eb458e72e8bf1c687cb1c9878cb04d2ad05d8fb8f8ffa3136c6080",
+          "crc32": "1437b393",
+          "local_state": "identical",
+          "role": "prototype data or state; not application persistence"
+        },
+        {
+          "path": "apps/mobile/src/state/studio.tsx",
+          "bytes": 4373,
+          "sha256": "fece49f8a853ff73c6b5c4776e041a92e235a1001c0b654814b6dbe4ad000e01",
+          "crc32": "7ada7a9e",
+          "local_state": "identical",
+          "role": "prototype data or state; not application persistence"
+        },
+        {
+          "path": "apps/mobile/src/theme/ThemeProvider.tsx",
+          "bytes": 1360,
+          "sha256": "240f6f1cb80724929e992257731773f15e6edea07bfc5c4e93eb58c12dd66181",
+          "crc32": "fd045d68",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/src/theme/useTokens.ts",
+          "bytes": 574,
+          "sha256": "880e43277ca8bcb308505c1bc16e67e58d2670511ca1e8bb156921ce2c3ce5ae",
+          "crc32": "d4a6ee88",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "apps/mobile/tsconfig.json",
+          "bytes": 309,
+          "sha256": "660810772ac282bb14cfaaaabe6638218ef5ea38baac3386df9f3a3c7e39ee42",
+          "crc32": "129eb535",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/lens-dark.png",
+          "bytes": 127583,
+          "sha256": "49e29f422e20a5c00e8abe3275366783133f32c41f385179f3acf06303a243f1",
+          "crc32": "7c88d50a",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/lens-gold.png",
+          "bytes": 161086,
+          "sha256": "462bb86ad9e21737ea011a8d1bfbfa11db7f63f9c5dd110fc2a1836a6d5ca69c",
+          "crc32": "6bd885aa",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/logo-banner-dark.png",
+          "bytes": 365138,
+          "sha256": "651b9539adc26ccc7aaf17ba394986e51a7a1cf055cfab3f62b111fced4158a1",
+          "crc32": "39f6fd20",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "assets/logo-banner-gold.png",
+          "bytes": 461173,
+          "sha256": "345c3cbdc6a26162ecf91378fc59d68de5e0c80d1d7976cade99145e3c436081",
+          "crc32": "b873c56f",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "doc-page.js",
+          "bytes": 37185,
+          "sha256": "371bab66f42db6ce490e1c2babff78ce4d47535728aec738f5a3e6b22c15bf91",
+          "crc32": "adf445dd",
+          "local_state": "identical",
+          "role": "prototype document runtime"
+        },
+        {
+          "path": "github.md",
+          "bytes": 14342,
+          "sha256": "f7c8d69199156013347908fdbc7b8b6f4bef4463af7ee6ee81441471b1b6e364",
+          "crc32": "30474cc7",
+          "local_state": "identical",
+          "role": "requirements or historical handoff"
+        },
+        {
+          "path": "package.json",
+          "bytes": 332,
+          "sha256": "acf46364c3ec7892876f5ff993275419163f6615ce06508b47e192959df23c4b",
+          "crc32": "585319b6",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "packages/tokens/package.json",
+          "bytes": 293,
+          "sha256": "212945ff004e74ee62cf3e506239026d8eca61d50e555878377e3fa86f25b67f",
+          "crc32": "42b1a660",
+          "local_state": "identical",
+          "role": "design token contract"
+        },
+        {
+          "path": "packages/tokens/src/index.ts",
+          "bytes": 185,
+          "sha256": "e7e4f4af1635e61624b243e255ab6df306387b1ba127e85ee6cbabc403a3c8c2",
+          "crc32": "ab8b1682",
+          "local_state": "identical",
+          "role": "design token contract"
+        },
+        {
+          "path": "packages/tokens/src/tokens.ts",
+          "bytes": 14678,
+          "sha256": "cdbef450126aacfdd5ad7ca216671db12816831b1396a8fa112a99283a1da9e6",
+          "crc32": "7cca25cd",
+          "local_state": "identical",
+          "role": "design token contract"
+        },
+        {
+          "path": "screenshots/e2e-1.png",
+          "bytes": 18605,
+          "sha256": "f987616fa676f4569904dd95769ead884d4c4bc6a6ba018d9740acf7a8490f84",
+          "crc32": "585e6a6c",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "screenshots/fin-overview.png",
+          "bytes": 21445,
+          "sha256": "1be670d9f8aee79ab5a639d9e8cbac8592da6a8b22d35f1e4ee76de53e04a839",
+          "crc32": "10bcef07",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "support.js",
+          "bytes": 66404,
+          "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+          "crc32": "cd1c707f",
+          "local_state": "identical",
+          "role": "prototype document runtime"
+        },
+        {
+          "path": "uploads/Studio-Suit_Project-Defintion.md",
+          "bytes": 13680,
+          "sha256": "1d665b698ae42a578b88fa631b443a857f9fc28ddfcaf364895313d379abe2e5",
+          "crc32": "8c30536e",
+          "local_state": "identical",
+          "role": "requirements or historical handoff"
+        },
+        {
+          "path": "uploads/Studio-Suite_Universal-Responsive-Design-Requirements.md",
+          "bytes": 10441,
+          "sha256": "68c95f57bb5f386f9d730c8eb6baed3ea6eb5a2065f74ebc349d65309c03adec",
+          "crc32": "0f8dae89",
+          "local_state": "identical",
+          "role": "requirements or historical handoff"
+        },
+        {
+          "path": "uploads/Studio-Suite_Universal-Responsive-Viewport-Matrix.md",
+          "bytes": 6538,
+          "sha256": "c940be44c401f3b2a3a7da761c883bb0e98f5b641fdd32cb1013b88c60d15381",
+          "crc32": "d1d443a1",
+          "local_state": "identical",
+          "role": "requirements or historical handoff"
+        },
+        {
+          "path": "uploads/design-system.html",
+          "bytes": 2880,
+          "sha256": "be3d92847ced940baca715f22e074f08e9f8c60f2b368a4ccd3d1da68bfb75ba",
+          "crc32": "a5152677",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "uploads/finance-audit.jsx",
+          "bytes": 13356,
+          "sha256": "3ee280c972a83a81fc846ef3633e454902b97c918a7f41549f4f1c64751d4ea8",
+          "crc32": "71663c03",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "uploads/finance-core.jsx",
+          "bytes": 26478,
+          "sha256": "be1d52bbb66505807c6c2ac74e29373d510014c6f06ff55a042c8edf735fe539",
+          "crc32": "33da0553",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "uploads/finance-tabs.jsx",
+          "bytes": 34947,
+          "sha256": "e1ba496edfbb7002e75aea66935fcd8640eafdbecc4f65d10b1c47ab9882840e",
+          "crc32": "c6cf2512",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        },
+        {
+          "path": "uploads/finance.jsx",
+          "bytes": 30612,
+          "sha256": "90f4708c3391f558b49131116167b42c596533f8aaf9312060ef40ca022017c0",
+          "crc32": "1dfcea5b",
+          "local_state": "identical",
+          "role": "design reference implementation"
+        }
+      ]
+    }
+  ]
+}

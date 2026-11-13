@@ -7,12 +7,12 @@ across handset ↔ tablet and both orientations from **measured runtime geometry
 ## Run
 
 ```bash
-npm install --ignore-scripts   # from repo root (workspaces)
-npm run mobile       # or: npm run start --workspace @illuminate/mobile
+pnpm install         # from repo root (workspace)
+pnpm mobile          # or: pnpm -F @illuminate/mobile start
 ```
 
 Press `i` / `a` for iOS / Android, or scan the QR with Expo Go.
-`npm run typecheck --workspace @illuminate/mobile` for TypeScript.
+`pnpm typecheck:mobile` for TypeScript.
 
 > Orientation is intentionally **unlocked** (`app.json → orientation: "default"`,
 > `ios.requireFullScreen: false`, `android.resizeableActivity: true`). A locked
@@ -24,7 +24,7 @@ Press `i` / `a` for iOS / Android, or scan the QR with Expo Go.
 apps/mobile/
 ├── app.json                Expo config — orientation unlocked, expo-router plugin, typed routes
 ├── babel.config.js         babel-preset-expo (bundles the router plugin)
-├── metro.config.js         monorepo-aware resolver (watches @illuminate/tokens)
+├── metro.config.js         monorepo-aware resolver (watches @is/tokens)
 ├── tsconfig.json           strict + path aliases (~/*  →  src/*)
 ├── expo-env.d.ts           typed-routes reference
 ├── app/                    ← FILE-BASED ROUTES
@@ -53,7 +53,7 @@ apps/mobile/
 │       ├── finance.tsx      Overview · Invoices · Expenses · GST & BAS · Reports · Accounts
 │       └── content.tsx      site content blocks
 └── src/
-    ├── theme/              ThemeProvider + useTokens (binds @illuminate/tokens to RN)
+    ├── theme/              ThemeProvider + useTokens (binds @is/tokens to RN)
     ├── state/session.tsx   auth + role context
     ├── state/records.tsx   bookings, inquiries and contacts — one shared store for the admin portal
     ├── state/portal.tsx    client portal state — inbox, filed documents, selections
@@ -128,7 +128,7 @@ Luma answers from a small offline fallback.
 
 ## Tests
 
-`npm run typecheck` and `npm run e2e` (from `apps/mobile`). The browser scripts need
+`pnpm typecheck` and `pnpm e2e` (from `apps/mobile`). The browser scripts need
 Playwright with Chromium available to Node. `e2e` runs four suites:
 
 - `finance.js` — the bookkeeping engine: cash flow must agree with the double-entry
@@ -146,7 +146,7 @@ Playwright with Chromium available to Node. `e2e` runs four suites:
   and orientation update instantly on rotation and split-view resize. No device-model
   branching; device *class* is only a refinement.
 - **Type + spacing** interpolate through `fs()` / `gutter` off the shared
-  `@illuminate/tokens` scale (the native analogue of web `clamp()`), never hard-coded.
+  `@is/tokens` scale (the native analogue of web `clamp()`), never hard-coded.
 - **`AppShell`** picks the navigation layout from measured width: **bottom tab bar**
   under 760pt, **side rail** (icon-only < 1000pt, labelled ≥ 1000pt) above. Tablet is a
   distinct two-pane layout (see `bookings.tsx`), not a stretched phone.

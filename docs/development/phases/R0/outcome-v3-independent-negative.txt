@@ -1,0 +1,63 @@
+import sys,json,copy,hashlib,tempfile,os
+from pathlib import Path
+from dataclasses import asdict
+sys.path.insert(0,str(Path('disposable').resolve()))
+from scripts.autonomous.protocol import Rejected,fresh_controller,compact_controller,recall_memory
+from scripts.autonomous.review_host import check_fields,build_packet,digest,FixedBroker
+from scripts.autonomous.supervisor import validate_test_commands,Supervisor,Lease,Journal,MANDATORY_COMMANDS
+from scripts.autonomous.gate import Evidence,publication_gate,compare_final_manifests,records_gate,reset_gate,review_gate
+from scripts.autonomous.tests.test_gate import binding,publication,review_fixture,reset_facts,memory_write
+from scripts.autonomous.tests.test_supervisor import receipts
+from scripts.autonomous.tests.test_protocol import Connection,Memory,lifecycle
+results=[]
+def check(name,fn):
+ try: v=fn();results.append({'check':name,'outcome':'accepted','value':v})
+ except Exception as e:results.append({'check':name,'outcome':'rejected','exception':type(e).__name__,'error':str(e)})
+b=binding()
+r=receipts()['test']
+for out in ['', 'Ran 0 tests in 0s\n\nOK\n','Ran 50 tests in 0s\nFAILED (failures=1)\n\nOK\n','Ran 50 tests in 0s\n\nOK (skipped=1)\n']:
+ t=copy.deepcopy(r);row=next(x for x in t['commands'] if 'unittest' in x['command']);row.update(output=out,output_sha256=hashlib.sha256(out.encode()).hexdigest());check('test_output:'+repr(out),lambda:validate_test_commands(t,b))
+for cmd in ['true','python3 -m unittest discover -s scripts/autonomous/tests -v; true','$(true)']:
+ t=copy.deepcopy(r);t['commands'][0]['command']=cmd;check('substitute_command:'+cmd,lambda:validate_test_commands(t,b))
+for field in ['hiddenReasoning','chainOfThought','priorVerdict','builderHistory']:
+ check('nested_field:'+field,lambda:check_fields({'data':[{'nested':{field:'synthetic prohibited'}}]}))
+for fld in ['commit','remote_commit']:
+ p=publication();del p[fld];check('missing_publication:'+fld,lambda:publication_gate(p,commit='b'*40,branch=p['branch']))
+p=publication();del p['jobs']['backend']['head_sha'];check('missing_job_head',lambda:publication_gate(p,commit='b'*40,branch=p['branch']))
+for mode in ['100755','120000','160000']:
+ check('changed_record_mode:'+mode,lambda:compare_final_manifests({'README.md':{'sha256':'a'*64,'mode':'100644'}},{'README.md':{'sha256':'a'*64,'mode':mode}}))
+with tempfile.TemporaryDirectory(dir='.') as tmp:
+ root=Path(tmp)
+ with Lease(root,'negative-only') as lease:
+  rr=receipts();ev=Evidence(b,rr,lambda *args:True,synthetic=True);j=Journal(root/'journal',b)
+  s=Supervisor(lease,j,ev,lambda _:True,{x:lambda _:True for x in ['SCOPED','REVIEWED','RECORDED','GREEN']})
+  s.advance('SCOPED','scope');s.fail('REWORK','scope','new-blocking-finding')
+  check('advance_after_unresolved_scope_rework',lambda:s.advance('BUILT','build'))
+  results.append({'check':'failure_state_after_dependent_advance','state':s.state,'failure':s.failure})
+  stale=Journal(root/'journal',b);j.append({'type':'failure','status':'BLOCKED','gate':'test','ref':'raw'})
+  check('stale_journal',lambda:stale.append({'type':'failure','status':'BLOCKED','gate':'test','ref':'raw'}))
+  with (root/'journal').open('ab') as f:f.write(b'{')
+  check('torn_journal',lambda:Journal(root/'journal',b))
+with tempfile.TemporaryDirectory(dir='.') as tmp:
+ root=Path(tmp);(root/'candidate.py').write_text('pass');(root/'authority.md').write_text('Do not export hidden reasoning.');(root/'raw.json').write_text(json.dumps({'data':{'priorVerdict':'PASS','hiddenReasoning':'synthetic prohibited'}}))
+ h=lambda n:hashlib.sha256((root/n).read_bytes()).hexdigest()
+ kw=dict(allowlist={'candidate.py','authority.md','raw.json'},base={'candidate.py':h('candidate.py')},candidate={'candidate.py':h('candidate.py')},authority={'authority.md':h('authority.md')},evidence={'raw.json':h('raw.json')},binding={'phase_id':'R0','contract_sha256':'a'*64,'candidate_commit':'b'*40,'candidate_tree':'c'*40})
+ check('contaminated_allowlisted_raw_json',lambda: {'included':build_packet(root,**kw)[0]['files']['evidence']['raw.json']})
+ check('contaminated_nested_metadata',lambda:build_packet(root,**kw,metadata={'environment':{'limitations':[{'hiddenReasoning':'x'}]}}))
+ (root/'README.md').write_text('records');os.chmod(root/'README.md',0o755)
+ ex={'candidate.py':h('candidate.py')};rec={'README.md':h('README.md')}
+ check('records_gate_executable_mode',lambda:records_gate(root,ex,rec,ex,rec,{'commit':'b'*40,'executable_sha256':digest(ex),'records_sha256':digest(rec)},final_commit='b'*40))
+for fld in ['memory_first','memory_readback','git_ci_verified','goal_ledger_verified']:
+ c,comp,boot=reset_facts();del boot[fld];check('reset_missing:'+fld,lambda:reset_gate(c,comp,boot,controller_thread_id='controller',final_commit='b'*40,source_sha256='e'*64))
+c,comp,boot=reset_facts(True);c['blocked_goals']=['C4'];check('terminal_blocked',lambda:reset_gate(c,comp,boot,controller_thread_id='controller',final_commit='b'*40,source_sha256='e'*64))
+for mutation in ['unverified','authority_drift','untrusted']:
+ r,rs=review_fixture();bb=b
+ if mutation=='unverified':r['criteria'][0]['result']='unverified';rs['review']['result_sha256']=digest(r)
+ elif mutation=='authority_drift':rs['sandbox']['binding']['source_sha256']='0'*64
+ e=Evidence(bb,rs,lambda *a:mutation!='untrusted',synthetic=True)
+ check('review:'+mutation,lambda:review_gate(r,bb,e))
+check('extra_callback',lambda:FixedBroker('i','t',{'configuration':lambda:{}}).call({'probe':'configuration','challenge':'x','command':'true'}))
+check('compaction_ack_only',lambda:compact_controller(Connection(),'old',role='controller',green_verified=True,timeout=.005))
+check('failed_compaction',lambda:compact_controller(Connection(lifecycle(status='failed')),'old',role='controller',green_verified=True,timeout=.005))
+m=Memory();m.fail=True;check('memory_failure',lambda:recall_memory(m))
+Path('independent-negative.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))

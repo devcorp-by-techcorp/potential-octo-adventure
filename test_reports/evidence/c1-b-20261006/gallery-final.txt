@@ -1,0 +1,2 @@
+PASS 1440x1000 no-preference: lifecycle, computed themes, focus/scroll, history/reload, ordinary routes
+PASS 390x844 reduce: lifecycle, computed themes, focus/scroll, history/reload, ordinary routes

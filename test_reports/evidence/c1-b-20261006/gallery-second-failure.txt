@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/studio-suite_v2/web/tests/gallery_theme.py", line 217, in <module>
+    main()
+  File "/workspace/studio-suite_v2/web/tests/gallery_theme.py", line 205, in main
+    run(base)
+  File "/workspace/studio-suite_v2/web/tests/gallery_theme.py", line 79, in run
+    assert viewer.evaluate("""el => {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

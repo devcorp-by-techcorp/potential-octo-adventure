@@ -1,0 +1,333 @@
+"""One-shot qualification of an existing host. No phase supervision or product work."""
+import hashlib
+import json
+import os
+import re
+import secrets
+import selectors
+import subprocess
+import tempfile
+import time
+import tomllib
+from pathlib import Path
+
+EXE = Path('/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex')
+REPO = Path('/home/techcorp2024/studio-suite_v2')
+ROOT = Path(tempfile.mkdtemp(prefix='studio-r0-bootstrap-v2-', dir='/tmp'))
+PACKET = ROOT / 'input'
+OUTPUT = ROOT / 'output'
+PACKET.mkdir()
+OUTPUT.mkdir()
+INSTANCE = secrets.token_hex(16)
+SENTINEL = ROOT / 'outside-sentinel'
+SENTINEL.write_bytes(secrets.token_bytes(64))
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+BEFORE = digest(SENTINEL)
+DISABLED = ['apps', 'plugins', 'hooks', 'memories', 'browser_use', 'browser_use_external',
+            'browser_use_full_cdp_access', 'computer_use', 'image_generation',
+            'multi_agent', 'multi_agent_v2', 'request_permissions_tool', 'in_app_browser',
+            'external_agent_memory_import', 'chronicle']
+FS = {':root': 'deny', ':minimal': 'read', str(PACKET): 'read', str(OUTPUT): 'write',
+      str(REPO / 'docs/development/phases/R0/bootstrap-qualification.md'): 'read',
+      str(REPO / 'docs/development/long-running-session-plan.md'): 'read',
+      '/home/techcorp2024/.codex/tmp/arg0': 'read', str(EXE.parent): 'read',
+      str(EXE.parent.parent / 'codex-path'): 'read'}
+POLICY = {'filesystem': FS, 'network': {'enabled': False}}
+argv = [str(EXE), '-c', 'model="gpt-6.1-sol"', '-c', 'model_reasoning_effort="medium"',
+        '-c', 'default_permissions="r0_qualified"', '-c', 'approval_policy="never"',
+        '-c', 'web_search="disabled"', '-c', 'shell_environment_policy.inherit="none"',
+        '-c', 'permissions.r0_qualified.filesystem={' + ','.join(json.dumps(k)+'='+json.dumps(v) for k,v in FS.items())+'}',
+        '-c', 'permissions.r0_qualified.network.enabled=false', '-c', 'features.skip_host_skill_discovery=true']
+for feature in DISABLED:
+    argv += ['--disable', feature]
+user_config = tomllib.loads(Path('/home/techcorp2024/.codex/config.toml').read_text())
+for name in user_config.get('mcp_servers', {}):
+    argv += ['-c', 'mcp_servers.' + name + '.enabled=false']
+MEMORY_FS = {k:v for k,v in FS.items() if k not in [str(PACKET),str(REPO / 'docs/development/phases/R0/bootstrap-qualification.md'),str(REPO / 'docs/development/long-running-session-plan.md')]}
+argv += ['-c','permissions.r0_bootstrap_memory.filesystem={' + ','.join(json.dumps(k)+'='+json.dumps(v) for k,v in MEMORY_FS.items())+'}', '-c','permissions.r0_bootstrap_memory.network.enabled=false']
+argv += ['app-server', '--stdio']
+
+(PACKET / 'contract.md').write_bytes((REPO / 'docs/development/phases/R0/bootstrap-qualification.md').read_bytes())
+(PACKET / 'authority.md').write_bytes((REPO / 'docs/development/long-running-session-plan.md').read_bytes())
+(PACKET / 'host-probe-source.py').write_bytes(Path(__file__).read_bytes())
+(PACKET / 'checkpoint.md').write_bytes((REPO / 'docs/development/phases/R0/checkpoint.md').read_bytes())
+(PACKET / 'negative-checkpoint.md').write_text((PACKET / 'checkpoint.md').read_text().replace('9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d', '0'*64))
+MANIFEST = {p.name: digest(p) for p in PACKET.iterdir()}
+(PACKET / 'manifest.json').write_text(json.dumps({'instance': INSTANCE, 'sha256': MANIFEST}, indent=2)+'\n')
+FROZEN = {p.name: digest(p) for p in PACKET.iterdir()}
+
+events = []
+responses = {}
+completed = {}
+pending_broker = []
+read_buffer = b''
+next_id = 0
+thread = None
+config = None
+server = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                          env={'PATH': os.environ['PATH'], 'HOME': os.environ['HOME']})
+selector = selectors.DefaultSelector()
+selector.register(server.stdout, selectors.EVENT_READ)
+print(json.dumps({'root': str(ROOT), 'instance': INSTANCE, 'serverPid': server.pid}), flush=True)
+
+def send(method, params, request=True):
+    global next_id
+    value = {'method': method, 'params': params}
+    if request:
+        next_id += 1
+        value['id'] = next_id
+    server.stdin.write((json.dumps(value)+'\n').encode())
+    server.stdin.flush()
+    return next_id
+
+def reply(ident, result):
+    server.stdin.write((json.dumps({'id': ident, 'result': result})+'\n').encode())
+    server.stdin.flush()
+
+def packet_state():
+    return {'expected': FROZEN, 'actual': {p: digest(PACKET/p) for p in FROZEN},
+            'unchanged': all(digest(PACKET/p)==h for p,h in FROZEN.items())}
+
+def validate_callback(tid, arguments):
+    if not thread or tid != thread['thread']['id']:
+        return 'wrong-thread'
+    if not isinstance(arguments, dict) or set(arguments) != {'probe', 'challenge'}:
+        return 'unexpected-fields'
+    if arguments['probe'] not in ['configuration', 'sentinel', 'transport', 'packet']:
+        return 'invalid-probe'
+    if not isinstance(arguments['challenge'], str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,64}', arguments['challenge']):
+        return 'invalid-challenge'
+    return None
+
+def host_evidence(tid, arguments):
+    error = validate_callback(tid, arguments)
+    if error:
+        return {'success': False, 'denial': error}
+    receipt = {'instance': INSTANCE, 'threadId': tid, 'challenge': arguments['challenge'],
+               'probe': arguments['probe'], 'recordedAt': time.time(), 'hostPid': os.getpid(),
+               'hostPidNamespace': os.readlink('/proc/self/ns/pid'), 'contractSha256': FROZEN['contract.md']}
+    if arguments['probe'] == 'configuration':
+        feature_rows = []
+        cursor = None
+        while True:
+            params = {'threadId': tid, 'limit': 100}
+            if cursor:
+                params['cursor'] = cursor
+            r = request('experimentalFeature/list', params)
+            feature_rows += r['data']
+            cursor = r.get('nextCursor')
+            if not cursor:
+                break
+        effective = {r['name']: r['enabled'] for r in feature_rows}
+        mcp = request('mcpServerStatus/list', {'limit': 100})
+        receipt.update({'actualThreadResponse': {k: thread.get(k) for k in ['model','reasoningEffort','modelProvider','approvalPolicy','activePermissionProfile','cwd','runtimeWorkspaceRoots','disabledPluginIds']},
+                        'effectiveFeatures': {k: effective.get(k) for k in DISABLED+['skip_host_skill_discovery','code_mode_host','shell_tool']},
+                        'mcpServerStatuses': [{'name': r.get('name'), 'status': r.get('status')} for r in mcp.get('data', [])],
+                        'configReadProjection': config, 'registeredProfile': POLICY, 'actualHostArgv': argv,
+                        'instructionSources': thread.get('instructionSources'),
+                        'negativeCallbackChecks': {name: validate_callback(test_tid, args) for name,test_tid,args in [
+                            ('extra_path',tid,{'probe':'sentinel','challenge':'extra','path':'/unrelated'}),
+                            ('command',tid,{'probe':'sentinel','challenge':'cmd','command':'false'}),
+                            ('wrong_thread','not-this-thread',{'probe':'sentinel','challenge':'wrong'}),
+                            ('invalid_probe',tid,{'probe':'mutation','challenge':'invalid'})]}})
+    elif arguments['probe'] == 'sentinel':
+        receipt.update({'sentinelPath': str(SENTINEL), 'beforeSha256': BEFORE, 'exists': SENTINEL.is_file(),
+                        'nowSha256': digest(SENTINEL), 'unchanged': digest(SENTINEL)==BEFORE, 'packet': packet_state()})
+    elif arguments['probe'] == 'transport':
+        receipt.update({'hostServerPid': server.pid, 'hostServerPidNamespace': os.readlink(f'/proc/{server.pid}/ns/pid'),
+                        'hostServerExecutable': str(EXE), 'hostServerExecutableSha256': digest(EXE),
+                        'hostLaunchEnvironmentKeys': ['HOME','PATH'], 'reviewerEnvironmentPolicy': 'none',
+                        'modelProvider': thread.get('modelProvider'), 'model': thread.get('model'),
+                        'baseInstructionsOverride': True, 'developerInstructionsOverride': True,
+                        'freshThreadInitialTurns': thread['thread'].get('turns', []),
+                        'readOnlyCallbackKeys': ['probe','challenge'], 'callerSelectedPathsOrCommands': False,
+                        'hostCallbackExportsCredentialValues': False})
+    else:
+        receipt['packet'] = packet_state()
+    receipt['receiptSha256'] = hashlib.sha256(json.dumps(receipt, sort_keys=True).encode()).hexdigest()
+    return {'success': True, 'receipt': receipt}
+
+def pump(timeout=1):
+    global read_buffer
+    for key, _ in selector.select(timeout):
+        data = os.read(key.fileobj.fileno(), 65536)
+        if not data:
+            raise RuntimeError('app-server stdout closed')
+        read_buffer += data
+        while b'\n' in read_buffer:
+            line, read_buffer = read_buffer.split(b'\n', 1)
+            msg = json.loads(line)
+            if 'id' in msg and ('result' in msg or 'error' in msg):
+                responses[msg['id']] = msg
+                continue
+            if 'id' in msg and msg.get('method') == 'item/tool/call':
+                pending_broker.append(msg)
+                continue
+            if 'id' in msg and 'method' in msg:
+                reply(msg['id'], {'decision': 'decline'})
+                events.append({'event': 'unexpected-request-denied', 'method': msg['method']})
+                continue
+            method = msg.get('method')
+            params = msg.get('params', {})
+            item = params.get('item', {})
+            if method == 'turn/completed':
+                completed[params.get('threadId')] = params['turn']
+                events.append({'event': method, 'threadId': params.get('threadId'), 'turn': params['turn']})
+                print(json.dumps({'event': method, 'status': params['turn'].get('status')}), flush=True)
+            elif method == 'item/completed' and item.get('type') in ['commandExecution','agentMessage','dynamicToolCall','contextCompaction']:
+                events.append({'event': method, 'threadId': params.get('threadId'), 'item': item})
+                print(json.dumps({'event': 'item/completed', 'type': item.get('type')}), flush=True)
+            elif method == 'error':
+                events.append({'event': method, 'error': params})
+            # Reasoning, analysis, deltas and transcripts are never exported.
+
+def request(method, params):
+    ident = send(method, params)
+    deadline = time.monotonic()+30
+    while ident not in responses:
+        if time.monotonic() >= deadline:
+            raise TimeoutError('API request timed out: '+method)
+        pump()
+    msg = responses.pop(ident)
+    if 'error' in msg:
+        raise RuntimeError(json.dumps({'method': method, 'error': msg['error']}))
+    return msg['result']
+
+def cli(args, cwd=None):
+    p = subprocess.run(args, cwd=cwd, capture_output=True, text=True, timeout=40)
+    if p.returncode:
+        raise RuntimeError(json.dumps({'command':args[:3], 'exit':p.returncode, 'error':p.stderr[:300]}))
+    return p.stdout.strip()
+
+def api(route):
+    return json.loads(cli(['gh','api','repos/devcorp-by-techcorp/studio-suite_v2/'+route]))
+
+policy_sequence = 0
+memory_ready_threads = set()
+
+def host_evidence(tid, arguments):
+    global policy_sequence
+    if not thread or tid != thread['thread']['id']:
+        return {'success':False,'denial':'wrong-thread'}
+    if not isinstance(arguments,dict) or set(arguments)!={'probe','challenge'}:
+        return {'success':False,'denial':'unexpected-fields'}
+    if arguments['probe'] not in ['empirical','git_ci','source_lifecycle'] or not isinstance(arguments['challenge'],str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,64}',arguments['challenge']):
+        return {'success':False,'denial':'invalid-request'}
+    if arguments['probe']!='empirical' and tid not in memory_ready_threads:
+        return {'success':False,'denial':'empirical-first-required'}
+    receipt={'instance':INSTANCE,'threadId':tid,'challenge':arguments['challenge'],'probe':arguments['probe'],'recordedAt':time.time()}
+    if arguments['probe']=='empirical':
+        workspace=cli(['empirical','workspace','current'])
+        ids=['6ac6d00d6705457911c73200','6ac6c8f46705457911c723b2','6ac6c9446705457911c724ab','6ac6c94b6705457911c724fa']
+        memories=[json.loads(cli(['empirical','memory','get','--memory-id',ident])) for ident in ids]
+        policy_sequence+=1
+        (ROOT/f'policy-request-{policy_sequence}.json').write_text(json.dumps({'sequence':policy_sequence,'threadId':tid,'challenge':arguments['challenge']}))
+        print(json.dumps({'event':'empirical-policy-request','sequence':policy_sequence,'root':str(ROOT)}),flush=True)
+        replyfile=ROOT/f'policy-response-{policy_sequence}.json'
+        deadline=time.monotonic()+90
+        while not replyfile.exists():
+            if time.monotonic()>deadline: raise TimeoutError('Live connected Empirical policy bridge absent')
+            pump(0.5)
+        bridge=json.loads(replyfile.read_text())
+        if bridge['threadId']!=tid or bridge['challenge']!=arguments['challenge']:
+            raise RuntimeError('policy bridge mismatch')
+        receipt.update({'workspaceCli':workspace,'policy':bridge['policy'],'workspaceApi':bridge['workspace'],'memories':memories})
+        if bridge['workspace']['current']['key']!='studio_suite_v2': raise RuntimeError('wrong memory workspace')
+        memory_ready_threads.add(tid)
+    elif arguments['probe']=='git_ci':
+        head=cli(['git','rev-parse','HEAD'],REPO);tree=cli(['git','rev-parse','HEAD^{tree}'],REPO)
+        refs=cli(['git','ls-remote','origin','refs/heads/main','refs/heads/codex/prerequisite-reconciliation-20261006'],REPO)
+        pr=api('pulls/18');run=api('actions/runs/37443377221');jobs=api('actions/runs/37443377221/jobs?per_page=100')
+        receipt.update({'branch':cli(['git','branch','--show-current'],REPO),'head':head,'tree':tree,'remoteRefs':refs,
+                        'pr':{k:pr.get(k) for k in ['number','state','merged','merge_commit_sha','merged_at','html_url']},
+                        'run':{k:run.get(k) for k in ['id','head_sha','status','conclusion','event','html_url']},
+                        'jobs':[{k:job.get(k) for k in ['id','name','status','conclusion','html_url']} for job in jobs['jobs']]})
+    else:
+        paths=['docs/development/long-running-session-plan.md','docs/development/phases/R0/checkpoint.md','docs/development/phases/R0/bootstrap-qualification.md']
+        lifecycle=[e for e in events if e.get('threadId')==predecessor_id and (e.get('event')=='turn/completed' or e.get('item',{}).get('type')=='contextCompaction')]
+        lifecycle=[{'event':e.get('event'),'threadId':e.get('threadId'),'turnId':e.get('turnId') or e.get('turn',{}).get('id'),'status':e.get('turn',{}).get('status'),'itemType':e.get('item',{}).get('type'),'itemId':e.get('item',{}).get('id')} for e in lifecycle]
+        receipt.update({'liveSourceSha256':{p:digest(REPO/p) for p in paths},'frozenPacket':packet_state(),
+                        'compactionLifecycle':lifecycle,'freshThreadId':tid,'priorThreadId':predecessor_id,
+                        'freshInitialTurns':thread['thread'].get('turns',[]),'negativeBootstrap':negative_receipt,'model':thread.get('model'),'reasoningEffort':thread.get('reasoningEffort'),
+                        'profile':thread.get('activePermissionProfile'),'compactionAcknowledgement':compaction_ack})
+    receipt['receiptSha256']=hashlib.sha256(json.dumps(receipt,sort_keys=True).encode()).hexdigest()
+    return {'success':True,'receipt':receipt}
+
+def wait_turn(tid, timeout=420):
+    deadline=time.monotonic()+timeout
+    while tid not in completed:
+        if time.monotonic()>deadline: raise TimeoutError('bounded qualification turn did not complete')
+        pump()
+        while pending_broker:
+            msg=pending_broker.pop(0);params=msg['params']
+            value=host_evidence(params.get('threadId'),params.get('arguments')) if params.get('tool')=='bootstrap_evidence' else {'success':False,'denial':'unknown-tool'}
+            events.append({'event':'bootstrap-evidence-response','threadId':params.get('threadId'),'input':params.get('arguments'),'response':value})
+            reply(msg['id'],{'success':value.get('success',False),'contentItems':[{'type':'inputText','text':json.dumps(value)}]})
+            print(json.dumps({'event':'bootstrap-evidence','probe':params.get('arguments',{}).get('probe'),'success':value.get('success')}),flush=True)
+    if completed[tid].get('status')!='completed': raise RuntimeError('qualification turn failed')
+
+def start_fresh(label, checkpoint):
+    global thread
+    tool={'type':'function','name':'bootstrap_evidence','description':'Fixed read-only actual Empirical, Git/CI and source/compaction evidence. No caller-selected paths, commands, queries, writes or credentials.',
+          'inputSchema':{'type':'object','additionalProperties':False,'properties':{'probe':{'type':'string','enum':['empirical','git_ci','source_lifecycle']},'challenge':{'type':'string','pattern':'^[A-Za-z0-9_-]{1,64}$'}},'required':['probe','challenge']}}
+    thread=request('thread/start',{'model':'gpt-6.1-sol','allowProviderModelFallback':False,'permissions':'r0_bootstrap_memory','approvalPolicy':'never','cwd':str(OUTPUT),'ephemeral':True,'dynamicTools':[tool],
+                   'baseInstructions':'You are a fresh Studio Suite bootstrap controller. Your first turn is memory-only: call bootstrap_evidence with probe empirical and an ASCII letters/digits/underscore-only challenge such as r0_bootstrap. On denial retry memory only; do not read any file. Return MEMORY_READY only after successful live memory/workspace/policy retrieval. Filesystem source reads are not granted until the host validates that turn. In the next turn read the checkpoint and indicated qualification contract. Independently verify current authority hashes and source/Git/CI facts. Do not export reasoning or credential values. Missing evidence or disagreement blocks advancement. No application changes or remote writes.',
+                   'developerInstructions':'This is read-only R0 preparation. R0 is not GREEN. Do not claim RESET_CONFIRMED or start any product phase. Return factual JSON with every applicable BQ row, prior gate state, exact next scope, advancement permission and limits. Prior controller messages, compacted items and previous verdicts are unavailable.'})
+    tid=thread['thread']['id']
+    if tid==predecessor_id or thread['thread'].get('turns') or thread.get('model')!='gpt-6.1-sol' or thread.get('reasoningEffort')!='medium':
+        raise RuntimeError('fresh controller identity/model/history mismatch')
+    events.append({'event':'fresh-thread-start','label':label,'response':{k:thread.get(k) for k in ['model','reasoningEffort','activePermissionProfile','instructionSources']},'threadId':tid,'initialTurns':thread['thread'].get('turns',[])})
+    prompt=f'Checkpoint pointer: {checkpoint}\nNext contract ID: R0 preparatory bootstrap qualification.'
+    events.append({'event':'fresh-input','threadId':tid,'text':prompt})
+    request('turn/start',{'threadId':tid,'model':'gpt-6.1-sol','effort':'medium','input':[{'type':'text','text':prompt,'text_elements':[]}]})
+    wait_turn(tid)
+    successes=[e for e in events if e.get('event')=='bootstrap-evidence-response' and e.get('threadId')==tid and e.get('input',{}).get('probe')=='empirical' and e['response'].get('success')]
+    if not successes: raise RuntimeError('memory-first stage failed; source permissions remain denied')
+    memory=successes[-1]['response']['receipt']
+    if memory['workspaceApi']['current']['key']!='studio_suite_v2' or [m['id'] for m in memory['memories']]!=['6ac6d00d6705457911c73200','6ac6c8f46705457911c723b2','6ac6c9446705457911c724ab','6ac6c94b6705457911c724fa']:
+        raise RuntimeError('memory-stage workspace or record mismatch')
+    events.append({'event':'memory-first-verified','threadId':tid,'sourceReadGrantBefore':False,'memoryReceiptSha256':memory['receiptSha256']})
+    del completed[tid]
+    request('turn/start',{'threadId':tid,'model':'gpt-6.1-sol','effort':'medium','permissions':'r0_qualified','input':[{'type':'text','text':'Live memory readback is verified. Continue the read-only bootstrap from the original checkpoint pointer under its qualification contract. Verify all applicable BQ rows, including any fixed raw negative-bootstrap receipt available through source_lifecycle.','text_elements':[]}]})
+    wait_turn(tid)
+    messages=[e['item']['text'] for e in events if e.get('threadId')==tid and e.get('item',{}).get('type')=='agentMessage']
+    if not messages: raise RuntimeError('fresh controller returned no receipt')
+    (ROOT/f'{label}-result.txt').write_text(messages[-1]+'\n')
+    return tid
+
+predecessor_id=None
+compaction_ack=None
+negative_receipt=None
+try:
+    request('initialize',{'clientInfo':{'name':'studio-r0-bootstrap-qualification','version':'0.1'},'capabilities':{'experimentalApi':True}})
+    send('initialized',{},False)
+    thread=request('thread/start',{'model':'gpt-6.1-sol','allowProviderModelFallback':False,'permissions':'r0_qualified','approvalPolicy':'never','cwd':str(OUTPUT),'ephemeral':True,
+                'baseInstructions':'Disposable idle controller for supported compaction qualification. No other task or external actions.',
+                'developerInstructions':'Read only the supplied qualification contract. Return its exact reset requirements and current no-product-advancement boundary as factual JSON. No reasoning export.'})
+    predecessor_id=thread['thread']['id']
+    if thread.get('model')!='gpt-6.1-sol' or thread.get('reasoningEffort')!='medium': raise RuntimeError('predecessor model mismatch')
+    request('turn/start',{'threadId':predecessor_id,'model':'gpt-6.1-sol','effort':'medium','input':[{'type':'text','text':f'Read {PACKET}/contract.md. State only the supported compaction completion and fresh-bootstrap requirements. No implementation or phase advancement.','text_elements':[]}]})
+    wait_turn(predecessor_id)
+    del completed[predecessor_id]
+    compaction_ack=request('thread/compact/start',{'threadId':predecessor_id})
+    events.append({'event':'compaction-acknowledged','threadId':predecessor_id,'response':compaction_ack})
+    wait_turn(predecessor_id,120)
+    matching=[e for e in events if e.get('event')=='item/completed' and e.get('threadId')==predecessor_id and e.get('item',{}).get('type')=='contextCompaction']
+    if not matching: raise RuntimeError('matching contextCompaction completion absent')
+    negative=start_fresh('negative',PACKET/'negative-checkpoint.md')
+    negative_receipt={'threadId':negative,'finalReceipt':json.loads((ROOT/'negative-result.txt').read_text())}
+    positive=start_fresh('positive',PACKET/'checkpoint.md')
+    print(json.dumps({'event':'bootstrap-qualified-observations-complete','positiveThread':positive,'negativeThread':negative,'root':str(ROOT)}),flush=True)
+except Exception as exc:
+    events.append({'event':'probe-failed','error':str(exc),'type':type(exc).__name__})
+    print(json.dumps(events[-1]),flush=True)
+finally:
+    (ROOT/'host-postcheck.json').write_text(json.dumps({'instance':INSTANCE,'packet':packet_state(),'hostSentinelUnchanged':digest(SENTINEL)==BEFORE},indent=2)+'\n')
+    (ROOT/'outcome-events.json').write_text(json.dumps(events,indent=2)+'\n')
+    server.terminate()
+    try: server.communicate(timeout=5)
+    except subprocess.TimeoutExpired: server.kill();server.communicate()
+    print(json.dumps({'event':'closed','root':str(ROOT),'serverExit':server.returncode}),flush=True)

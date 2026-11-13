@@ -1,0 +1,21 @@
+{
+  "cwd": "/home/techcorp2024/studio-suite_v2",
+  "candidateDependencyLimitation": "Missing TypeScript and generated bundles; direct candidate checks failed ERR_MODULE_NOT_FOUND.",
+  "sourceEquality": {
+    "verifiedInputs": 92,
+    "includes": "authoritative DS files, checker source, token source, compatibility and historical fixtures"
+  },
+  "checks": [
+    {
+      "command": "node scripts/check-design.mjs",
+      "exit_code": 0,
+      "output": "design-check: token mirrors match; 25 runtime variables resolve."
+    },
+    {
+      "command": "node scripts/check-token-compatibility.mjs",
+      "exit_code": 0,
+      "output": "token-compatibility: historical web/native palette, rollup, alpha and shadow helper contracts pass."
+    }
+  ],
+  "scope": "Existing source/bundles checks, not aggregate candidate browser/native acceptance."
+}

@@ -1,0 +1,140 @@
+{
+  "success": true,
+  "receipt": {
+    "instance": "cbb7c785b0e48758ce82dba0053669ef",
+    "threadId": "01a118b4-405b-73b3-a519-5b82a9d959cd",
+    "challenge": "before_review",
+    "probe": "configuration",
+    "recordedAt": 1791415829.138822,
+    "hostPid": 19690,
+    "hostPidNamespace": "pid:[4026532604]",
+    "contractSha256": "95510bb0203e1fe4b700a7151fbee31183106d23442cc1c08669afd20c22c5a1",
+    "actualThreadResponse": {
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "medium",
+      "modelProvider": "openai",
+      "approvalPolicy": "never",
+      "activePermissionProfile": {
+        "id": "r0_qualified",
+        "extends": null
+      },
+      "cwd": "/tmp/studio-r0-scope-v2-p3qx8ovs/output",
+      "runtimeWorkspaceRoots": [
+        "/tmp/studio-r0-scope-v2-p3qx8ovs/output"
+      ],
+      "disabledPluginIds": []
+    },
+    "effectiveFeatures": {
+      "apps": false,
+      "plugins": false,
+      "hooks": false,
+      "memories": false,
+      "browser_use": false,
+      "browser_use_external": false,
+      "browser_use_full_cdp_access": false,
+      "computer_use": false,
+      "image_generation": false,
+      "multi_agent": false,
+      "multi_agent_v2": false,
+      "request_permissions_tool": false,
+      "in_app_browser": false,
+      "external_agent_memory_import": false,
+      "chronicle": false,
+      "skip_host_skill_discovery": true,
+      "code_mode_host": true,
+      "shell_tool": true
+    },
+    "mcpServerStatuses": [
+      {
+        "name": "empirical",
+        "status": null
+      }
+    ],
+    "configReadProjection": {
+      "model": "gpt-6.1-sol",
+      "model_reasoning_effort": "medium",
+      "approval_policy": "never",
+      "web_search": "disabled",
+      "sandbox_mode": null
+    },
+    "registeredProfile": {
+      "filesystem": {
+        ":root": "deny",
+        ":minimal": "read",
+        "/tmp/studio-r0-scope-v2-p3qx8ovs/input": "read",
+        "/tmp/studio-r0-scope-v2-p3qx8ovs/output": "write",
+        "/home/techcorp2024/.codex/tmp/arg0": "read",
+        "/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin": "read",
+        "/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/codex-path": "read"
+      },
+      "network": {
+        "enabled": false
+      }
+    },
+    "actualHostArgv": [
+      "/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex",
+      "-c",
+      "model=\"gpt-6.1-sol\"",
+      "-c",
+      "model_reasoning_effort=\"medium\"",
+      "-c",
+      "default_permissions=\"r0_qualified\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "web_search=\"disabled\"",
+      "-c",
+      "shell_environment_policy.inherit=\"none\"",
+      "-c",
+      "permissions.r0_qualified.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\"/tmp/studio-r0-scope-v2-p3qx8ovs/input\"=\"read\",\"/tmp/studio-r0-scope-v2-p3qx8ovs/output\"=\"write\",\"/home/techcorp2024/.codex/tmp/arg0\"=\"read\",\"/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin\"=\"read\",\"/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/codex-path\"=\"read\"}",
+      "-c",
+      "permissions.r0_qualified.network.enabled=false",
+      "-c",
+      "features.skip_host_skill_discovery=true",
+      "--disable",
+      "apps",
+      "--disable",
+      "plugins",
+      "--disable",
+      "hooks",
+      "--disable",
+      "memories",
+      "--disable",
+      "browser_use",
+      "--disable",
+      "browser_use_external",
+      "--disable",
+      "browser_use_full_cdp_access",
+      "--disable",
+      "computer_use",
+      "--disable",
+      "image_generation",
+      "--disable",
+      "multi_agent",
+      "--disable",
+      "multi_agent_v2",
+      "--disable",
+      "request_permissions_tool",
+      "--disable",
+      "in_app_browser",
+      "--disable",
+      "external_agent_memory_import",
+      "--disable",
+      "chronicle",
+      "-c",
+      "mcp_servers.empirical.enabled=false",
+      "app-server",
+      "--stdio"
+    ],
+    "instructionSources": [
+      "/home/techcorp2024/.codex/AGENTS.md"
+    ],
+    "negativeCallbackChecks": {
+      "extra_path": "unexpected-fields",
+      "command": "unexpected-fields",
+      "wrong_thread": "wrong-thread",
+      "invalid_probe": "invalid-probe"
+    },
+    "receiptSha256": "25a8cc3b55671f334c86295019295ae484f9711ca8e80f2a7881e739fe3a44ff"
+  }
+}

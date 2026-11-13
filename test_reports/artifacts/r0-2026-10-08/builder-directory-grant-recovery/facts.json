@@ -1,0 +1,89 @@
+[
+  {
+    "event": "item/completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "turnId": "01a118e8-83ad-7633-ab19-2d52dee3e438",
+    "item": {
+      "type": "commandExecution",
+      "id": "exec-3cf241cd-81d4-4ffb-a6d4-c99cd1b11deb",
+      "pluginId": null,
+      "scriptPath": null,
+      "command": "/bin/bash -lc '/bin/ls -ld /home/techcorp2024/scratch/studio-suite-r0-candidate-20261008 /tmp/studio-r0-builder-resumed-x925c72b/input'",
+      "cwd": "/tmp/studio-r0-builder-resumed-x925c72b/output",
+      "processId": "58331",
+      "source": "unifiedExecStartup",
+      "status": "failed",
+      "commandActions": [
+        {
+          "type": "unknown",
+          "command": "/bin/ls -ld /home/techcorp2024/scratch/studio-suite-r0-candidate-20261008 /tmp/studio-r0-builder-resumed-x925c72b/input"
+        }
+      ],
+      "aggregatedOutput": "/bin/ls: cannot access '/home/techcorp2024/scratch/studio-suite-r0-candidate-20261008': No such file or directory\n/bin/ls: cannot access '/tmp/studio-r0-builder-resumed-x925c72b/input': No such file or directory\n",
+      "exitCode": 2,
+      "durationMs": 0
+    }
+  },
+  {
+    "event": "builder-evidence-response",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "probe": "configuration",
+    "challenge": "r0_resumed_access",
+    "success": false,
+    "denial": "empirical-first-required"
+  },
+  {
+    "event": "builder-evidence-response",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "probe": "empirical",
+    "challenge": "r0_bootstrap",
+    "success": true,
+    "denial": null,
+    "receiptSha256": "f49234f255d45293f19e0d96d5400a642bfdf12d8c017b90b92ffb53a2e1509d",
+    "receiptHashVerified": true,
+    "workspace": "Current workspace: studio-suite_v2",
+    "readbackVerified": true,
+    "fullRequiredMemoryIds": [
+      "6ac6d8e16705457911c73a00",
+      "6ac6d4f46705457911c73811",
+      "6ac6d3856705457911c7366b"
+    ]
+  },
+  {
+    "event": "actual_directory_profile_inspection_completed",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "successfulCommandCount": 2,
+    "resumedPhaseThread": true,
+    "implementationStarted": false
+  },
+  {
+    "event": "actual_phase_goal_registered",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "goal": {
+      "goal": {
+        "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+        "objective": "Complete Studio Suite R0 under the accepted infrastructure contract, with every build/test/review/integration/records/CI/GREEN/reset gate before product work.",
+        "status": "active",
+        "tokenBudget": null,
+        "tokensUsed": 4347,
+        "timeUsedSeconds": 23,
+        "createdAt": 1791417874,
+        "updatedAt": 1791419342
+      }
+    },
+    "explicitAuthority": "Activated user plan conditional Goal registration; no token budget supplied."
+  },
+  {
+    "event": "builder-evidence-response",
+    "threadId": "01a118d1-6e03-7dc3-8496-8d8c5e8f49b4",
+    "probe": "configuration",
+    "challenge": "r0_build_configuration",
+    "success": true,
+    "denial": null,
+    "receiptSha256": "208f093a08336219eca8e1b6c0c13ffba0dd272fb2797875d9ae68c41dedb54f",
+    "receiptHashVerified": true,
+    "workspace": null,
+    "readbackVerified": null,
+    "fullRequiredMemoryIds": []
+  }
+]

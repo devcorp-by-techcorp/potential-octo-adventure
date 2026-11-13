@@ -1,0 +1,72 @@
+{
+  "exactBytePreservation": true,
+  "historicalCommitsAndOriginalCheckoutPreserved": true,
+  "files": [
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/bootstrap-v1/input/host-probe-source.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/bootstrap-v1/input/host-probe-source.py.txt",
+      "sha256": "257c9307a54b151eac491cf63b9a96680b0521b793c88d0c828e4bbe6d797182",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/bootstrap-v2/input/host-probe-source.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/bootstrap-v2/input/host-probe-source.py.txt",
+      "sha256": "a2eab3ac2501e3771cf8b5a4b240018a4ef57b1a6eea8553938c340b51a31afb",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/host-v2/input/host-probe-source.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/host-v2/input/host-probe-source.py.txt",
+      "sha256": "1a577d5ae5bce24d9a698860fb20bf8d5cb67a52a954a9c71db8d2a1c1cbdb1e",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/namespace-classification.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/namespace-classification.py.txt",
+      "sha256": "2da3284e1e929485b65561c27bacd87ede60ce57187596c2798ee1b6b511b254",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/native-probe.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/native-probe.py.txt",
+      "sha256": "b6a226df2b4efadb53c371f0ca72f53b4c6f3aad2b45573b9f23211d3ac68881",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/probe.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/probe.py.txt",
+      "sha256": "fff06b2a2960b7d5fab0986455bdfaa9705d5fcb28df779a4130575b5a74368c",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/review-input-host-isolation-probe.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/review-input-host-isolation-probe.py.txt",
+      "sha256": "2da3284e1e929485b65561c27bacd87ede60ce57187596c2798ee1b6b511b254",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/runtime-reset-probe.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/runtime-reset-probe.py.txt",
+      "sha256": "bd292252d78aefd4f7e072d0130f1c5830cba55588c566751573da8fcf9a66bd",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/scope-v1/input/host-probe-source.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/scope-v1/input/host-probe-source.py.txt",
+      "sha256": "d7f8652bc193f58d1792ca20c8dc2c2f38c46e7751f3b4d39209b49645437d95",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/scope-v2/input/host-probe-source.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/scope-v2/input/host-probe-source.py.txt",
+      "sha256": "f3575fe35dfaecce1d08ce0bbca56f28f5cf4f8446046646774895e196b2f762",
+      "mode": "100644"
+    },
+    {
+      "historicalPath": "test_reports/artifacts/r0-2026-10-08/scope-v3/input/host-probe-source.py",
+      "currentPath": "test_reports/artifacts/r0-2026-10-08/scope-v3/input/host-probe-source.py.txt",
+      "sha256": "aca5aa3964cb6b0606c35a2eacb5efd69ddc0aa6c74827fe85ea2c26ec5037bd",
+      "mode": "100644"
+    }
+  ]
+}

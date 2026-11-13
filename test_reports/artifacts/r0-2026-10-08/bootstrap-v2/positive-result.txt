@@ -1,0 +1,83 @@
+{
+  "verdict": "PASS",
+  "qualification_only": true,
+  "instance": "85db873f575aac44a2dfebba0c911a1c",
+  "thread_id": "01a118a6-da88-7023-92f8-0c50a77cc650",
+  "prior_gate_state": "R0 PREPARATION_ONLY; not GREEN",
+  "next_contract_id": "R0 preparatory bootstrap qualification",
+  "BQ": [
+    {
+      "id": "BQ-1",
+      "disposition": "PASS",
+      "evidence": "Prior thread completed a controller turn, matching contextCompaction item and successful compaction turn; acknowledgement alone was not used."
+    },
+    {
+      "id": "BQ-2",
+      "disposition": "PASS",
+      "evidence": "Distinct fresh thread with empty initial turns, gpt-6.1-sol/medium and no predecessor conversation."
+    },
+    {
+      "id": "BQ-3",
+      "disposition": "PASS",
+      "evidence": "First turn retrieved live Empirical only. Host validated memory before granting second-turn source reads. Workspace studio_suite_v2, policy stopOnMemoryFailure=true and all four contract-required records verified.",
+      "record_ids": [
+        "6ac6d00d6705457911c73200",
+        "6ac6c8f46705457911c723b2",
+        "6ac6c9446705457911c724ab",
+        "6ac6c94b6705457911c724fa"
+      ]
+    },
+    {
+      "id": "BQ-4",
+      "disposition": "PASS",
+      "evidence": "Independent /usr/bin/sha256sum checks match frozen manifest and live authority/contract hashes. Broker confirms unchanged packet and checkpoint agreement with current Git, remote refs, merged PR and exact-head CI."
+    },
+    {
+      "id": "BQ-5",
+      "disposition": "PASS",
+      "evidence": "This receipt binds current thread, memory, source, Git/CI and exact continuation scope; denies reset confirmation and product advancement."
+    },
+    {
+      "id": "BQ-6",
+      "disposition": "PASS",
+      "evidence": "Fixed source_lifecycle negative-bootstrap receipt identifies a distinct fresh thread returning BLOCKED for expected authority hash of 64 zeros versus actual 9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d; advancement_permission=false.",
+      "negative_thread_id": "01a118a5-b996-7db3-bf77-1ba4b58f55ae"
+    }
+  ],
+  "hashes": {
+    "checkpoint_sha256": "d19d6659f58e2c8b87c94912b4fe7faa56cc7e7ddb696fd289c7249c82febdb1",
+    "contract_sha256": "a53677f2d38ba0c7b3c40a46e7039e3e560630c4b764131d650a093c60de7888",
+    "authority_sha256": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+    "initial_memory_receipt": "a07944a56dc343c887102f9545bde1b1df1efab399f21452609e86d5081f9061",
+    "source_lifecycle_receipt": "2b0246b03a4d4f532278a80a7b482507398f97f0263cd82b743e110b82d71bde",
+    "git_ci_receipt": "ee776ca969e725650bbb437849a91e4f0c3b409b8f845ec539b6a52fdeb1d762"
+  },
+  "git_ci": {
+    "branch": "codex/prerequisite-reconciliation-20261006",
+    "head": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "tree": "3e212b16ab94df4ae705dbd17392d42e66de36c8",
+    "remote_preview": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "remote_main": "5c2fe515b0eba4b0d89492305a21f9548c2dd853",
+    "pr_18": "merged",
+    "exact_head_ci_run": 37443377221,
+    "successful_required_job_ids": [
+      112202251063,
+      112202251329,
+      112202251588
+    ]
+  },
+  "advancement_permission": false,
+  "RESET_CONFIRMED": false,
+  "product_phase_activation": false,
+  "exact_next_scope": "After host validation of this qualification receipt, freeze the full R0 supervisor/gate contract and obtain a fresh source-fidelity scope audit before implementation. No R0-C, C3 or C4 activation.",
+  "findings": [],
+  "evidence_limits": [
+    "PASS applies only to this preparatory capability qualification, not full R0 acceptance.",
+    "Git/CI, lifecycle and negative-bootstrap facts were retrieved through the fixed read-only broker.",
+    "Existing application-head CI is not final R0 integration-head CI.",
+    "The negative receipt's historical statement that no separate negative receipt was available describes its own run; the current lifecycle probe supplies that negative run's factual receipt.",
+    "Initial cat invocation failed because cat was absent from PATH; shell builtins subsequently read required documents and absolute-path sha256sum succeeded.",
+    "No application changes, remote writes, memory writes, credential export or raw-transcript export occurred.",
+    "Full R0 still requires scope, outcome and records reviews, implementation and negative-gate tests, integration/publication, final-head CI, memory readback, GREEN checkpoint and boundary reset."
+  ]
+}

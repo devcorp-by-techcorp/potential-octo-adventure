@@ -1,0 +1,41 @@
+# Normalise line endings: Git stores LF, checks out native on Windows.
+* text=auto eol=lf
+
+# Explicit text types
+*.py    text eol=lf
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.css   text eol=lf
+*.html  text eol=lf
+*.toml  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.sh    text eol=lf
+
+# Lockfiles are text but should not inflate diffs in review tooling
+package-lock.json   text eol=lf -diff linguist-generated=true
+
+# Binary assets (never normalise)
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.avif  binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.zip   binary
+*.gz    binary
+
+# Preserve the user-supplied design reference byte-for-byte across platforms.
+_ds/** -text
+# Supplied Markdown uses two-space hard line breaks; retain those source bytes.
+_ds/**/*.md whitespace=-blank-at-eol

@@ -1,0 +1,66 @@
+{
+  "verdict": "BLOCKED",
+  "thread_id": "01a118a5-b996-7db3-bf77-1ba4b58f55ae",
+  "instance": "85db873f575aac44a2dfebba0c911a1c",
+  "prior_gate_state": "R0 PREPARATION_ONLY; not GREEN",
+  "next_contract_id": "R0 preparatory bootstrap qualification",
+  "BQ": [
+    {
+      "id": "BQ-1",
+      "disposition": "PASS",
+      "evidence": "Prior thread completed a controller turn, contextCompaction item, and successful compaction turn."
+    },
+    {
+      "id": "BQ-2",
+      "disposition": "PASS",
+      "evidence": "Distinct fresh thread, empty initial turns, gpt-6.1-sol/medium; no predecessor conversation supplied."
+    },
+    {
+      "id": "BQ-3",
+      "disposition": "PASS",
+      "evidence": "Live Empirical retrieval completed before source access; host verified workspace, policy and all four required record readbacks."
+    },
+    {
+      "id": "BQ-4",
+      "disposition": "FAIL",
+      "evidence": "Independent SHA-256 checks agree with live source and frozen manifest, but disagree with the supplied negative checkpoint's expected authority hash."
+    },
+    {
+      "id": "BQ-5",
+      "disposition": "PASS",
+      "evidence": "This factual receipt binds current evidence and denies reset, product activation and advancement."
+    },
+    {
+      "id": "BQ-6",
+      "disposition": "PASS",
+      "evidence": "This fresh negative bootstrap reports BLOCKED, identifies the deliberately mismatched authority hash and permits no advancement."
+    }
+  ],
+  "hashes": {
+    "checkpoint_sha256": "2f02029c5661f6f2db13b704cf3fef59c219bddbc17adc7e45784ad6f96d079e",
+    "contract_sha256": "a53677f2d38ba0c7b3c40a46e7039e3e560630c4b764131d650a093c60de7888",
+    "authority_expected_by_checkpoint": "0000000000000000000000000000000000000000000000000000000000000000",
+    "authority_actual_sha256": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d"
+  },
+  "git_ci": {
+    "branch": "codex/prerequisite-reconciliation-20261006",
+    "head": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "tree": "3e212b16ab94df4ae705dbd17392d42e66de36c8",
+    "remote_preview": "11c537271958fd357f3ab9337f06bac0aa95ffee",
+    "remote_main": "5c2fe515b0eba4b0d89492305a21f9548c2dd853",
+    "pr_18": "merged",
+    "exact_head_ci_run": 37443377221,
+    "required_jobs": "All three successful",
+    "checkpoint_agreement": true
+  },
+  "advancement_permission": false,
+  "RESET_CONFIRMED": false,
+  "product_phase_activation": false,
+  "exact_next_scope": "Resolve the checkpoint/source authority disagreement and complete a successful read-only bootstrap qualification. Only afterward may the full R0 supervisor/gate contract be frozen for fresh source-fidelity scope audit; no implementation is authorized here.",
+  "evidence_limits": [
+    "source_lifecycle returned negativeBootstrap=null; no separate raw negative-bootstrap receipt was available.",
+    "Git/CI and lifecycle facts were verified through the fixed read-only broker.",
+    "Existing application CI is not final R0 integration-head CI.",
+    "No application changes, remote writes, credential export or full R0 acceptance occurred."
+  ]
+}

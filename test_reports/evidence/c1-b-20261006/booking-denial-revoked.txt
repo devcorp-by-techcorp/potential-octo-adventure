@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="en" style="--ink-000: #ffffff; --ink-050: #fafbfc; --ink-100: #ffffff; --ink-200: #f1f4f7; --ink-300: #e1e7ed; --ink-400: #c4cdd6; --ink-500: #8a96a3; --ink-600: #4a5666; --bone-050: #0e1730; --bone-100: #1a2540; --bone-200: #34405a; --bone-300: #5a6378; --bone-400: #828a9a; --bone-500: #aab1be; --gold-100: #d4b87a; --sage-100: #dde3d2; --gold-200: #b89868; --sage-200: #b5c2a4; --gold-300: #a8884f; --sage-300: #828d72; --gold-400: #826737; --sage-400: #5e6852; --gold-500: #5a481f; --sage-500: #3d4534; --success: #7a9b6e; --danger: #b86a5b; --info: #8aa3b8; --warning: #d4a356; --shadow-sm: 0 1px 2px rgba(20,30,50,0.06); --shadow-md: 0 4px 16px rgba(20,30,50,0.08), 0 1px 2px rgba(20,30,50,0.05); --shadow-lg: 0 24px 50px rgba(20,30,50,0.12), 0 4px 12px rgba(20,30,50,0.06); --shadow-gold: 0 0 0 1px rgba(168,136,79,0.28), 0 12px 30px rgba(168,136,79,0.12); --gold-text-grad: linear-gradient(180deg, #b89868 0%, #a8884f 50%, #5a481f 100%); --gold-fill-grad: radial-gradient(120% 80% at 30% 30%, rgba(255,235,190,0.5), transparent 60%), linear-gradient(135deg, #d4b87a 0%, #a8884f 50%, #5a481f 100%); --scrim: rgba(14,23,48,0.55); --surface-canvas: #fafbfc; --surface-raised: #ffffff; --surface-elevated: #ffffff; --surface-inset: #f1f4f7; --surface-accent: #e1e7ed; --border-subtle: #e1e7ed; --border-default: #c4cdd6; --border-strong: #8a96a3; --border-gold: #826737; --ink-primary: #0e1730; --ink-secondary: #34405a; --ink-tertiary: #5a6378; --ink-disabled: #aab1be; --ink-inverse: #fdf8ee; --brand-gold: #a8884f; --brand-gold-hover: #b89868; --brand-gold-muted: rgba(168,136,79,0.12); --status-success: #7a9b6e; --status-danger: #b86a5b; --status-info: #8aa3b8; --status-warning: #d4a356;"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b0b0f">
+    <meta name="description" content="Illuminate Studios — considered wedding, portrait, and editorial photography in Melbourne. Explore our collections and begin your enquiry.">
+    <title>Illuminate Studios — Photography with feeling</title>
+    <link rel="icon" type="image/png" href="/brand/lens-gold.png">
+    <script type="module" crossorigin="" src="/assets/index-BFsjH23p.js"></script>
+    <link rel="stylesheet" crossorigin="" href="/assets/index-BZhat6kZ.css">
+  </head>
+  <body data-theme="light">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"><main class="portal-entry studio-entry"><img alt="" width="64" height="64" src="/brand/lens-gold.png"><p class="eyebrow">Illuminate Studios</p><h1>Studio sign-in</h1><p role="status">Checking your session…</p><a class="studio-button secondary" href="/" data-discover="true">Back to the studio</a></main></div>
+
+
+</body></html>

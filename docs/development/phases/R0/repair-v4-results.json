@@ -1,0 +1,27 @@
+[
+  {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/autonomous/tests",
+      "-v"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "a455b15ff02bbd25cad5dce1061ce3f485d6251c1a3f8d6cbdef94533280a7a4"
+  },
+  {
+    "command": [
+      "/usr/bin/git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 128,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "1bb626e7e2f1b7ad37e555b7f3af62762f0f2a0791f0dc465f0ac58b65d516aa"
+  }
+]

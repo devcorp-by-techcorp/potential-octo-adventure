@@ -1,0 +1,40 @@
+{
+	admin off
+	auto_https off
+}
+
+:{$PORT:8080} {
+	encode zstd gzip
+	header X-Content-Type-Options nosniff
+	header Referrer-Policy strict-origin-when-cross-origin
+
+	# Web liveness is independent of the API/database deployment order.
+	handle /healthz {
+		respond "ok" 200
+	}
+
+	# Preserve /api and cookies; never rewrite API failures to the SPA.
+	@api path /api /api/*
+	handle @api {
+		reverse_proxy {$API_UPSTREAM} {
+			transport http {
+				dial_timeout 5s
+				response_header_timeout 60s
+			}
+		}
+	}
+
+	# Missing assets should be 404s, not HTML with an incorrect content type.
+	@static path /assets/* /brand/* /fonts/* /portfolio/*
+	handle @static {
+		root * /srv
+		file_server
+	}
+
+	handle {
+		root * /srv
+		header Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}

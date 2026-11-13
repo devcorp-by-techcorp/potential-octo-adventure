@@ -1,0 +1,9 @@
+{
+  "authority.md": "9e9c7bbc47bb995bc1368edad11d943aa3135379cbce4c113b3693cfefdd641d",
+  "contract.md": "08590c5d1344f49a4188fbe2b55e14c7efb64fac5993920563cf46bf870f9d19",
+  "host-before.json": "90587c0bf088c1e7f9ff7df7da32f0799f759f29fe772f2cd9368e4ecb1184c0",
+  "host-launch.json": "c9186a6555375fd39fdf8706004c33a75408c6263dfc4a6060205df3e2535a9c",
+  "host-isolation-outcomes.json": "a31c7714ea65450cf68ba0585d94092d76e1d2e77d9f1444a59121a2c7917633",
+  "host-isolation-probe.py": "2da3284e1e929485b65561c27bacd87ede60ce57187596c2798ee1b6b511b254",
+  "host-grants.json": "ed3ba3ec29aaf9fb745cb47e2fa8fd2aee7fc03ee969edbb9b7b89f219fcf01b"
+}

@@ -1,0 +1,50 @@
+{
+  "description": "Applied dashboard/API settings for preview. Legacy TOML enrolment was rejected by Railway; Dockerfile detection selects the web Docker build.",
+  "project": {
+    "name": "triumphant-freedom",
+    "id": "5e6a20db-f850-4ca9-9732-7764997cf0c0"
+  },
+  "environment": {
+    "name": "preview",
+    "id": "908f025f-ecb8-49ea-ae70-169cd445e986"
+  },
+  "services": {
+    "web": {
+      "name": "studio-suite_v2",
+      "id": "0cd586b2-40ff-4f92-9fbc-48633b2686da",
+      "rootDirectory": "/",
+      "builder": "RAILPACK",
+      "dockerfilePath": "web/Dockerfile",
+      "buildCommand": "",
+      "startCommand": "",
+      "preDeployCommand": [],
+      "publicOrigin": "https://studio-suitev2-preview.up.railway.app",
+      "variablesTemplate": "deploy/railway/web.env.example",
+      "numReplicas": 1,
+      "sleepApplication": false,
+      "healthcheckTimeout": 120,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "healthcheckPath": "/healthz"
+    },
+    "backend": {
+      "name": "backend",
+      "id": "47a4db1b-5649-4772-b05c-2667251ef6e8",
+      "rootDirectory": "/backend",
+      "builder": "RAILPACK",
+      "buildCommand": null,
+      "startCommand": "python deploy_server.py",
+      "preDeployCommand": [
+        "python initialize_database.py --check"
+      ],
+      "variablesTemplate": "deploy/railway/backend.env.example",
+      "numReplicas": 1,
+      "sleepApplication": false,
+      "healthcheckTimeout": 120,
+      "restartPolicyType": "ON_FAILURE",
+      "restartPolicyMaxRetries": 10,
+      "healthcheckPath": "/api/ready",
+      "ipv6EgressEnabled": true
+    }
+  }
+}

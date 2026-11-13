@@ -1,0 +1,40 @@
+{
+  "$jsonSchema": {
+    "title": "client_recovery_tokens",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "identity_id": {
+        "bsonType": "string"
+      },
+      "auth_version": {
+        "bsonType": "string"
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "expires_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "consumed_at": {
+        "bsonType": [
+          "date",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "_id",
+      "identity_id",
+      "auth_version",
+      "created_at",
+      "expires_at",
+      "consumed_at"
+    ],
+    "additionalProperties": true
+  }
+}

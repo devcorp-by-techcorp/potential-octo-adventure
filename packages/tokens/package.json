@@ -1,9 +1,31 @@
 {
-  "name": "@illuminate/tokens",
-  "version": "0.1.0",
-  "description": "Illuminate Studios — cross-platform design tokens (source of truth for web + native).",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "sideEffects": false,
-  "files": ["src", "illuminate-design-spec.json"]
+  "name": "@is/tokens",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "react-native": "./dist/index.native.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./css": "./dist/css/index.css",
+    "./dist/css/index.css": "./dist/css/index.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && node scripts/build-css.mjs"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.0"
+  }
 }

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Cinzel:wght@600&display=swap" rel="stylesheet"/>
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0;background:#e8e4dd}
+a{color:#a8884f;text-decoration:none}
+a:hover{color:#8a6f3e}
+</style>
+<script src="./doc-page.js"></script>
+</helmet>
+
+<doc-page margin="0.7in">
+
+  <div slot="header" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:8px;border-bottom:1px solid #ddd6c9;font-family:'Inter',system-ui,sans-serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#8c8578">
+    <span style="font-family:'Cinzel',serif;letter-spacing:.22em;color:#a8884f">Illuminate Studios</span>
+    <span>Studio Suite · web → mobile parity audit</span>
+  </div>
+
+  <div slot="footer" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-top:8px;border-top:1px solid #ddd6c9;font-family:'JetBrains Mono',monospace;font-size:9px;color:#8c8578">
+    <span>2 August 2026 · rev A</span>
+    <span>Prepared for the studio product review</span>
+  </div>
+
+  <div style="font-family:'Inter',system-ui,sans-serif;color:#1f1e1b;line-height:1.6">
+
+    <div style="font-family:'Inter',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.24em;font-size:10px;font-weight:600;color:#a8884f">End-to-end assessment</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:40px;line-height:1.04;margin:8px 0 10px;color:#1f1e1b">Is every web feature reachable in the mobile app?</h1>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;line-height:1.6;color:#4a463f;margin:0 0 22px;max-width:60ch">Short answer: nearly. Thirteen of the fifteen modules carry across cleanly. Finance was the main exception — four of its six tabs were complete, but Overview and Invoices between them were missing seven desktop capabilities. All seven are now integrated. The one gap left open is on the public site, and it needs a decision rather than a fix.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 26px">
+      <div style="border:1px solid #ddd6c9;border-radius:3px;background:#fbf9f5;padding:14px 16px;break-inside:avoid">
+        <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#8c8578">Surfaces compared</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;line-height:1;margin-top:8px">19</div>
+      </div>
+      <div style="border:1px solid #ddd6c9;border-radius:3px;background:#fbf9f5;padding:14px 16px;break-inside:avoid">
+        <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#8c8578">Gaps found</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;line-height:1;margin-top:8px">8</div>
+      </div>
+      <div style="border:1px solid #a8884f;border-radius:3px;background:#f7f1e4;padding:14px 16px;break-inside:avoid">
+        <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#a8884f">Closed this pass</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;line-height:1;margin-top:8px;color:#a8884f">8</div>
+      </div>
+      <div style="border:1px solid #ddd6c9;border-radius:3px;background:#fbf9f5;padding:14px 16px;break-inside:avoid">
+        <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:#8c8578">Awaiting a decision</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:30px;line-height:1;margin-top:8px">2</div>
+      </div>
+    </div>
+
+    <h2 style="font-family:'Inter',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:#a8884f;margin:28px 0 10px">1 · What was compared, and how</h2>
+    <p style="margin:0 0 10px;font-size:13.5px;max-width:74ch">Each web module was read at source and walked control by control, then matched against the mobile build (<span style="font-family:'JetBrains Mono',monospace;font-size:12px">StudioSuite-Mobile.dc.html</span>) and the Expo screen map. A control counts as present only when the mobile side has a bound handler that produces the same result — not merely a lookalike element.</p>
+    <ul style="margin:0 0 10px;padding-left:18px;font-size:13.5px">
+      <li style="margin-bottom:4px">Finance — <span style="font-family:'JetBrains Mono',monospace;font-size:12px">finance.jsx · finance-core.jsx · finance-tabs.jsx · finance-audit.jsx</span>, read in full against the mobile finance engine and its six tabs.</li>
+      <li style="margin-bottom:4px">Studio admin and client portal — <span style="font-family:'JetBrains Mono',monospace;font-size:12px">admin.jsx · client.jsx · documents.jsx · pricing.jsx</span>, control inventory compared against the mobile equivalents.</li>
+      <li style="margin-bottom:4px">Public site — <span style="font-family:'JetBrains Mono',monospace;font-size:12px">landing.jsx</span>, compared against the mobile marketing surface.</li>
+      <li>The standing interaction gate (<span style="font-family:'JetBrains Mono',monospace;font-size:12px">StudioSuite-E2E.dc.html</span>) remains the check for dead controls, unbound inputs and tap-target floors; it walks each surface at handset and desktop width.</li>
+    </ul>
+
+    <h2 style="font-family:'Inter',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:#a8884f;margin:28px 0 10px">2 · Module-level verdict</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <thead>
+        <tr style="border-bottom:1px solid #1f1e1b">
+          <th style="text-align:left;padding:7px 8px 7px 0;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600">Module</th>
+          <th style="text-align:left;padding:7px 8px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600">Mobile surface</th>
+          <th style="text-align:left;padding:7px 0 7px 8px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600">Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Dashboard</td><td style="padding:7px 8px;color:#4a463f">Admin · Dashboard</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Bookings + detail drawer</td><td style="padding:7px 8px;color:#4a463f">Admin · Bookings</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Inquiries · accept / decline</td><td style="padding:7px 8px;color:#4a463f">Admin · Inquiries</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Shoot tracker · phase advance</td><td style="padding:7px 8px;color:#4a463f">Admin · Shoot Tracker</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Contacts</td><td style="padding:7px 8px;color:#4a463f">Admin · Contacts</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Documents · library, issued, archive</td><td style="padding:7px 8px;color:#4a463f">Admin · Documents</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5;background:#f7f1e4"><td style="padding:7px 8px 7px 0;font-weight:600">Finance · six modules</td><td style="padding:7px 8px;color:#4a463f">Admin · Finance</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">7 gaps found · all closed</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Site content</td><td style="padding:7px 8px;color:#4a463f">Admin · Site Content</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Client overview + welcome</td><td style="padding:7px 8px;color:#4a463f">Client · Overview</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Gallery · folders, viewer, selections</td><td style="padding:7px 8px;color:#4a463f">Client · Gallery</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Inbox · reader + e-signature</td><td style="padding:7px 8px;color:#4a463f">Client · Inbox</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Client documents</td><td style="padding:7px 8px;color:#4a463f">Client · Documents</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Print collection + sizes</td><td style="padding:7px 8px;color:#4a463f">Client · Prints</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Ahead — order flow added on mobile</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Luma concierge</td><td style="padding:7px 8px;color:#4a463f">Both portals · header</td><td style="padding:7px 0 7px 8px;color:#4a7a52">Full parity</td></tr>
+        <tr><td style="padding:7px 8px 7px 0;font-weight:600">Public site · reserve a date</td><td style="padding:7px 8px;color:#4a463f">Marketing page</td><td style="padding:7px 0 7px 8px;color:#9a5a33;font-weight:600">Booking flow absent</td></tr>
+      </tbody>
+    </table>
+
+    <h2 style="font-family:'Inter',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:#a8884f;margin:30px 0 10px">3 · Finance, feature by feature</h2>
+    <p style="margin:0 0 12px;font-size:13.5px;max-width:74ch">The bookkeeping engine itself was already faithful — GST at one-eleventh, Simpler BAS, super guarantee at 12%, the $20,000 instant asset write-off, the double-entry journal and the hash-chained audit trail all match the desktop calculations. What was missing sat above the engine: the Overview page and everything an invoice can do.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <thead>
+        <tr style="border-bottom:1px solid #1f1e1b">
+          <th style="text-align:left;padding:7px 8px 7px 0;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600">Desktop capability</th>
+          <th style="text-align:left;padding:7px 8px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;width:88px">Before</th>
+          <th style="text-align:left;padding:7px 0 7px 8px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:600">Status now</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Bookkeeping settings — GST registration, price basis, cash/accrual</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Unchanged. Desktop repeats the strip on every tab; mobile keeps it on Overview.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Period selector — FY, quarters, months</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Unchanged — scrolling chip rail.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Overview headline figures — income, expenses, net profit, cash at bank</td><td style="padding:7px 8px;color:#9a5a33">wrong set</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">Built. Mobile was reporting receivables instead of the P&amp;L figures; it now reports the same four.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Overview profit &amp; loss snapshot + Full report link</td><td style="padding:7px 8px;color:#9a5a33">missing</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">Built.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Overview cash movement — opening, receipts, payments, closing</td><td style="padding:7px 8px;color:#9a5a33">missing</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">Built.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Upcoming obligations — BAS, super guarantee, overdue invoices, GST threshold warning</td><td style="padding:7px 8px;color:#9a5a33">missing</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">Built. Each row navigates to the tab that answers it.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Invoice register + status filters</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Rows are now tappable.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Raise an invoice — client, description, income account, total, issue date, terms</td><td style="padding:7px 8px;color:#9a5a33">missing</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">Built. Numbering continues the desktop series from INV-2001; GST is previewed as you type.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Invoice detail — ATO-format tax invoice on paper</td><td style="padding:7px 8px;color:#9a5a33">missing</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">Built as a bottom sheet: studio identity and ABN, billed-to, line item, GST subtotal, payment reference, and the correct heading for the unregistered case.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Record payment / mark unpaid · send to client · PDF</td><td style="padding:7px 8px;color:#9a5a33">missing</td><td style="padding:7px 0 7px 8px;color:#a8884f;font-weight:600">Built. Payment state feeds cash flow, BAS and the ledger exactly as on desktop; send and PDF are demo actions on both.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Expense register, record, edit, delete</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Unchanged.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Password gate at both ends + hash-chained audit trail</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Unchanged — failed attempts are recorded on mobile too.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">GST &amp; BAS worksheet, lodgment panel, unregistered state</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Unchanged.</td></tr>
+        <tr style="border-bottom:1px solid #e6e0d5"><td style="padding:7px 8px 7px 0">Reports — P&amp;L, cash flow, super, PAYG instalments, depreciation</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Unchanged.</td></tr>
+        <tr><td style="padding:7px 8px 7px 0">Accounts — general ledger and chart of accounts</td><td style="padding:7px 8px;color:#4a7a52">present</td><td style="padding:7px 0 7px 8px;color:#4a463f">Unchanged.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 style="font-family:'Inter',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:#a8884f;margin:30px 0 10px">4 · Open items — your call</h2>
+
+    <div style="border:1px solid #a8884f;border-radius:3px;background:#fbf9f5;padding:16px 18px;margin-bottom:12px;break-inside:avoid">
+      <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;line-height:1.2">A · Public “Reserve a Date” flow</div>
+      <p style="margin:6px 0 0;font-size:13px;color:#4a463f">The web landing page carries a three-step booking modal — month calendar, contact details, confirmation — reachable from the header, the hero and each package card. The mobile marketing page shows the packages but routes every intent to sign-in or Luma, so a prospective client cannot hold a date from their phone. This is the largest remaining functional difference. Recommended: a bottom-sheet version of the same three steps, with a month grid sized to 44pt targets.</p>
+    </div>
+
+    <div style="border:1px solid #ddd6c9;border-radius:3px;background:#fbf9f5;padding:16px 18px;margin-bottom:12px;break-inside:avoid">
+      <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;line-height:1.2">B · Persistence of finance edits <span style="font-family:'Inter',system-ui,sans-serif;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#4a7a52;vertical-align:middle">closed</span></div>
+      <p style="margin:6px 0 0;font-size:13px;color:#4a463f">Closed. The prototype now stores bookkeeping settings, the expense register, manually raised invoices, payment overrides, the hash-chained audit log, the selected period and the studio registers (staff, roster, suppliers, contacts) in local storage under <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px">studiosuite.v1</span>, matching desktop; transient UI — open sheets, form drafts, searches, password gates — is deliberately not kept. The acceptance crawler loads every surface with <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px">&amp;nopersist=1</span> so its synthetic clicks never enter the studio's books. The native app would use device storage on the same key set.</p>
+    </div>
+
+    <div style="border:1px solid #ddd6c9;border-radius:3px;background:#fbf9f5;padding:16px 18px;break-inside:avoid">
+      <div style="font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;line-height:1.2">C · Two decorative desktop buttons</div>
+      <p style="margin:6px 0 0;font-size:13px;color:#4a463f">“New Booking” on Bookings and “Add Contact” on Contacts exist on the web but have no handler there either — they are placeholders, and mobile omits them rather than copying dead controls. If they should become real, they need designing once and building on both.</p>
+    </div>
+
+    <h2 style="font-family:'Inter',system-ui,sans-serif;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:600;color:#a8884f;margin:30px 0 10px">5 · Re-verification</h2>
+    <p style="margin:0 0 10px;font-size:13.5px;max-width:74ch">The surfaces added since the last full pass — Studio Staff (roster and contracts) and Finance → Suppliers — were crawled at 390px and 1280px through the interaction gate, which now deep-links every finance tab and staff segment directly. One real defect was found and fixed: the engagement-type, pay-basis, agreement-type and contract-status chips were 42px tall and are now 44px. Handler wiring, controlled inputs and thrown errors came back clean across all six runs.</p>
+    <p style="margin:0;font-size:13.5px;max-width:74ch">Two caveats on the method. The inert-click test compares markup length, so a chip that swaps one style string for another of equal length reads as inert; those lines are informational, not failures. And the 12-width layout matrix depends on the app's ResizeObserver, which only fires when the browser grants a rendering opportunity — in a background preview that is roughly once every ten seconds — so the matrix is skipped in the quick crawl and belongs to <span style="font-family:'JetBrains Mono',monospace;font-size:12px">StudioSuite-Matrix-Probe.dc.html</span>, run with the tab in front. One open observation from the desktop runs: a 60×17 nav target is measured mid-crawl at 1280px, which looks like phone chrome being measured before the app has re-laid out for the wider frame rather than a defect in the design — worth confirming on a focused run.</p>
+
+  </div>
+</doc-page>
+
+</x-dc>
+</body>
+</html>

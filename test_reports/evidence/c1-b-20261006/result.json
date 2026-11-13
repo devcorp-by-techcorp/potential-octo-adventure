@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "bundle": "web/build",
+  "widths": [
+    1440,
+    390
+  ],
+  "database": "not used",
+  "api": "unauthenticated denial fixture",
+  "images": "SVG fixtures; no photographic fidelity claim"
+}

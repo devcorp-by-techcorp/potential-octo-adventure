@@ -1,0 +1,24 @@
+{
+  "hostBinary": "/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex",
+  "hostBinarySha256": "9a820c17865fa825d04db416818679a9d63bd72e50835c396f496e5684626c9c",
+  "transport": "Host Codex CLI owns ChatGPT login/model transport; model command children use selected filesystem/network profile. Credentials are not mounted into command namespace.",
+  "toolEnvironmentPolicy": "none",
+  "hostLauncherEnvironmentKeys": [
+    "PATH",
+    "HOME"
+  ],
+  "disabledFeatures": [
+    "apps",
+    "plugins",
+    "hooks",
+    "memories",
+    "browser_use",
+    "computer_use",
+    "image_generation",
+    "multi_agent",
+    "multi_agent_v2"
+  ],
+  "userConfigLoaded": false,
+  "threadHistory": "new ephemeral exec, no fork/resume",
+  "standingAuthority": "https://learn.chatgpt.com/docs/permissions"
+}

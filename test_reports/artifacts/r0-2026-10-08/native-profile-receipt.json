@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex",
+    "-c",
+    "permissions.r0_probe.filesystem={\":root\"=\"deny\",\":minimal\"=\"read\",\"/tmp/studio-suite-r0-isolation-4uvvipkz/packet\"=\"read\",\"/tmp/studio-suite-r0-isolation-4uvvipkz/review-output\"=\"write\",\"/home/techcorp2024/.codex\"=\"deny\",\"/home/techcorp2024/studio-suite_v2\"=\"deny\"}",
+    "-c",
+    "permissions.r0_probe.network.enabled=false",
+    "sandbox",
+    "-P",
+    "r0_probe",
+    "-C",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/review-output",
+    "--",
+    "/usr/bin/python3",
+    "/tmp/studio-suite-r0-isolation-4uvvipkz/packet/probe.py"
+  ],
+  "exit": 1,
+  "stdout": "",
+  "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)\nerror building bubblewrap command: app-server socket directory must be a user-owned directory with mode 0700\n"
+}

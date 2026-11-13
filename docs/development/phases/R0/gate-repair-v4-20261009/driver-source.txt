@@ -1,0 +1,342 @@
+"""One-shot qualification of an existing host. No phase supervision or product work."""
+import hashlib
+import json
+import os
+import re
+import secrets
+import selectors
+import subprocess
+import tempfile
+import time
+import tomllib
+from pathlib import Path
+
+EXE = Path('/home/techcorp2024/.codex/packages/app-server-daemon/releases/0.161.0-x86_64-unknown-linux-musl/bin/codex')
+REPO = Path('/home/techcorp2024/studio-suite_v2')
+ROOT = Path(tempfile.mkdtemp(prefix='studio-r0-gate-repair-v4-', dir='/tmp'))
+PACKET = ROOT / 'input'
+OUTPUT = ROOT / 'output'
+PACKET.mkdir()
+OUTPUT.mkdir()
+INSTANCE = secrets.token_hex(16)
+SENTINEL = ROOT / 'outside-sentinel'
+SENTINEL.write_bytes(secrets.token_bytes(64))
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+BEFORE = digest(SENTINEL)
+DISABLED = ['apps', 'plugins', 'hooks', 'memories', 'browser_use', 'browser_use_external',
+            'browser_use_full_cdp_access', 'computer_use', 'image_generation',
+            'multi_agent', 'multi_agent_v2', 'request_permissions_tool', 'in_app_browser',
+            'external_agent_memory_import', 'chronicle']
+FS = {':root': 'deny', ':minimal': 'read', str(PACKET): 'read', str(OUTPUT): 'write',
+      '/home/techcorp2024/.codex/tmp/arg0': 'read', str(EXE.parent): 'read',
+      str(EXE.parent.parent / 'codex-path'): 'read'}
+POLICY = {'filesystem': FS, 'network': {'enabled': False}}
+argv = [str(EXE), '-c', 'model="gpt-6.1-sol"', '-c', 'model_reasoning_effort="medium"',
+        '-c', 'default_permissions="r0_qualified"', '-c', 'approval_policy="never"',
+        '-c', 'web_search="disabled"', '-c', 'shell_environment_policy.inherit="none"',
+        '-c', 'permissions.r0_qualified.filesystem={' + ','.join(json.dumps(k)+'='+json.dumps(v) for k,v in FS.items())+'}',
+        '-c', 'permissions.r0_qualified.network.enabled=false', '-c', 'features.skip_host_skill_discovery=true']
+for feature in DISABLED:
+    argv += ['--disable', feature]
+user_config = tomllib.loads(Path('/home/techcorp2024/.codex/config.toml').read_text())
+for name in user_config.get('mcp_servers', {}):
+    argv += ['-c', 'mcp_servers.' + name + '.enabled=false']
+WORK=Path('/home/techcorp2024/scratch/studio-suite-r0-candidate-20261008')
+(WORK/'scripts/autonomous/tests').mkdir(parents=True,exist_ok=True)
+MEMORY_FS={k:v for k,v in FS.items() if k!=str(PACKET)}
+BUILDER_FS={**FS,str(WORK):'read',str(WORK/'scripts/autonomous'):'write',str(WORK/'.github/workflows'):'write',str(WORK/'docs/development/phases/R0'):'write'}
+for profile,paths in [('r0_memory',MEMORY_FS),('r0_builder',BUILDER_FS)]:
+ argv+=['-c','permissions.'+profile+'.filesystem={' + ','.join(json.dumps(k)+'='+json.dumps(v) for k,v in paths.items())+'}', '-c','permissions.'+profile+'.network.enabled=false']
+argv += ['app-server', '--stdio']
+
+(PACKET / 'contract.md').write_bytes((REPO / 'docs/development/phases/R0/execution-contract.md').read_bytes())
+(PACKET / 'authority.md').write_bytes((REPO / 'docs/development/long-running-session-plan.md').read_bytes())
+(PACKET / 'host-probe-source.py').write_bytes(Path(__file__).read_bytes())
+import shutil
+shutil.copytree('/tmp/studio-suite-r0-protocol-20261008',PACKET/'schemas')
+MANIFEST = {p.name: digest(p) for p in PACKET.iterdir() if p.is_file()}
+(PACKET / 'manifest.json').write_text(json.dumps({'instance': INSTANCE, 'sha256': MANIFEST}, indent=2)+'\n')
+FROZEN = {p.name: digest(p) for p in PACKET.iterdir() if p.is_file()}
+
+events = []
+responses = {}
+completed = {}
+pending_broker = []
+read_buffer = b''
+next_id = 0
+thread = None
+config = None
+import sys
+sys.path.insert(0,str(WORK))
+from scripts.autonomous.supervisor import Lease
+LEASE_DIRECTORY=Path('/tmp/studio-r0-builder-controller-restart-p6dscarr/controller-leases')
+assert LEASE_DIRECTORY.is_dir()
+LEASE=Lease(LEASE_DIRECTORY,'codex/studio-suite-r0-candidate-20261008')
+LEASE.acquire()
+server = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                          env={'PATH': os.environ['PATH'], 'HOME': os.environ['HOME']})
+selector = selectors.DefaultSelector()
+selector.register(server.stdout, selectors.EVENT_READ)
+print(json.dumps({'root': str(ROOT), 'instance': INSTANCE, 'serverPid': server.pid}), flush=True)
+
+def send(method, params, request=True):
+    global next_id
+    value = {'method': method, 'params': params}
+    if request:
+        next_id += 1
+        value['id'] = next_id
+    server.stdin.write((json.dumps(value)+'\n').encode())
+    server.stdin.flush()
+    return next_id
+
+def reply(ident, result):
+    server.stdin.write((json.dumps({'id': ident, 'result': result})+'\n').encode())
+    server.stdin.flush()
+
+def packet_state():
+    return {'expected': FROZEN, 'actual': {p: digest(PACKET/p) for p in FROZEN},
+            'unchanged': all(digest(PACKET/p)==h for p,h in FROZEN.items())}
+
+def validate_callback(tid, arguments):
+    if not thread or tid != thread['thread']['id']:
+        return 'wrong-thread'
+    if not isinstance(arguments, dict) or set(arguments) != {'probe', 'challenge'}:
+        return 'unexpected-fields'
+    if arguments['probe'] not in ['configuration', 'sentinel', 'transport', 'packet']:
+        return 'invalid-probe'
+    if not isinstance(arguments['challenge'], str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,64}', arguments['challenge']):
+        return 'invalid-challenge'
+    return None
+
+def host_evidence(tid, arguments):
+    error = validate_callback(tid, arguments)
+    if error:
+        return {'success': False, 'denial': error}
+    receipt = {'instance': INSTANCE, 'threadId': tid, 'challenge': arguments['challenge'],
+               'probe': arguments['probe'], 'recordedAt': time.time(), 'hostPid': os.getpid(),
+               'hostPidNamespace': os.readlink('/proc/self/ns/pid'), 'contractSha256': FROZEN['contract.md']}
+    if arguments['probe'] == 'configuration':
+        feature_rows = []
+        cursor = None
+        while True:
+            params = {'threadId': tid, 'limit': 100}
+            if cursor:
+                params['cursor'] = cursor
+            r = request('experimentalFeature/list', params)
+            feature_rows += r['data']
+            cursor = r.get('nextCursor')
+            if not cursor:
+                break
+        effective = {r['name']: r['enabled'] for r in feature_rows}
+        mcp = request('mcpServerStatus/list', {'limit': 100})
+        receipt.update({'actualThreadResponse': {k: thread.get(k) for k in ['model','reasoningEffort','modelProvider','approvalPolicy','activePermissionProfile','cwd','runtimeWorkspaceRoots','disabledPluginIds']},
+                        'effectiveFeatures': {k: effective.get(k) for k in DISABLED+['skip_host_skill_discovery','code_mode_host','shell_tool']},
+                        'mcpServerStatuses': [{'name': r.get('name'), 'status': r.get('status')} for r in mcp.get('data', [])],
+                        'configReadProjection': config, 'registeredProfile': POLICY, 'actualHostArgv': argv,
+                        'instructionSources': thread.get('instructionSources'),
+                        'negativeCallbackChecks': {name: validate_callback(test_tid, args) for name,test_tid,args in [
+                            ('extra_path',tid,{'probe':'sentinel','challenge':'extra','path':'/unrelated'}),
+                            ('command',tid,{'probe':'sentinel','challenge':'cmd','command':'false'}),
+                            ('wrong_thread','not-this-thread',{'probe':'sentinel','challenge':'wrong'}),
+                            ('invalid_probe',tid,{'probe':'mutation','challenge':'invalid'})]}})
+    elif arguments['probe'] == 'sentinel':
+        receipt.update({'sentinelPath': str(SENTINEL), 'beforeSha256': BEFORE, 'exists': SENTINEL.is_file(),
+                        'nowSha256': digest(SENTINEL), 'unchanged': digest(SENTINEL)==BEFORE, 'packet': packet_state()})
+    elif arguments['probe'] == 'transport':
+        receipt.update({'hostServerPid': server.pid, 'hostServerPidNamespace': os.readlink(f'/proc/{server.pid}/ns/pid'),
+                        'hostServerExecutable': str(EXE), 'hostServerExecutableSha256': digest(EXE),
+                        'hostLaunchEnvironmentKeys': ['HOME','PATH'], 'reviewerEnvironmentPolicy': 'none',
+                        'modelProvider': thread.get('modelProvider'), 'model': thread.get('model'),
+                        'baseInstructionsOverride': True, 'developerInstructionsOverride': True,
+                        'freshThreadInitialTurns': thread['thread'].get('turns', []),
+                        'readOnlyCallbackKeys': ['probe','challenge'], 'callerSelectedPathsOrCommands': False,
+                        'hostCallbackExportsCredentialValues': False})
+    else:
+        receipt['packet'] = packet_state()
+    receipt['receiptSha256'] = hashlib.sha256(json.dumps(receipt, sort_keys=True).encode()).hexdigest()
+    return {'success': True, 'receipt': receipt}
+
+def pump(timeout=1):
+    global read_buffer
+    for key, _ in selector.select(timeout):
+        data = os.read(key.fileobj.fileno(), 65536)
+        if not data:
+            raise RuntimeError('app-server stdout closed')
+        read_buffer += data
+        while b'\n' in read_buffer:
+            line, read_buffer = read_buffer.split(b'\n', 1)
+            msg = json.loads(line)
+            if 'id' in msg and ('result' in msg or 'error' in msg):
+                responses[msg['id']] = msg
+                continue
+            if 'id' in msg and msg.get('method') == 'item/tool/call':
+                pending_broker.append(msg)
+                continue
+            if 'id' in msg and 'method' in msg:
+                reply(msg['id'], {'decision': 'decline'})
+                events.append({'event': 'unexpected-request-denied', 'method': msg['method']})
+                continue
+            method = msg.get('method')
+            params = msg.get('params', {})
+            item = params.get('item', {})
+            if method == 'turn/completed':
+                completed[params.get('threadId')] = {k:params['turn'].get(k) for k in ['id','status','error','startedAt','completedAt','durationMs']}
+                events.append({'event': method, 'threadId': params.get('threadId'), 'turn': completed[params.get('threadId')]})
+                print(json.dumps({'event': method, 'status': params['turn'].get('status')}), flush=True)
+            elif method == 'item/completed' and item.get('type') in ['commandExecution','agentMessage','dynamicToolCall','contextCompaction']:
+                events.append({'event': method, 'threadId': params.get('threadId'), 'turnId':params.get('turnId'), 'item': item})
+                print(json.dumps({'event': 'item/completed', 'type': item.get('type')}), flush=True)
+            elif method == 'error':
+                events.append({'event': method, 'error': params})
+            # Reasoning, analysis, deltas and transcripts are never exported.
+
+def request(method, params):
+    ident = send(method, params)
+    deadline = time.monotonic()+30
+    while ident not in responses:
+        if time.monotonic() >= deadline:
+            raise TimeoutError('API request timed out: '+method)
+        pump()
+    msg = responses.pop(ident)
+    if 'error' in msg:
+        raise RuntimeError(json.dumps({'method': method, 'error': msg['error']}))
+    return msg['result']
+
+WORKTREE=Path('/home/techcorp2024/scratch/studio-suite-r0-candidate-20261008')
+MEMORY_OK=False
+BUILD_ROUND=0
+SKILLS=[Path('/home/techcorp2024/.agents/skills/empirical-memory/SKILL.md')]+[Path('/home/techcorp2024/.codex/plugins/cache/empirical-memory')/suffix for suffix in ['empirical-work-history/1.1.2/skills/empirical-work-history/SKILL.md','empirical-scar-tissue/1.2.0/skills/empirical-scar-tissue/SKILL.md','empirical-todo/1.1.3/skills/empirical-todo/SKILL.md']]
+
+def cli(arguments):
+    for attempt in range(2):
+        result=subprocess.run(arguments,capture_output=True,text=True,timeout=45)
+        if result.returncode==0:return result.stdout.strip()
+    raise RuntimeError(json.dumps({'readOperation':arguments[:3],'error':result.stderr[:250],'retry':1,'sourceAccessGranted':False}))
+
+def memory_rows(data):
+    if isinstance(data,list):return data
+    for key in ['memories','results','matches','items']:
+        if isinstance(data.get(key),list):return data[key]
+    raise RuntimeError('Unknown documented Empirical response shape')
+
+def full_record(row):
+    ident=row.get('id') or row.get('memoryId')
+    if not isinstance(ident,str) or not re.fullmatch('[0-9a-f]{24}',ident):raise RuntimeError('Invalid memory ID')
+    record=json.loads(cli(['empirical','memory','get','--memory-id',ident]))
+    return {k:record.get(k) for k in ['id','summary','tags','category','createdAt','updatedAt','notes','data','workspaceId','authorType']}
+
+def empirical():
+    skills=[{'path':str(p),'sha256':digest(p),'instructions':p.read_text()} for p in SKILLS]
+    # Installed syntax, policy and workspace are read before project recall.
+    syntax=cli(['empirical','doc','memory'])
+    policy=json.loads(cli(['empirical','policy','show']))
+    cli(['empirical','workspace','select','studio-suite_v2'])
+    workspace=cli(['empirical','workspace','current'])
+    if workspace!='Current workspace: studio-suite_v2':raise RuntimeError('Selected workspace mismatch')
+    recent=json.loads(cli(['empirical','memory','list','--tags','studio-suite_v2','--limit','12']))
+    histories=[r for r in memory_rows(recent) if 'work-history' in r.get('tags',[]) and 'studio-suite_v2' in r.get('tags',[])][:7]
+    selected={'workHistory':[full_record(r) for r in histories]}
+    for group,tags,query,status in [('scarTissue','studio-suite_v2,scar-tissue','Studio Suite R0 sandbox memory-first bootstrap',''),('openTodos','studio-suite_v2,todo','Studio Suite R0 infrastructure open work','open,in_progress,blocked')]:
+        args=['empirical','memory','query','--match',query,'--tags-all',tags,'--top-k','5']
+        if status:args+=['--status',status]
+        rows=memory_rows(json.loads(cli(args)))
+        if not rows:
+            rows=memory_rows(json.loads(cli(['empirical','memory','query','--match',query,'--tags','studio-suite_v2','--top-k','5'])))
+        rows=[r for r in rows if 'studio-suite_v2' in r.get('tags',[])]
+        selected[group]=[full_record(r) for r in rows]
+    required=[full_record({'id':ident}) for ident in ['6ac6d8e16705457911c73a00','6ac6d4f46705457911c73811','6ac6d3856705457911c7366b']]
+    return {'workspace':workspace,'policy':policy,'skills':skills,'documentedCliSyntax':syntax,'recall':selected,'requiredFullRecords':required,'readbackVerified':True,'filterRelaxationOnEmpty':True,'oneRetryThenBlockOnFailure':True}
+
+def builder_evidence(tid,arguments):
+    global MEMORY_OK
+    if tid!=thread['thread']['id']:return {'success':False,'denial':'wrong-thread'}
+    if not isinstance(arguments,dict) or set(arguments)!={'probe','challenge'}:return {'success':False,'denial':'unexpected-fields'}
+    if arguments['probe'] not in ['empirical','configuration'] or not isinstance(arguments['challenge'],str) or not re.fullmatch('[A-Za-z0-9_-]{1,64}',arguments['challenge']):return {'success':False,'denial':'invalid-request'}
+    receipt={'threadId':tid,'instance':INSTANCE,'probe':arguments['probe'],'challenge':arguments['challenge'],'recordedAt':time.time()}
+    if arguments['probe']=='empirical':
+        try:
+            receipt['empirical']=empirical()
+        except (RuntimeError,subprocess.TimeoutExpired) as exc:
+            (ROOT/'empirical-fallback-request.json').write_text(json.dumps({'threadId':tid,'challenge':arguments['challenge'],'fixedOperation':'installed-skills-policy-workspace-full-project-recall','failure':str(exc),'sourceAccessGranted':False}))
+            print(json.dumps({'event':'empirical-connected-fallback-required','root':str(ROOT),'threadId':tid}),flush=True)
+            fallback=ROOT/'empirical-fallback-response.json'
+            deadline=time.monotonic()+120
+            while not fallback.exists():
+                if time.monotonic()>deadline:raise TimeoutError('Connected alternative missing; source access remains denied')
+                pump(0.5)
+            bridged=json.loads(fallback.read_text())
+            if bridged['threadId']!=tid or bridged['challenge']!=arguments['challenge'] or bridged['empirical']['workspace']!='Current workspace: studio-suite_v2' or not bridged['empirical']['readbackVerified']:
+                raise RuntimeError('Connected alternative mismatch; source access denied')
+            receipt['empirical']=bridged['empirical']
+        MEMORY_OK=True
+    elif not MEMORY_OK:return {'success':False,'denial':'empirical-first-required'}
+    else:
+        receipt.update({'model':thread.get('model'),'reasoningEffort':thread.get('reasoningEffort'),'initialTurns':thread['thread'].get('turns',[]),'worktree':str(WORKTREE),'profiles':{'memory':MEMORY_FS,'builder':BUILDER_FS},'activeGoal':request('thread/goal/get',{'threadId':tid}),'protocolSchemas':str(PACKET/'schemas'),'hostOwnsPublicationAndMemoryWrites':True})
+    receipt['receiptSha256']=hashlib.sha256(json.dumps(receipt,sort_keys=True).encode()).hexdigest()
+    return {'success':True,'receipt':receipt}
+
+def save():
+    (ROOT/'outcome-events.json').write_text(json.dumps(events,indent=2)+'\n')
+
+def wait_turn(tid, expected_turn):
+    last_progress=time.monotonic()
+    while tid not in completed or completed[tid].get('id') != expected_turn:
+        pump()
+        while pending_broker:
+            msg=pending_broker.pop(0);p=msg['params']
+            value=builder_evidence(p.get('threadId'),p.get('arguments')) if p.get('tool')=='builder_evidence' else {'success':False,'denial':'unknown-tool'}
+            events.append({'event':'builder-evidence-response','threadId':tid,'input':p.get('arguments'),'response':value})
+            reply(msg['id'],{'success':value.get('success',False),'contentItems':[{'type':'inputText','text':json.dumps(value)}]})
+            print(json.dumps({'event':'builder-evidence','probe':p.get('arguments',{}).get('probe'),'success':value.get('success')}),flush=True)
+        save()
+        if time.monotonic()-last_progress>=45:
+            print(json.dumps({'event':'owned-controller-running','threadId':tid,'observationalOnly':True}),flush=True);last_progress=time.monotonic()
+    if completed[tid].get('status')!='completed':raise RuntimeError('Controller turn did not complete')
+
+def turn(text,profile,cwd):
+    global BUILD_ROUND
+    tid=thread['thread']['id'];completed.pop(tid,None)
+    started=request('turn/start',{'threadId':tid,'model':'gpt-6.1-sol','effort':'medium','permissions':profile,'cwd':str(cwd),'runtimeWorkspaceRoots':[str(cwd)],'input':[{'type':'text','text':text,'text_elements':[]}]})
+    wait_turn(tid, started['turn']['id'])
+    if profile=='r0_builder':
+        BUILD_ROUND+=1
+        messages=[e['item']['text'] for e in events if e.get('threadId')==tid and e.get('item',{}).get('type')=='agentMessage']
+        (ROOT/f'build-{BUILD_ROUND}-result.txt').write_text(messages[-1]+'\n')
+        (ROOT/'status.json').write_text(json.dumps({'state':'awaiting_host_gate','threadId':tid,'model':thread['model'],'reasoningEffort':thread['reasoningEffort'],'round':BUILD_ROUND,'hostServerPid':server.pid,'root':str(ROOT),'goal':request('thread/goal/get',{'threadId':tid})},indent=2)+'\n')
+        print(json.dumps({'event':'builder-turn-finished','root':str(ROOT),'round':BUILD_ROUND,'phaseComplete':False}),flush=True)
+
+try:
+    request('initialize',{'clientInfo':{'name':'studio-r0-scoped-builder','version':'0.1'},'capabilities':{'experimentalApi':True}});send('initialized',{},False)
+    tool={'type':'function','name':'builder_evidence','description':'Fixed authorized read-only Empirical skills/policy/workspace/project recall and exact controller configuration. No arbitrary paths/commands/queries or writes.',
+          'inputSchema':{'type':'object','additionalProperties':False,'properties':{'probe':{'type':'string','enum':['empirical','configuration']},'challenge':{'type':'string','pattern':'^[A-Za-z0-9_-]{1,64}$'}},'required':['probe','challenge']}}
+    thread=request('thread/start',{'model':'gpt-6.1-sol','allowProviderModelFallback':False,'permissions':'r0_memory','approvalPolicy':'never','cwd':str(OUTPUT),'ephemeral':False,'dynamicTools':[tool],
+         'baseInstructions':'You are the actual Studio Suite R0 controller at gpt-6.1-sol/medium. First turn is memory-only: call builder_evidence empirical with safe ASCII challenge r0_bootstrap; read installed skill instructions, current policy/workspace and full project recall in its reply. Do not read files or change code until host validates retrieval and grants scoped source access. Return MEMORY_READY only after success. On denial retry only memory; stop on failure. No private reasoning/transcript exports or secret values. Respect the approved phase contract and preserve existing sources/business rules.',
+         'developerInstructions':'The accepted R0 contract governs only the listed infrastructure files and records on the isolated candidate branch. Host owns integration/publication, memory writes/readbacks, independent review and final gates. After the memory-only turn, implement/test only that contract, no application/DS/database/main/deployment changes. Use standard-library modules and meaningful negative/concurrency tests. Return factual build/test findings as a bounded handoff; do not claim R0 GREEN or complete the unfinished full-phase Goal. The host keeps this same controller idle for repair/records and eventual actual compaction; a future fresh controller supplies reset boundary.'})
+    tid=thread['thread']['id']
+    if thread.get('model')!='gpt-6.1-sol' or thread.get('reasoningEffort')!='medium' or thread.get('activePermissionProfile',{}).get('id')!='r0_memory' or thread['thread'].get('turns'): raise RuntimeError('Actual fresh medium runtime/profile mismatch')
+    (ROOT/'launch-receipt.json').write_text(json.dumps({'threadId':tid,'instance':INSTANCE,'actualThreadStart':{k:thread.get(k) for k in ['model','modelProvider','reasoningEffort','approvalPolicy','activePermissionProfile','instructionSources']},'profiles':{'memory':MEMORY_FS,'builder':BUILDER_FS},'argv':argv,'worktree':str(WORKTREE),'input':str(PACKET),'hostServerPid':server.pid},indent=2)+'\n')
+    turn(f'This resumed turn is MEMORY-ONLY. Call builder_evidence empirical with safe challenge r0_resumed_memory before ANY other tool or source command. Return MEMORY_READY only after success. Checkpoint pointer: {WORKTREE}/docs/development/phases/R0/checkpoint.md\nActive contract ID: R0 complete infrastructure execution.','r0_memory',OUTPUT)
+    if not MEMORY_OK:raise RuntimeError('Memory-only turn did not obtain validated recall; source grant denied')
+    before_probe=len(events)
+    turn(f'Live Empirical retrieval is validated. Source access is now granted ONLY for inspection; do not write code yet. Use /usr/bin/python3 to read and hash {WORKTREE}/docs/development/phases/R0/execution-contract.md, compare its digest to e8472eba2f0ea0dc6ab9bda2ab52011540841b8e6763c467eec80809345e0337 and read its mandatory acceptance. Inspect the CI source and installed protocol schemas under {PACKET}/schemas. End with SOURCE_READY after successful actual commands. No file writes, no goal completion.', 'r0_builder', WORKTREE)
+    probe_commands=[e for e in events[before_probe:] if e.get('item',{}).get('type')=='commandExecution']
+    if not any(e['item'].get('exitCode')==0 for e in probe_commands): raise RuntimeError('Actual directory-profile source inspection has no successful command')
+    events.append({'event':'actual_directory_profile_inspection_completed','threadId':tid,'successfulCommandCount':sum(e['item'].get('exitCode')==0 for e in probe_commands),'technicalControllerRestart':True,'previousPhaseThread':'01a118d1-6e03-7dc3-8496-8d8c5e8f49b4','phaseBoundaryResetClaimed':False,'implementationStarted':False})
+    goal=request('thread/goal/set',{'threadId':tid,'objective':'Complete Studio Suite R0 under the accepted infrastructure contract, with every build/test/review/integration/records/CI/GREEN/reset gate before product work.','status':'active','origin':'user'})
+    events.append({'event':'actual_phase_goal_registered','threadId':tid,'goal':goal,'explicitAuthority':'Activated user plan conditional Goal registration; no token budget supplied.'})
+    prompt='Resume R0 candidate e16579d727abac22874ed410256faf6e8c48eb4e under accepted immutable contract e8472eba2f0ea0dc6ab9bda2ab52011540841b8e6763c467eec80809345e0337 and fresh source-only accepted supplemental repair specification docs/development/phases/R0/repair-acceptance-20261009.md. Read that supplementary specification and actual source/tests. Repair four boundaries with meaningful regression tests: (1) Supervisor.fail must preserve failure across reload and deny dependent advancement; explicit durable reconciliation must independently validate distinct repaired receipt for the failed known gate under exact binding, and reject arbitrary/reused/invalid gate evidence; do not auto-clear failure in advance. (2) build_packet must inspect structured evidence JSON recursively through existing normalized prohibited-field checks, rejecting nested priorVerdict/hiddenReasoning and malformed structured payloads without keyword-filtering legitimate source authority/prose. (3) validate_test_commands must reject contradictory FAILED then OK, multiple/malformed suite result summaries and explicit error/failure despite exit0/hash while admitting actual valid unittest outputs. (4) records_gate must verify actual non-executable regular file modes and symlink rejection in its acceptance path as well as current byte pins/manifests; include real chmod0755 negative. Preserve existing50tests, add negative/reload/positive reconciliation tests, and inspect independent reproduction source now available as docs/development/phases/R0/outcome-v3-independent-negative.txt. Exact allowlist only gate.py/supervisor.py/review_host.py and their tests; no protocol/CI/app/DS/database changes. Host owns probe-file record migration, neutral ordering/correlation qualification evidence, Git/CI/publication and Empirical writes. Run all stdlib tests plus diffcheck, save raw outputs under allowed phaseR0 records. Keep all acceptance and authority hashes; no weakening, no arbitrary waiver or fixture live claims. Return bounded factual handoff. Full R0 Goal remains unfinished, never complete/pause it. Host will perform exact five command captures and fresh native disposable qualification/outcome review before any publication.'
+
+
+    turn(prompt,'r0_builder',WORKTREE)
+    print(json.dumps({'event':'repair-handoff-complete','phaseComplete':False}),flush=True)
+
+except Exception as exc:
+    events.append({'event':'builder-host-failed','error':str(exc),'type':type(exc).__name__});print(json.dumps(events[-1]),flush=True)
+finally:
+    save();server.terminate();LEASE.close()
+    try:server.communicate(timeout=5)
+    except subprocess.TimeoutExpired:server.kill();server.communicate()
+    print(json.dumps({'event':'owned-controller-closed','root':str(ROOT),'serverExit':server.returncode}),flush=True)

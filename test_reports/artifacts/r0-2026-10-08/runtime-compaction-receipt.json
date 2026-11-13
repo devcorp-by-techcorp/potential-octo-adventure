@@ -1,0 +1,85 @@
+[
+  {
+    "initialize": {
+      "userAgent": "studio-suite-r0-runtime-probe/0.161.0 (Debian 12.0.0; x86_64) dumb (studio-suite-r0-runtime-probe; 0.1)",
+      "codexHome": "/home/techcorp2024/.codex",
+      "platformFamily": "unix",
+      "platformOs": "linux"
+    }
+  },
+  {
+    "model": "gpt-6.1-sol",
+    "modelProvider": "openai",
+    "reasoningEffort": "medium",
+    "approvalPolicy": "never",
+    "sandbox": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "sandboxPolicy": null,
+    "permissions": null,
+    "event": "thread_created",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "requested_effort": "medium"
+  },
+  {
+    "event": "turn/started",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "turnId": "01a11879-95ee-7801-9097-6fbec5a97cda",
+    "status": "inProgress",
+    "error": null
+  },
+  {
+    "event": "final_message",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "text": "R0_RUNTIME_OK"
+  },
+  {
+    "event": "turn/completed",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "turnId": "01a11879-95ee-7801-9097-6fbec5a97cda",
+    "status": "completed",
+    "error": null
+  },
+  {
+    "event": "compaction_acknowledged",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "response": {}
+  },
+  {
+    "event": "turn/started",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "turnId": "01a11879-da8b-7912-b2e9-a560ab1c484b",
+    "status": "inProgress",
+    "error": null
+  },
+  {
+    "event": "item/started",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "turnId": "01a11879-da8b-7912-b2e9-a560ab1c484b",
+    "item": {
+      "type": "contextCompaction",
+      "id": "01a11879-daaa-78b1-ad64-50853995942c"
+    }
+  },
+  {
+    "event": "item/completed",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "turnId": "01a11879-da8b-7912-b2e9-a560ab1c484b",
+    "item": {
+      "type": "contextCompaction",
+      "id": "01a11879-daaa-78b1-ad64-50853995942c"
+    }
+  },
+  {
+    "event": "turn/completed",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f",
+    "turnId": "01a11879-da8b-7912-b2e9-a560ab1c484b",
+    "status": "completed",
+    "error": null
+  },
+  {
+    "event": "compaction_verified",
+    "threadId": "01a11879-94c1-7313-83ea-8fd385d7fa4f"
+  }
+]

@@ -1,0 +1,77 @@
+{
+  "$jsonSchema": {
+    "title": "client_invitations",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "enquiry_id": {
+        "bsonType": "string"
+      },
+      "email": {
+        "bsonType": "string"
+      },
+      "generation": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "token_hash": {
+        "bsonType": "string"
+      },
+      "status": {
+        "bsonType": "string",
+        "enum": [
+          "pending",
+          "accepted",
+          "revoked"
+        ]
+      },
+      "issued_by": {
+        "bsonType": "string"
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "expires_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "cleanup_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "revoked_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "accepted_by": {
+        "bsonType": "string"
+      },
+      "accepted_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "enrolled": {
+        "bsonType": "bool"
+      }
+    },
+    "required": [
+      "_id",
+      "enquiry_id",
+      "email",
+      "generation",
+      "token_hash",
+      "status",
+      "issued_by",
+      "created_at",
+      "expires_at",
+      "cleanup_at"
+    ],
+    "additionalProperties": true
+  }
+}

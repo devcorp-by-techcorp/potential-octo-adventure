@@ -1,0 +1,191 @@
+{
+  "$jsonSchema": {
+    "title": "booking_resources",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string"
+      },
+      "kind": {
+        "bsonType": "string",
+        "enum": [
+          "photographer",
+          "assistant",
+          "studio_room",
+          "equipment"
+        ]
+      },
+      "name": {
+        "bsonType": "string",
+        "minLength": 1,
+        "maxLength": 120
+      },
+      "capacity": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 1,
+        "maximum": 9007199254740991
+      },
+      "enabled": {
+        "bsonType": "bool"
+      },
+      "revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "updated_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "creation_input": {
+        "bsonType": "object",
+        "properties": {
+          "kind": {
+            "bsonType": "string",
+            "enum": [
+              "photographer",
+              "assistant",
+              "studio_room",
+              "equipment"
+            ]
+          },
+          "name": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "capacity": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "capacity"
+        ],
+        "additionalProperties": true
+      },
+      "creation_receipt": {
+        "bsonType": "object",
+        "properties": {
+          "_id": {
+            "bsonType": "string"
+          },
+          "kind": {
+            "bsonType": "string",
+            "enum": [
+              "photographer",
+              "assistant",
+              "studio_room",
+              "equipment"
+            ]
+          },
+          "name": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "capacity": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "enabled": {
+            "bsonType": "bool"
+          },
+          "revision": {
+            "bsonType": [
+              "int",
+              "long"
+            ],
+            "minimum": 0
+          },
+          "created_at": {
+            "bsonType": "date",
+            "description": "UTC instant stored as a BSON date, with millisecond precision."
+          },
+          "updated_at": {
+            "bsonType": "date",
+            "description": "UTC instant stored as a BSON date, with millisecond precision."
+          }
+        },
+        "required": [
+          "_id",
+          "kind",
+          "name",
+          "capacity",
+          "enabled",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "additionalProperties": true
+      },
+      "history": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "action": {
+              "bsonType": "string"
+            },
+            "actor_id": {
+              "bsonType": "string"
+            },
+            "at": {
+              "bsonType": "date",
+              "description": "UTC instant stored as a BSON date, with millisecond precision."
+            },
+            "before": {
+              "bsonType": "object",
+              "properties": {},
+              "additionalProperties": true
+            },
+            "after": {
+              "bsonType": "object",
+              "properties": {},
+              "additionalProperties": true
+            }
+          },
+          "required": [
+            "action",
+            "actor_id",
+            "at"
+          ],
+          "additionalProperties": true
+        }
+      }
+    },
+    "required": [
+      "_id",
+      "kind",
+      "name",
+      "capacity",
+      "enabled",
+      "revision",
+      "created_at",
+      "updated_at",
+      "creation_input",
+      "creation_receipt",
+      "history"
+    ],
+    "additionalProperties": true
+  }
+}

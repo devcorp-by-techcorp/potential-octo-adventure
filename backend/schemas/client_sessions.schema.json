@@ -1,0 +1,104 @@
+{
+  "$jsonSchema": {
+    "title": "client_sessions",
+    "bsonType": "object",
+    "properties": {
+      "_id": {
+        "bsonType": "string",
+        "description": "SHA-256 digest of the opaque session token; never the raw token."
+      },
+      "identity_id": {
+        "bsonType": "string"
+      },
+      "auth_version": {
+        "bsonType": "string"
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "expires_at": {
+        "bsonType": "date",
+        "description": "UTC instant stored as a BSON date, with millisecond precision."
+      },
+      "revoked_at": {
+        "bsonType": [
+          "date",
+          "null"
+        ]
+      },
+      "authorization_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "transaction_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "booking_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "content_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "conversation_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "session_management_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "acceptance_checks": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "access_revision": {
+        "bsonType": [
+          "int",
+          "long"
+        ],
+        "minimum": 0
+      },
+      "scope": {
+        "bsonType": "string",
+        "enum": [
+          "client"
+        ]
+      }
+    },
+    "required": [
+      "_id",
+      "identity_id",
+      "auth_version",
+      "created_at",
+      "expires_at",
+      "revoked_at",
+      "scope"
+    ],
+    "additionalProperties": true
+  }
+}

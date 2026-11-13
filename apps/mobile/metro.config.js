@@ -1,7 +1,7 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
 
-// Monorepo aware: watch the shared @illuminate/tokens package and resolve
+// Monorepo aware: watch the shared @is/tokens package and resolve
 // dependencies from both the app and the repo root.
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, "../..");
