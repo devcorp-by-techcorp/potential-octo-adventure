@@ -13,12 +13,15 @@ from auth import (
     DUMMY_HASH,
     PASSWORDS,
     LoginBody,
+    Transport,
     database_errors,
     digest,
     normalize_email,
     now,
+    presented_credential,
     public_identity,
     require_origin,
+    session_transport,
     throttle,
     verify_password,
 )
@@ -46,7 +49,7 @@ class ClientIdentity(BaseModel):
 
 class ClientSessionResponse(BaseModel):
     identity: ClientIdentity
-    csrf_token: str
+    csrf_token: str | None
     expires_at: datetime
     expires_in_seconds: int = Field(ge=1, le=604800)
 
@@ -77,7 +80,7 @@ async def login_budget(database, request, email):
     await throttle(database, "email", email, 5, "client_login_limits")
 
 
-async def insert_session(database, identity, token, session=None):
+async def insert_session(database, identity, token, session=None, transport: Transport = "cookie"):
     expires = now() + timedelta(seconds=get_settings().auth_session_seconds)
     await database.client_sessions.insert_one(
         {
@@ -88,6 +91,7 @@ async def insert_session(database, identity, token, session=None):
             "created_at": now(),
             "expires_at": expires,
             "revoked_at": None,
+            "transport": transport,
         },
         session=session,
     )
@@ -114,16 +118,15 @@ def session_response(response, identity, token, expires):
 
 
 async def require_client(request: Request):
-    token = request.cookies.get(cookie_name(), "")
     denied = HTTPException(401, "Your client session has expired. Please sign in again.")
-    if not token or len(token) > 128:
-        raise denied
+    token, transport = presented_credential(request, cookie_name(), denied)
     with database_errors():
         database = get_database()
         session = await database.client_sessions.find_one({"_id": digest(token)})
         if (
             not session
             or session.get("scope") != "client"
+            or session_transport(session) != transport
             or session.get("revoked_at") is not None
             or session["expires_at"].replace(tzinfo=UTC) <= now()
         ):
@@ -137,12 +140,16 @@ async def require_client(request: Request):
         ):
             raise denied
     request.state.client_session = session
+    request.state.client_transport = transport
     return identity
 
 
 async def require_client_write(
     request: Request, identity: Annotated[dict, Depends(require_client)]
 ):
+    if request.state.client_transport == "bearer":
+        # A bearer header is never attached by a browser on its own, so there is no CSRF surface.
+        return identity
     require_origin(request)
     if not secrets.compare_digest(
         request.headers.get("x-csrf-token", "").encode(),
@@ -152,7 +159,8 @@ async def require_client_write(
     return identity
 
 
-async def login(body: LoginBody, request, response):
+async def authenticate_client(body: LoginBody, request, transport: Transport):
+    """Verify credentials under the shared budget and open a session on the given transport."""
     with database_errors():
         database = get_database()
         await ensure_indexes(database)
@@ -171,5 +179,21 @@ async def login(body: LoginBody, request, response):
                 {"$set": {"password_hash": replacement}},
             )
         token = secrets.token_urlsafe(32)
-        expires = await insert_session(database, identity, token)
+        expires = await insert_session(database, identity, token, transport=transport)
+    return identity, token, expires
+
+
+async def login(body: LoginBody, request, response):
+    identity, token, expires = await authenticate_client(body, request, "cookie")
     return session_response(response, identity, token, expires)
+
+
+async def token_login(body: LoginBody, request) -> dict:
+    """Native clients: a bearer session, never a cookie, so no Origin or CSRF applies."""
+    identity, token, expires = await authenticate_client(body, request, "bearer")
+    return {
+        "identity": public_identity(identity),
+        "token": token,
+        "expires_at": expires.isoformat(),
+        "expires_in_seconds": get_settings().auth_session_seconds,
+    }

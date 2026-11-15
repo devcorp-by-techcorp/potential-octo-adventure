@@ -330,6 +330,8 @@ async def inspect_invitation(body: TokenBody):
     response_model=AcceptedInvitation,
 )
 async def accept(body: AcceptBody, request: Request, response: Response):
+    # Deliberately cookie-only: acceptance mints a browser session, and an
+    # Authorization header is ignored here rather than authenticating anything.
     authenticated = None
     if request.cookies.get(clients.cookie_name()):
         authenticated = await clients.require_client(request)
@@ -529,6 +531,11 @@ async def login(body: clients.ClientLoginBody, request: Request, response: Respo
     return await clients.login(body, request, response)
 
 
+@router.post("/auth/client/token")
+async def token_login(body: clients.ClientLoginBody, request: Request):
+    return await clients.token_login(body, request)
+
+
 @router.get("/auth/client/session", response_model=clients.ClientSessionResponse)
 async def current_session(
     request: Request, identity: Annotated[dict, Depends(clients.require_client)]
@@ -539,7 +546,11 @@ async def current_session(
             key: str(identity["_id"]) if key == "id" else identity[key]
             for key in ("id", "email", "name")
         },
-        "csrf_token": clients.csrf_token(request.cookies[clients.cookie_name()]),
+        "csrf_token": (
+            clients.csrf_token(request.cookies[clients.cookie_name()])
+            if request.state.client_transport == "cookie"
+            else None
+        ),
         "expires_at": expires.isoformat(),
         "expires_in_seconds": max(1, int((expires - now()).total_seconds())),
     }
@@ -556,13 +567,14 @@ async def logout(
         await get_database().client_sessions.update_one(
             {"_id": request.state.client_session["_id"]}, {"$set": {"revoked_at": now()}}
         )
-    response.delete_cookie(
-        clients.cookie_name(),
-        path="/",
-        secure=get_settings().is_production,
-        httponly=True,
-        samesite="lax",
-    )
+    if request.state.client_transport == "cookie":
+        response.delete_cookie(
+            clients.cookie_name(),
+            path="/",
+            secure=get_settings().is_production,
+            httponly=True,
+            samesite="lax",
+        )
 
 
 @router.get("/client/enquiries", response_model=ClientPage)

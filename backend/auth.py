@@ -129,7 +129,9 @@ def presented_credential(
 
     Raises ``denied`` when there is none, when both a bearer header and the named
     cookie are present, when the header is malformed, or when the token is not 1-128
-    characters. Roles pass their own cookie name and refusal.
+    characters. Roles pass their own cookie name and refusal. The both-credentials
+    refusal fires on any ``Authorization`` header, not only Bearer, when the role's
+    cookie is present; this is fail-closed by design.
     """
     header = request.headers.get("authorization")
     cookie_value = request.cookies.get(cookie, "")
@@ -243,14 +245,14 @@ async def require_staff(request: Request):
             or session.get("revoked_at") is not None
             or session["expires_at"].replace(tzinfo=UTC) <= now()
         ):
-            raise HTTPException(401, "Your session has expired. Please sign in again.")
+            raise HTTPException(401, EXPIRED)
         identity = await database.staff_identities.find_one({"_id": session["identity_id"]})
         if (
             not identity
             or not identity.get("enabled")
             or identity.get("auth_version") != session["auth_version"]
         ):
-            raise HTTPException(401, "Your session has expired. Please sign in again.")
+            raise HTTPException(401, EXPIRED)
         if identity.get("role") != "staff":
             raise HTTPException(403, "Staff access is required.")
     request.state.staff_session = session
@@ -359,4 +361,4 @@ async def fence_staff_session(database, request, identity, session):
         session=session,
     )
     if not account.matched_count or not active.matched_count:
-        raise HTTPException(401, "Your session has expired. Please sign in again.")
+        raise HTTPException(401, EXPIRED)
