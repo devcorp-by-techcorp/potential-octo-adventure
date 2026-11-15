@@ -1,38 +1,174 @@
 /**
- * Session — auth state + role routing (public / client / admin).
- * Mirrors the web app's auth-state persona resolution.
+ * Session — real backend sign-in, restore and sign-out.
+ * Web uses cookie sessions (the page never sees the token; the CSRF token
+ * lives in a ref). Native keeps a bearer token in SecureStore only.
  */
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import { credentials } from "~/api/credentials";
+import type { Role } from "~/api/credentials";
+import { apiBase } from "~/api/config";
+import { ApiError, createApiClient } from "~/api/client";
+import type { ApiClient } from "~/api/client";
+import { readSession, signInRequest, signOutRequest } from "~/api/auth";
+import type { SessionInfo } from "~/api/auth";
+import { initialSessionState, sessionReducer } from "./sessionReducer";
+import type { SessionEvent, SessionState, SessionStatus } from "./sessionReducer";
 
-export type Role = "client" | "admin";
+export { sessionReducer, initialSessionState };
+export type { SessionEvent, SessionState, SessionStatus, Role };
 
-interface SessionValue {
-  authed: boolean;
-  role: Role;
-  signIn: (role: Role) => void;
-  signOut: () => void;
+export type SignInResult = { ok: true } | { ok: false; error: string };
+
+export interface SessionValue {
+  status: SessionStatus;
+  identity: SessionInfo["identity"] | null;
+  message: string | null;
+  api: ApiClient;
+  signIn(role: Role, email: string, password: string): Promise<SignInResult>;
+  signOut(): Promise<void>;
+  restore(): Promise<void>;
 }
 
-const SessionContext = createContext<SessionValue>({
-  authed: false,
-  role: "client",
-  signIn: () => {},
-  signOut: () => {},
-});
+const SessionContext = createContext<SessionValue | null>(null);
+
+const EXPIRED = "Your session has expired. Please sign in again.";
+const STORE_FAILED = "We couldn't save your sign-in on this device. Please try again.";
+const GENERIC = "Something went wrong. Please try again.";
+
+const isRole = (r: unknown): r is Role => r === "staff" || r === "client";
 
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [authed, setAuthed] = useState(false);
-  const [role, setRole] = useState<Role>("client");
+  const [state, dispatch] = useReducer(sessionReducer, initialSessionState);
+  const stateRef = useRef<SessionState>(state);
+  stateRef.current = state;
+  const tokenRef = useRef<string | null>(null);
+  const csrfRef = useRef<string | null>(null);
+  const restoringRef = useRef(false);
+  const signingInRef = useRef(false);
+
+  const safeClear = useCallback(async () => {
+    try { await credentials.clear(); } catch { /* local state is cleared regardless */ }
+  }, []);
+
+  const api = useMemo<ApiClient>(() => {
+    return createApiClient({
+      base: apiBase(),
+      mode: credentials.mode,
+      fetch: (...a) => fetch(...a),
+      getToken: () => tokenRef.current,
+      getCsrf: () => csrfRef.current,
+      onUnauthorized: (message) => {
+        // A 401 while restoring is an answer, not an expiry; restore() handles it.
+        if (restoringRef.current) return;
+        tokenRef.current = null;
+        csrfRef.current = null;
+        void safeClear();
+        dispatch({ type: "signed-out", message: message || EXPIRED });
+      },
+    });
+  }, [safeClear]);
+
+  const restore = useCallback(async () => {
+    if (restoringRef.current) return;
+    restoringRef.current = true;
+    try {
+      let stored: Awaited<ReturnType<typeof credentials.read>> = null;
+      try { stored = await credentials.read(); } catch { stored = null; }
+
+      let order: Role[];
+      if (credentials.mode === "bearer") {
+        if (!stored || !isRole(stored.role) || typeof stored.token !== "string" || !stored.token) {
+          await safeClear();
+          dispatch({ type: "restore-failed-unauthorized" });
+          return;
+        }
+        tokenRef.current = stored.token;
+        order = [stored.role];
+      } else {
+        const first: Role = stored && isRole(stored.role) ? stored.role : "staff";
+        order = [first, first === "staff" ? "client" : "staff"];
+      }
+
+      for (const role of order) {
+        try {
+          const info = await readSession(api, role);
+          csrfRef.current = info.csrfToken;
+          if (credentials.mode === "cookie") {
+            try { await credentials.write({ role }); } catch { /* remembered role is a convenience */ }
+          }
+          api.resetUnauthorized();
+          dispatch({ type: "restored", role, info });
+          return;
+        } catch (e) {
+          if (e instanceof ApiError && e.kind === "unauthorized") continue;
+          dispatch({ type: "restore-failed-unavailable" });
+          return;
+        }
+      }
+      tokenRef.current = null;
+      csrfRef.current = null;
+      await safeClear();
+      api.resetUnauthorized();
+      dispatch({ type: "restore-failed-unauthorized" });
+    } finally {
+      restoringRef.current = false;
+    }
+  }, [api, safeClear]);
+
+  useEffect(() => { void restore(); }, [restore]);
+
+  const signIn = useCallback(async (role: Role, email: string, password: string): Promise<SignInResult> => {
+    if (signingInRef.current) return { ok: false, error: "Sign-in is already in progress." };
+    signingInRef.current = true;
+    try {
+      let info: SessionInfo;
+      try {
+        info = await signInRequest(api, credentials.mode, role, email.trim(), password);
+      } catch (e) {
+        return { ok: false, error: e instanceof ApiError ? e.message : GENERIC };
+      }
+      try {
+        if (credentials.mode === "bearer") {
+          if (!info.token) return { ok: false, error: GENERIC };
+          await credentials.write({ role, token: info.token });
+          tokenRef.current = info.token;
+        } else {
+          await credentials.write({ role });
+        }
+      } catch {
+        tokenRef.current = null;
+        return { ok: false, error: STORE_FAILED };
+      }
+      csrfRef.current = info.csrfToken;
+      api.resetUnauthorized();
+      dispatch({ type: "signed-in", role, info });
+      return { ok: true };
+    } finally {
+      signingInRef.current = false;
+    }
+  }, [api]);
+
+  const signOut = useCallback(async () => {
+    const role = stateRef.current.role;
+    if (role) {
+      try { await signOutRequest(api, role); } catch { /* sign out locally whatever the server said */ }
+    }
+    tokenRef.current = null;
+    csrfRef.current = null;
+    await safeClear();
+    api.resetUnauthorized();
+    dispatch({ type: "signed-out" });
+  }, [api, safeClear]);
+
   const value = useMemo<SessionValue>(
-    () => ({
-      authed,
-      role,
-      signIn: (r) => { setRole(r); setAuthed(true); },
-      signOut: () => setAuthed(false),
-    }),
-    [authed, role]
+    () => ({ status: state.status, identity: state.identity, message: state.message, api, signIn, signOut, restore }),
+    [state.status, state.identity, state.message, api, signIn, signOut, restore]
   );
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 };
 
-export const useSession = () => useContext(SessionContext);
+export const useSession = (): SessionValue => {
+  const v = useContext(SessionContext);
+  if (!v) throw new Error("useSession must be used inside SessionProvider");
+  return v;
+};

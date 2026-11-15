@@ -4,7 +4,7 @@
  * fluidly with available width (Mechanism Law §3). Tap targets ≥ 44pt.
  */
 import React from "react";
-import { View, Text, Pressable, StyleProp, ViewStyle, TextStyle } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, StyleProp, ViewStyle, TextStyle } from "react-native";
 import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
 import { Icon, IconName } from "./Icon";
@@ -68,25 +68,28 @@ export const Badge: React.FC<{ label: string; tone?: Tone }> = ({ label, tone = 
 
 export const Button: React.FC<{
   label: string; onPress?: () => void; variant?: "primary" | "ghost"; icon?: IconName; fullWidth?: boolean; style?: StyleProp<ViewStyle>;
-}> = ({ label, onPress, variant = "primary", icon, fullWidth, style }) => {
+  disabled?: boolean; busy?: boolean;
+}> = ({ label, onPress, variant = "primary", icon, fullWidth, style, disabled, busy }) => {
   const { theme, radius } = useTokens();
   const { fs } = useResponsive();
   const primary = variant === "primary";
   const fg = primary ? theme.ink.inverse : theme.ink.primary;
   return (
     <Pressable
-      onPress={onPress}
+      onPress={disabled || busy ? undefined : onPress}
+      disabled={disabled || busy}
       accessibilityRole="button"
+      accessibilityState={{ disabled: !!(disabled || busy), busy: !!busy }}
       style={({ pressed }) => [{
         minHeight: 44, paddingVertical: 12, paddingHorizontal: 18, borderRadius: radius.xs,
         flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8,
         alignSelf: fullWidth ? "stretch" : "flex-start", width: fullWidth ? "100%" : undefined,
         backgroundColor: primary ? theme.brand.gold : "transparent",
         borderWidth: primary ? 0 : 1, borderColor: theme.border.default,
-        opacity: pressed ? 0.85 : 1,
+        opacity: disabled || busy ? 0.6 : pressed ? 0.85 : 1,
       }, style]}
     >
-      {icon ? <Icon name={icon} size={16} color={fg} /> : null}
+      {busy ? <ActivityIndicator size="small" color={fg} /> : icon ? <Icon name={icon} size={16} color={fg} /> : null}
       <Text style={{ fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1.2, fontSize: fs(11), fontWeight: "600", color: fg }}>{label}</Text>
     </Pressable>
   );

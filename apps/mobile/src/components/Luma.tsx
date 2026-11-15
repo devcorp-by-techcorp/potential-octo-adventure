@@ -33,8 +33,8 @@ const LumaDrawer: React.FC<{ visible: boolean; onClose: () => void }> = ({ visib
   const { theme, radius } = useTokens();
   const { isWide } = useResponsive();
   const insets = useSafeAreaInsets();
-  const { authed, role } = useSession();
-  const persona = !authed ? "public" : role === "admin" ? "admin" : "client";
+  const { status } = useSession();
+  const persona = status === "staff" ? "admin" : status === "client" ? "client" : "public";
   // Studio staff are greeted by the name held in Site Content, so a change
   // there is the name Luma uses on the next open.
   const { identity } = useStudio();

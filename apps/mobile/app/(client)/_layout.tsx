@@ -1,5 +1,6 @@
 import { AppShell, NavItem } from "~/components/AppShell";
 import { usePortal } from "~/state/portal";
+import { SessionGate } from "~/components/SessionGate";
 
 export default function ClientLayout() {
   const { unread } = usePortal();
@@ -10,5 +11,9 @@ export default function ClientLayout() {
     { name: "documents", label: "Docs", icon: "doc", href: "/(client)/documents" },
     { name: "prints", label: "Prints", icon: "gallery", href: "/(client)/prints" },
   ];
-  return <AppShell items={items} roleLabel="Client Portal" />;
+  return (
+    <SessionGate require="client">
+      <AppShell items={items} roleLabel="Client Portal" />
+    </SessionGate>
+  );
 }
