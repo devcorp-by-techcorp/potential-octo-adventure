@@ -45,6 +45,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const csrfRef = useRef<string | null>(null);
   const restoringRef = useRef(false);
   const signingInRef = useRef(false);
+  // Mirrors SessionState.gen: bumped synchronously wherever signed-in / signed-out is dispatched.
+  const genRef = useRef(0);
 
   const safeClear = useCallback(async () => {
     try { await credentials.clear(); } catch { /* local state is cleared regardless */ }
@@ -62,6 +64,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (restoringRef.current) return;
         tokenRef.current = null;
         csrfRef.current = null;
+        genRef.current += 1;
         void safeClear();
         dispatch({ type: "signed-out", message: message || EXPIRED });
       },
@@ -71,6 +74,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const restore = useCallback(async () => {
     if (restoringRef.current) return;
     restoringRef.current = true;
+    const gen = genRef.current;
+    const stale = () => genRef.current !== gen;
     try {
       let stored: Awaited<ReturnType<typeof credentials.read>> = null;
       try { stored = await credentials.read(); } catch { stored = null; }
@@ -78,8 +83,10 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       let order: Role[];
       if (credentials.mode === "bearer") {
         if (!stored || !isRole(stored.role) || typeof stored.token !== "string" || !stored.token) {
+          if (stale()) return;
           await safeClear();
-          dispatch({ type: "restore-failed-unauthorized" });
+          if (stale()) return;
+          dispatch({ type: "restore-failed-unauthorized", gen });
           return;
         }
         tokenRef.current = stored.token;
@@ -92,24 +99,29 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       for (const role of order) {
         try {
           const info = await readSession(api, role);
+          if (stale()) return;
           csrfRef.current = info.csrfToken;
           if (credentials.mode === "cookie") {
             try { await credentials.write({ role }); } catch { /* remembered role is a convenience */ }
           }
+          if (stale()) return;
           api.resetUnauthorized();
-          dispatch({ type: "restored", role, info });
+          dispatch({ type: "restored", role, info, gen });
           return;
         } catch (e) {
+          if (stale()) return;
           if (e instanceof ApiError && e.kind === "unauthorized") continue;
-          dispatch({ type: "restore-failed-unavailable" });
+          dispatch({ type: "restore-failed-unavailable", gen });
           return;
         }
       }
+      if (stale()) return;
       tokenRef.current = null;
       csrfRef.current = null;
       await safeClear();
+      if (stale()) return;
       api.resetUnauthorized();
-      dispatch({ type: "restore-failed-unauthorized" });
+      dispatch({ type: "restore-failed-unauthorized", gen });
     } finally {
       restoringRef.current = false;
     }
@@ -127,9 +139,10 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } catch (e) {
         return { ok: false, error: e instanceof ApiError ? e.message : GENERIC };
       }
+      genRef.current += 1; // any restore still in flight is now stale
       try {
         if (credentials.mode === "bearer") {
-          if (!info.token) return { ok: false, error: GENERIC };
+          if (!info.token) { dispatch({ type: "signed-out" }); return { ok: false, error: GENERIC }; }
           await credentials.write({ role, token: info.token });
           tokenRef.current = info.token;
         } else {
@@ -137,6 +150,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       } catch {
         tokenRef.current = null;
+        dispatch({ type: "signed-out" });
         return { ok: false, error: STORE_FAILED };
       }
       csrfRef.current = info.csrfToken;
@@ -150,6 +164,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const signOut = useCallback(async () => {
     const role = stateRef.current.role;
+    genRef.current += 1;
     if (role) {
       try { await signOutRequest(api, role); } catch { /* sign out locally whatever the server said */ }
     }

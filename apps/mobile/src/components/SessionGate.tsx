@@ -27,7 +27,7 @@ export function RetryPanel() {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 28, gap: 14, backgroundColor: theme.surface.canvas }}>
       <Text accessibilityRole="alert" style={{ fontFamily: "Inter_500Medium", fontSize: 15, textAlign: "center", color: theme.ink.primary }}>
-        We couldn't reach the studio server. Check your connection and try again.
+        The studio is temporarily unavailable. Please try again.
       </Text>
       <Button label="Try again" onPress={retry} busy={busy} />
     </View>

@@ -3,7 +3,7 @@
  * column on compact / portrait; side-by-side on wide landscape. Role toggle
  * routes into the client vs studio-admin portal.
  */
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { View, Text, ScrollView, Pressable, TextInput, Linking, Platform } from "react-native";
 import { Image } from "expo-image";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -32,8 +32,10 @@ export default function SignIn() {
   const [error, setError] = useState<string | null>(null);
   const shownError = error ?? message;
 
+  const busyRef = useRef(false);
   const submit = async () => {
-    if (pending) return;
+    if (busyRef.current) return;
+    busyRef.current = true;
     setPending(true);
     setError(null);
     try {
@@ -41,6 +43,7 @@ export default function SignIn() {
       if (r.ok) router.replace(role === "staff" ? "/(admin)/dashboard" : "/(client)/home");
       else setError(r.error);
     } finally {
+      busyRef.current = false;
       setPending(false);
     }
   };
