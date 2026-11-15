@@ -1,6 +1,6 @@
 # App foundation: one Expo application on web and native, connected to the backend
 
-Date: 15 November 2026. Status: draft for owner approval.
+Date: 15 November 2026. Status: approved by the owner on 15 November 2026, including the calls listed at the end.
 
 This is step 1 of the plan to make the Expo application (`apps/mobile`) fully operational
 against the FastAPI backend (`backend/`). Later steps each get their own design.
