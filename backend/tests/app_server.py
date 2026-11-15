@@ -1,4 +1,4 @@
-"""Test-only backend for the mobile app's web build: real isolated MongoDB, seeded identities, no email."""
+"""Test-only backend for the app web build: real isolated MongoDB, seeded identities, no email."""
 
 import os
 import sys
