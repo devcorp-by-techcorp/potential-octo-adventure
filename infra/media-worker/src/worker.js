@@ -1,6 +1,6 @@
 /**
  * IlluminateMyGallery — token-gated media delivery Worker.
- * Domain:  media.illuminatestudios.com.au
+ * Domain:  media.illuminatemygallery.com.au
  * Serves:  thumbnails + previews from the PRIVATE R2 derivatives bucket.
  * Never serves originals (structurally rejected by the path validator).
  *
