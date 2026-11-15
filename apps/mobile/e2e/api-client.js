@@ -99,6 +99,16 @@ const hdr = (c, k) => { const h = c.init.headers || {}; const key = Object.keys(
     ok('logout uses POST', t.calls.every((c) => c.init.method === 'POST'));
   }
 
+  {
+    const t = make('cookie', () => json(401, { detail: 'Invalid credentials' }));
+    let err; try { await auth.signInRequest(t.api, 'cookie', 'staff', 'a', 'bad'); } catch (e) { err = e; }
+    let err2; try { await auth.signInRequest(t.api, 'bearer', 'client', 'a', 'bad'); } catch (e) { err2 = e; }
+    ok('failed sign-in throws unauthorized ApiError with backend message', err instanceof ApiError && err.kind === 'unauthorized' && err.message === 'Invalid credentials' && err2 instanceof ApiError && err2.kind === 'unauthorized');
+    ok('failed sign-in does not call onUnauthorized', t.unauthCount() === 0, String(t.unauthCount()));
+    await t.api.request('GET', '/x').catch(() => {});
+    ok('later ordinary 401 after failed sign-in calls onUnauthorized once', t.unauthCount() === 1, String(t.unauthCount()));
+  }
+
   console.log(res.join('\n')); const bad = res.filter((r) => r.startsWith('FAIL')).length;
   console.log(`\n${res.length - bad} passed, ${bad} failed`); fs.rmSync(out, { recursive: true, force: true }); process.exit(bad ? 1 : 0);
 })();

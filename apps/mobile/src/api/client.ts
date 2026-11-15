@@ -26,8 +26,13 @@ function kindFor(status: number): ApiErrorKind {
   }
 }
 
+export interface RequestOptions {
+  /** A 401 still throws, but neither calls onUnauthorized nor arms the one-shot guard (sign-in requests). */
+  skipUnauthorized?: boolean;
+}
+
 export interface ApiClient {
-  request<T>(method: "GET" | "POST" | "PATCH", path: string, body?: unknown): Promise<T>;
+  request<T>(method: "GET" | "POST" | "PATCH", path: string, body?: unknown, options?: RequestOptions): Promise<T>;
   resetUnauthorized(): void;
 }
 
@@ -43,7 +48,7 @@ export interface ApiClientDeps {
 export function createApiClient(deps: ApiClientDeps): ApiClient {
   let unauthorizedFired = false;
 
-  async function request<T>(method: "GET" | "POST" | "PATCH", path: string, body?: unknown): Promise<T> {
+  async function request<T>(method: "GET" | "POST" | "PATCH", path: string, body?: unknown, options?: RequestOptions): Promise<T> {
     const headers: Record<string, string> = { Accept: "application/json" };
     const init: RequestInit = { method, headers };
     if (body !== undefined) {
@@ -76,7 +81,7 @@ export function createApiClient(deps: ApiClientDeps): ApiClient {
       }
       const kind = kindFor(response.status);
       const message = detail || `Request failed (${response.status})`;
-      if (kind === "unauthorized" && !unauthorizedFired) {
+      if (kind === "unauthorized" && !options?.skipUnauthorized && !unauthorizedFired) {
         unauthorizedFired = true;
         deps.onUnauthorized(message);
       }

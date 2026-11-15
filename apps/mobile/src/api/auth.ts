@@ -25,7 +25,7 @@ const prefix = (role: Role) => (role === "client" ? "/api/auth/client" : "/api/a
 
 export async function signInRequest(api: ApiClient, mode: Mode, role: Role, email: string, password: string): Promise<SessionInfo> {
   const path = `${prefix(role)}/${mode === "bearer" ? "token" : "login"}`;
-  return toSession(await api.request<SessionWire>("POST", path, { email, password }));
+  return toSession(await api.request<SessionWire>("POST", path, { email, password }, { skipUnauthorized: true }));
 }
 
 export async function readSession(api: ApiClient, role: Role): Promise<SessionInfo> {
