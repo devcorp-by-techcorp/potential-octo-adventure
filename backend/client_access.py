@@ -330,8 +330,9 @@ async def inspect_invitation(body: TokenBody):
     response_model=AcceptedInvitation,
 )
 async def accept(body: AcceptBody, request: Request, response: Response):
-    # Deliberately cookie-only: acceptance mints a browser session, and an
-    # Authorization header is ignored here rather than authenticating anything.
+    # Deliberately cookie-only: acceptance mints a browser session. An Authorization
+    # header is ignored only when no client cookie is present; with a client cookie
+    # present, any Authorization header is refused (401) by presented_credential.
     authenticated = None
     if request.cookies.get(clients.cookie_name()):
         authenticated = await clients.require_client(request)

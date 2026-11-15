@@ -4,16 +4,19 @@ from datetime import timedelta
 from uuid import uuid4
 
 import pytest
+from httpx import ASGITransport, AsyncClient
 
 import auth
 import client_auth
 from clients import change_client
 from db import get_database
+from server import create_app
 from staff import change_staff
 from tests.test_auth import EMAIL, ORIGIN, PASSWORD, login
-from tests.test_client_invitations import ACCEPT, CLIENT_PASSWORD, accept
+from tests.test_client_invitations import ACCEPT, CLIENT_PASSWORD, RECIPIENT, accept
 from tests.test_client_invitations import issue as issue_invite
 from tests.test_client_invitations import setup as invitation_setup  # noqa: F401
+from tests.test_studio_enquiries import record
 
 TOKEN_PATH = "/api/auth/token"
 
@@ -104,7 +107,7 @@ async def test_bearer_expiry_revocation_and_auth_version(client, staff, change):
     assert (await client.get("/api/studio/home", headers=bearer(token))).status_code == 401
 
 
-async def test_staff_token_cannot_reach_client_routes(client, staff, client_account):
+async def test_staff_token_cannot_reach_client_routes(client, client_account):
     staff_token = await issue(client)
     client_token = await client_issue(client)
     # The client bearer is valid for a different identity, so the refusal is about role.
@@ -113,7 +116,7 @@ async def test_staff_token_cannot_reach_client_routes(client, staff, client_acco
     assert (await client.get(CLIENT_ENQUIRIES, headers=bearer(staff_token))).status_code == 401
 
 
-async def test_client_token_cannot_reach_staff_routes(client, staff, client_account):
+async def test_client_token_cannot_reach_staff_routes(client, client_account):
     token = await client_issue(client)
     assert (await client.get("/api/studio/home", headers=bearer(token))).status_code == 401
     assert (await client.get("/api/auth/session", headers=bearer(token))).status_code == 401
@@ -157,25 +160,24 @@ async def test_bearer_write_through_transactional_fence(client, staff):
     assert response.status_code == 200 and response.json()["name"] == "Bearer photographer"
 
 
-CLIENT_EMAIL = "bearer-client@example.test"
+CLIENT_EMAIL = RECIPIENT
 CLIENT_TOKEN_PATH = "/api/auth/client/token"
 CLIENT_SESSION = "/api/auth/client/session"
 CLIENT_ENQUIRIES = "/api/client/enquiries"
 
 
 @pytest.fixture
-async def client_account():
-    await get_database().client_identities.insert_one(
-        {
-            "_id": "bearer-client",
-            "email": CLIENT_EMAIL,
-            "name": "Bearer Client",
-            "enabled": True,
-            "role": "client",
-            "auth_version": str(uuid4()),
-            "password_hash": auth.password_hash(CLIENT_PASSWORD),
-        }
-    )
+async def client_account(client, invitation_setup):  # noqa: F811
+    """A real client identity, enrolled through the invitation path (also provisions staff)."""
+    _, token = await issue_invite(client, invitation_setup)
+    async with AsyncClient(
+        transport=ASGITransport(app=create_app()), base_url="http://testserver"
+    ) as enrolling:
+        assert (await accept(enrolling, token)).status_code == 200
+    client.cookies.clear()
+    identity = await get_database().client_identities.find_one({"email": CLIENT_EMAIL})
+    assert identity["role"] == "client"
+    return identity
 
 
 async def client_token_login(client, password=CLIENT_PASSWORD):
@@ -194,9 +196,9 @@ async def test_client_token_login_and_bearer_read(client, client_account):
     assert "set-cookie" not in response.headers
     body = response.json()
     assert body["identity"] == {
-        "id": "bearer-client",
+        "id": client_account["_id"],
         "email": CLIENT_EMAIL,
-        "name": "Bearer Client",
+        "name": client_account["name"],
     }
     assert body["expires_in_seconds"] == 28800
     token = body["token"]
@@ -209,9 +211,12 @@ async def test_client_token_login_and_bearer_read(client, client_account):
 
 
 async def test_client_token_login_throttled_and_rejects_bad_password(client, client_account):
-    for _ in range(5):
-        assert (await client_token_login(client, password="incorrect")).status_code == 401
-    assert (await client_token_login(client, password="incorrect")).status_code == 429
+    # Enrolment already spent part of the shared per-email budget of 5.
+    statuses = [
+        (await client_token_login(client, password="incorrect")).status_code for _ in range(5)
+    ]
+    assert statuses[0] == 401 and statuses[-1] == 429
+    assert set(statuses) == {401, 429}
 
 
 async def test_client_bearer_logout_without_origin_or_csrf(client, client_account):
@@ -221,7 +226,7 @@ async def test_client_bearer_logout_without_origin_or_csrf(client, client_accoun
     assert (await client.get(CLIENT_SESSION, headers=bearer(token))).status_code == 401
 
 
-async def test_client_cross_transport_and_cross_role(client, staff, client_account):
+async def test_client_cross_transport_and_cross_role(client, client_account):
     token = await client_issue(client)
     client.cookies[client_auth.cookie_name()] = token
     assert (await client.get(CLIENT_SESSION)).status_code == 401
@@ -250,7 +255,7 @@ async def test_client_bearer_invalidated_by_reset_and_disable(client, client_acc
     assert (await client.get(CLIENT_SESSION, headers=bearer(token))).status_code == 401
 
 
-async def test_session_counts_and_revoke_others_span_transports(client, staff, client_account):
+async def test_session_counts_and_revoke_others_span_transports(client, client_account):
     cases = [
         ("/api/auth/login", TOKEN_PATH, "/api/auth", EMAIL, PASSWORD),
         (
@@ -263,6 +268,9 @@ async def test_session_counts_and_revoke_others_span_transports(client, staff, c
     ]
     for login_path, token_path, prefix, email, password in cases:
         client.cookies.clear()
+        # Enrolment and staff set-up left earlier sessions; count only this test's.
+        await get_database().client_sessions.delete_many({})
+        await get_database().staff_sessions.delete_many({})
         credentials = {"email": email, "password": password}
         cookie = await client.post(login_path, headers={"Origin": ORIGIN}, json=credentials)
         assert cookie.status_code == 200
@@ -289,17 +297,59 @@ async def test_session_counts_and_revoke_others_span_transports(client, staff, c
         assert (await client.get(session_path)).status_code == 401
 
 
-async def test_invitation_accept_ignores_bearer_header(client, invitation_setup):  # noqa: F811
-    _, token = await issue_invite(client, invitation_setup)
-    bearer_holder = {"Origin": ORIGIN, **bearer("x" * 40)}
-    unknown = "not-a-real-invitation-token-value-43-chars-xx"
-    plain = await accept(client, unknown)
-    with_header = await client.post(
-        ACCEPT, headers=bearer_holder, json={"token": unknown, "password": CLIENT_PASSWORD}
+async def invite_other(client, index, email):
+    """A fresh pending invitation for another enquiry, addressed to a different email."""
+    await get_database().booking_requests.insert_one(
+        record(index, email=email, name="Invited " + str(index))
     )
-    assert (plain.status_code, plain.json()) == (with_header.status_code, with_header.json())
-    ignored = await client.post(
-        ACCEPT, headers=bearer_holder, json={"token": token, "password": CLIENT_PASSWORD}
+    login_response = await login(client)
+    headers = {"Origin": ORIGIN, "X-CSRF-Token": login_response.json()["csrf_token"]}
+    path = f"/api/studio/enquiries/{record(index)['_id']}/client-invitations"
+    _, token = await issue_invite(client, headers, path)
+    client.cookies.clear()
+    return token
+
+
+async def test_invitation_accept_ignores_bearer_header(client, client_account):
+    bearer_token = await client_issue(client)
+    anonymous_token = await invite_other(client, 2, "anonymous@example.test")
+    carried_token = await invite_other(client, 3, "carried@example.test")
+    anonymous = await accept(client, anonymous_token)
+    assert anonymous.status_code == 200, anonymous.text
+    client.cookies.clear()
+    carried = await client.post(
+        ACCEPT,
+        headers={"Origin": ORIGIN, **bearer(bearer_token)},
+        json={"token": carried_token, "password": CLIENT_PASSWORD},
     )
-    assert ignored.status_code == 200, ignored.text
-    assert "set-cookie" in ignored.headers
+    assert carried.status_code == anonymous.status_code
+    assert set(carried.json()) == set(anonymous.json())
+    assert carried.json()["recovered"] is anonymous.json()["recovered"] is False
+    assert carried.json()["identity"]["email"] == "carried@example.test"
+    assert carried.json()["identity"]["id"] != str(client_account["_id"])
+    database = get_database()
+    session = await database.client_sessions.find_one(
+        {"_id": auth.digest(client.cookies[client_auth.cookie_name()])}
+    )
+    owner = await database.client_identities.find_one({"_id": session["identity_id"]})
+    assert owner["email"] == "carried@example.test"
+    assert session["identity_id"] != client_account["_id"]
+    assert session["transport"] == "cookie"
+    # The invitation grant went to the invited identity, never to the bearer's client.
+    assert await database.client_access.count_documents({"client_id": client_account["_id"]}) == 1
+
+
+@pytest.mark.parametrize("header", ["Bearer anything", "Basic abc"])
+async def test_invitation_accept_with_cookie_and_authorization_header_is_refused(
+    client, client_account, header
+):
+    first = await invite_other(client, 2, "second@example.test")
+    token = await invite_other(client, 3, "third@example.test")
+    assert (await accept(client, first)).status_code == 200
+    assert client.cookies[client_auth.cookie_name()]
+    refused = await client.post(
+        ACCEPT,
+        headers={"Origin": ORIGIN, "Authorization": header},
+        json={"token": token, "password": CLIENT_PASSWORD},
+    )
+    assert refused.status_code == 401
