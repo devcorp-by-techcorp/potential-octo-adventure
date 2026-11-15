@@ -28,7 +28,8 @@ Choose **limited** access with package registries allowed, plus these hosts:
 | `api.cloudflare.com` | Wrangler deploys, R2 bucket creation, secrets, cache purge |
 | `developers.cloudflare.com` | Cloudflare docs and the agent-setup prompt (blocked in the previous session) |
 | `mcp.cloudflare.com` | The Cloudflare plugin's MCP server (returned 403 in the previous session) |
-| `registry-1.docker.io`, `auth.docker.io`, `production.cloudflare.docker.com` | Pulling `mongo:7.0.16` for the backend tests |
+| `cdn.playwright.dev` | Chromium for the repo's pinned Python Playwright (web browser suites). Blocked by default; without it the setup script warns and skips. |
+| `registry-1.docker.io`, `auth.docker.io`, `production.cloudflare.docker.com` | Pulling `mongo:7.0.16` for the backend tests (reachable in the previous session; list them so a stricter policy does not drop them) |
 
 The previous environment could not be changed to allow `developers.cloudflare.com`. If that
 remains true, a new environment created with these hosts from the start is the way round it.
@@ -46,15 +47,23 @@ the alternatives.
 `wrangler secret put` and in Railway's backend settings, by you, and never shown to or stored by
 a session.
 
-### Setup script (proposed — confirm it runs in the first session before saving it)
+### Setup script
 
-```bash
-if [ -d potential-octo-adventure ]; then
-  (cd potential-octo-adventure && corepack enable && pnpm install --frozen-lockfile)
-  (cd potential-octo-adventure/backend && pip install -r requirements-dev.txt)
-  (cd potential-octo-adventure/infra/media-worker && npm install)
-fi
-```
+Paste the contents of [`scripts/cloud-env-setup.sh`](scripts/cloud-env-setup.sh) into the
+environment's setup script field. It runs as root from the folder holding the checkouts, skips
+cleanly when the repository is not attached, and is safe to re-run. It:
+
+1. pins pnpm 10.34.3 through corepack, runs `pnpm install --frozen-lockfile` and builds `@is/tokens`;
+2. creates `backend/.venv` (gitignored) with the backend's dev requirements (pytest, ruff, Playwright 1.58);
+3. downloads Chromium for that Playwright (needs `cdn.playwright.dev`; warns instead of failing);
+4. installs Wrangler 4.156.0 globally for the media Worker.
+
+Tested from the checkouts folder in the previous session: first run 52 s, re-run 13 s; afterwards
+`wrangler --version`, `ruff check`, the Worker tests (25 passed) and the mobile typecheck all
+worked. Only step 3 failed there, because `cdn.playwright.dev` was not allowed.
+
+It deliberately does not start Docker or MongoDB (no background daemons in setup scripts); the
+session starts them when it needs the backend tests.
 
 Chromium and Playwright for Node are pre-installed in cloud containers; nothing to add for the
 mobile e2e suites.
@@ -114,10 +123,13 @@ cd backend && ruff check . && pytest -q
 cd infra/media-worker && npm test    # Worker against in-memory R2 + cache (25 checks)
 ```
 
-If dockerd is not running: `setsid nohup dockerd >/tmp/dockerd.log 2>&1 &`.
+Docker is not running when a session starts. Start it first:
+`setsid nohup dockerd >/tmp/dockerd.log 2>&1 &` then wait for `docker info` to succeed.
+Backend tools live in `backend/.venv` (created by the setup script): `backend/.venv/bin/pytest`,
+`backend/.venv/bin/ruff`.
 Web browser tests: `python web/tests/{gallery_theme,portal_shell,run_browser}.py`; the repo pins
-Python Playwright 1.58, which may not match the container's Chromium — use a scratch venv with
-the matching version rather than changing the pin.
+Python Playwright 1.58, which may not match the container's Chromium — the setup script installs its
+browser when `cdn.playwright.dev` is allowed. Do not change the pin.
 
 Last known results: backend 394 passed / 2 skipped; mobile e2e finance 22, screens 125,
 kids 88, studio 76; Worker 25; all four CI jobs green on `main`.
