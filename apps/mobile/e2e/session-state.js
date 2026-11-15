@@ -19,6 +19,15 @@ ok('initial state is restoring with no identity', initialSessionState.status ===
   ok('restore-failed-unauthorized -> signed-out, message null, identity cleared', s.status === 'signed-out' && s.message === null && s.identity === null);
 }
 {
+  const m = 'Your session has expired. Please sign in again.';
+  const e = S(initialSessionState, { type: 'restore-failed-unauthorized', gen: 0, hadStored: true });
+  ok('restore 401 with stored credentials -> signed-out carrying the expired message', e.status === 'signed-out' && e.message === m);
+  const f = S(initialSessionState, { type: 'restore-failed-unauthorized', gen: 0, hadStored: false });
+  ok('restore 401 for a fresh visitor stays silent', f.status === 'signed-out' && f.message === null);
+  const stale = S(S(initialSessionState, { type: 'signed-in', role: 'client', info }), { type: 'restore-failed-unauthorized', gen: 0, hadStored: true });
+  ok('stale restore 401 with stored credentials leaves a newer sign-in untouched', stale.status === 'client' && stale.message === null);
+}
+{
   const signed = S(initialSessionState, { type: 'restored', role: 'client', info, gen: 0 });
   const s = S(signed, { type: 'restore-failed-unavailable', gen: 0 });
   ok('restore-failed-unavailable -> unavailable', s.status === 'unavailable');

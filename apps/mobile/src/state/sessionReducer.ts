@@ -19,10 +19,13 @@ export interface SessionState {
 
 export type SessionEvent =
   | { type: "restored"; role: Role; info: SessionInfo; gen: number }
-  | { type: "restore-failed-unauthorized"; gen: number }
+  /** `hadStored`: credentials existed when the restore began, so a 401 means they expired or were revoked. */
+  | { type: "restore-failed-unauthorized"; gen: number; hadStored?: boolean }
   | { type: "restore-failed-unavailable"; gen: number }
   | { type: "signed-in"; role: Role; info: SessionInfo }
   | { type: "signed-out"; message?: string };
+
+export const EXPIRED_MESSAGE = "Your session has expired. Please sign in again.";
 
 export const initialSessionState: SessionState = { status: "restoring", identity: null, role: null, message: null, gen: 0 };
 
@@ -36,7 +39,7 @@ export function sessionReducer(state: SessionState, event: SessionEvent): Sessio
     case "signed-in":
       return { status: event.role, identity: event.info.identity, role: event.role, message: null, gen: state.gen + 1 };
     case "restore-failed-unauthorized":
-      return { status: "signed-out", identity: null, role: null, message: null, gen: state.gen };
+      return { status: "signed-out", identity: null, role: null, message: event.hadStored ? EXPIRED_MESSAGE : null, gen: state.gen };
     case "restore-failed-unavailable":
       return { ...state, status: "unavailable" };
     case "signed-out":

@@ -11,7 +11,7 @@ import { ApiError, createApiClient } from "~/api/client";
 import type { ApiClient } from "~/api/client";
 import { readSession, signInRequest, signOutRequest } from "~/api/auth";
 import type { SessionInfo } from "~/api/auth";
-import { initialSessionState, sessionReducer } from "./sessionReducer";
+import { EXPIRED_MESSAGE as EXPIRED, initialSessionState, sessionReducer } from "./sessionReducer";
 import type { SessionEvent, SessionState, SessionStatus } from "./sessionReducer";
 
 export { sessionReducer, initialSessionState };
@@ -31,7 +31,6 @@ export interface SessionValue {
 
 const SessionContext = createContext<SessionValue | null>(null);
 
-const EXPIRED = "Your session has expired. Please sign in again.";
 const STORE_FAILED = "We couldn't save your sign-in on this device. Please try again.";
 const GENERIC = "Something went wrong. Please try again.";
 
@@ -86,7 +85,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
           if (stale()) return;
           await safeClear();
           if (stale()) return;
-          dispatch({ type: "restore-failed-unauthorized", gen });
+          dispatch({ type: "restore-failed-unauthorized", gen, hadStored: false });
           return;
         }
         tokenRef.current = stored.token;
@@ -121,7 +120,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       await safeClear();
       if (stale()) return;
       api.resetUnauthorized();
-      dispatch({ type: "restore-failed-unauthorized", gen });
+      dispatch({ type: "restore-failed-unauthorized", gen, hadStored: stored !== null });
     } finally {
       restoringRef.current = false;
     }
