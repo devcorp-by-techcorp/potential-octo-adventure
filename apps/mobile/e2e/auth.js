@@ -146,6 +146,19 @@ const LOGOUT_URL = /\/api\/auth\/(client\/)?logout$/;
         ok(T('a hanging logout still lands on /marketing within the budget'), (await path(pg)) === '/marketing' && took < 12000, `${await path(pg)} after ${took} ms`);
         await ctx.close(); }
 
+      // A sign-in request that never answers gives up after 15 s with an error, so the button (and
+      // any sign-out waiting on it) is not held indefinitely.
+      { const { ctx, pg } = await fresh();
+        await pg.route(/\/api\/auth\/(client\/)?login$/, () => { /* never answer */ });
+        await pg.goto(base + '/sign-in');
+        await pg.getByLabel('Email').fill(CLIENT); await pg.getByLabel('Password').fill(PASSWORD);
+        const started = Date.now();
+        await pg.getByText(/^Enter .* portal$/i).click();
+        await pg.getByText('Could not reach the server').first().waitFor({ timeout: 20000 }).catch(() => {});
+        const took = Date.now() - started;
+        ok(T('a hanging sign-in gives up with an error and stays on /sign-in'), (await path(pg)) === '/sign-in' && (await text(pg)).includes('Could not reach the server') && took < 19000, `${await path(pg)} after ${took} ms`);
+        await ctx.close(); }
+
       // Sign out then reload: stays signed out, with no expiry message.
       { const { ctx, pg } = await fresh();
         await signIn(pg, 'staff', STAFF); await settle(pg, '/dashboard');

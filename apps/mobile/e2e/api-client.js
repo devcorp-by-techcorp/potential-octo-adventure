@@ -127,6 +127,11 @@ const hdr = (c, k) => { const h = c.init.headers || {}; const key = Object.keys(
     const err = await pending;
     ok('an aborted request rejects as unavailable', err instanceof ApiError && err.kind === 'unavailable', String(err));
   }
+  {
+    const t = make('cookie', () => ({ status: 200, ok: true, headers: { get: () => null }, text: async () => { throw Object.assign(new Error('aborted'), { name: 'AbortError' }); } }));
+    const err = await t.api.request('GET', '/x').then(() => 'resolved', (e) => e);
+    ok('an abort while reading the body rejects as unavailable', err instanceof ApiError && err.kind === 'unavailable', String(err));
+  }
 
   console.log(res.join('\n')); const bad = res.filter((r) => r.startsWith('FAIL')).length;
   console.log(`\n${res.length - bad} passed, ${bad} failed`); fs.rmSync(out, { recursive: true, force: true }); process.exit(bad ? 1 : 0);

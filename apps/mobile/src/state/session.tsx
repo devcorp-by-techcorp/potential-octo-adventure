@@ -40,6 +40,8 @@ const GENERIC = "Something went wrong. Please try again.";
 export const SIGNING_OUT_MESSAGE = "You're still being signed out. Please wait a moment and try again.";
 /** The server part of sign-out gives up after this; local sign-out always completes. */
 const SIGN_OUT_BUDGET_MS = 8000;
+/** A sign-in request gives up after this and reports the server as unreachable. */
+const SIGN_IN_TIMEOUT_MS = 15000;
 
 const isRole = (r: unknown): r is Role => r === "staff" || r === "client";
 
@@ -146,21 +148,32 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const signInNow = useCallback(async (role: Role, email: string, password: string): Promise<SignInResult> => {
     let info: SessionInfo;
+    // Bounded, so a sign-out waiting on this sign-in (and the sign-in button) can't hang for minutes.
+    const deadline = new AbortController();
+    const timer = setTimeout(() => deadline.abort(), SIGN_IN_TIMEOUT_MS);
     try {
-      info = await signInRequest(api, credentials.mode, role, email.trim(), password);
+      info = await signInRequest(api, credentials.mode, role, email.trim(), password, deadline.signal);
     } catch (e) {
       return { ok: false, error: e instanceof ApiError ? e.message : GENERIC };
+    } finally {
+      clearTimeout(timer);
     }
     genRef.current += 1; // any restore still in flight is now stale
     try {
       if (credentials.mode === "bearer") {
-        if (!info.token) { dispatch({ type: "signed-out" }); return { ok: false, error: GENERIC }; }
+        if (!info.token) {
+          roleRef.current = null; tokenRef.current = null; csrfRef.current = null;
+          dispatch({ type: "signed-out" });
+          return { ok: false, error: GENERIC };
+        }
         await credentials.write({ role, token: info.token });
         tokenRef.current = info.token;
       } else {
         await credentials.write({ role });
       }
     } catch {
+      roleRef.current = null;
+      csrfRef.current = null;
       tokenRef.current = null;
       dispatch({ type: "signed-out" });
       return { ok: false, error: STORE_FAILED };
@@ -189,7 +202,9 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const role = roleRef.current ?? stateRef.current.role;
     genRef.current += 1;
     // A hanging request must not hold the user on the splash. Aborting also stops the remaining
-    // logouts, so none can land later and revoke a session signed in after this one.
+    // cross-portal reads, so this old sign-out can't pick up (and revoke) the CSRF token of a
+    // session signed in after it. Trade-off: a logout cut off by the budget leaves that server
+    // session alive (on web, its cookie stays), but the device is signed out locally.
     const deadline = new AbortController();
     const timer = setTimeout(() => deadline.abort(), SIGN_OUT_BUDGET_MS);
     const quiet = { skipUnauthorized: true, signal: deadline.signal };

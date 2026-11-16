@@ -92,7 +92,12 @@ export function createApiClient(deps: ApiClientDeps): ApiClient {
     }
 
     if (response.status === 204) return undefined as T;
-    const text = await response.text();
+    let text: string;
+    try {
+      text = await response.text();
+    } catch {
+      throw new ApiError(0, "unavailable", "Could not reach the server"); // includes an abort mid-body
+    }
     return (text ? JSON.parse(text) : undefined) as T;
   }
 
