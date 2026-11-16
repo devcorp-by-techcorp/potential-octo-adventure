@@ -108,6 +108,13 @@ const hdr = (c, k) => { const h = c.init.headers || {}; const key = Object.keys(
     await t.api.request('GET', '/x').catch(() => {});
     ok('later ordinary 401 after failed sign-in calls onUnauthorized once', t.unauthCount() === 1, String(t.unauthCount()));
   }
+  {
+    const t = make('cookie', () => json(401, { detail: 'No session' }));
+    let err; try { await auth.readSession(t.api, 'staff', { skipUnauthorized: true }); } catch (e) { err = e; }
+    ok('readSession with skipUnauthorized throws unauthorized and never calls onUnauthorized', err instanceof ApiError && err.kind === 'unauthorized' && t.unauthCount() === 0, String(t.unauthCount()));
+    await t.api.request('GET', '/x').catch(() => {});
+    ok('a skipped session 401 does not arm the latch', t.unauthCount() === 1, String(t.unauthCount()));
+  }
 
   console.log(res.join('\n')); const bad = res.filter((r) => r.startsWith('FAIL')).length;
   console.log(`\n${res.length - bad} passed, ${bad} failed`); fs.rmSync(out, { recursive: true, force: true }); process.exit(bad ? 1 : 0);

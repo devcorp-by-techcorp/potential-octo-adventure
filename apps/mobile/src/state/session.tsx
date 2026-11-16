@@ -59,8 +59,6 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       getToken: () => tokenRef.current,
       getCsrf: () => csrfRef.current,
       onUnauthorized: (message) => {
-        // A 401 while restoring is an answer, not an expiry; restore() handles it.
-        if (restoringRef.current) return;
         tokenRef.current = null;
         csrfRef.current = null;
         genRef.current += 1;
@@ -88,6 +86,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
           dispatch({ type: "restore-failed-unauthorized", gen, hadStored: false });
           return;
         }
+        if (stale()) return;
         tokenRef.current = stored.token;
         order = [stored.role];
       } else {
@@ -97,7 +96,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       for (const role of order) {
         try {
-          const info = await readSession(api, role);
+          const info = await readSession(api, role, { skipUnauthorized: true });
           if (stale()) return;
           csrfRef.current = info.csrfToken;
           if (credentials.mode === "cookie") {
@@ -164,8 +163,21 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const signOut = useCallback(async () => {
     const role = stateRef.current.role;
     genRef.current += 1;
-    if (role) {
-      try { await signOutRequest(api, role); } catch { /* sign out locally whatever the server said */ }
+    const quiet = { skipUnauthorized: true };
+    if (credentials.mode === "cookie") {
+      // The browser may hold both portals' cookies (a portal switch does not sign out), so revoke
+      // both. Each logout needs that role's own CSRF token: read the session to get it, and ignore
+      // failures (a 401 just means that role was not signed in).
+      const roles: Role[] = role ? [role, role === "staff" ? "client" : "staff"] : ["staff", "client"];
+      for (const r of roles) {
+        try {
+          const info = r === role && csrfRef.current ? null : await readSession(api, r, quiet);
+          if (info) csrfRef.current = info.csrfToken;
+          await signOutRequest(api, r, quiet);
+        } catch { /* sign out locally whatever the server said */ }
+      }
+    } else if (role) {
+      try { await signOutRequest(api, role, quiet); } catch { /* sign out locally whatever the server said */ }
     }
     tokenRef.current = null;
     csrfRef.current = null;

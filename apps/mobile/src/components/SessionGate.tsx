@@ -38,7 +38,7 @@ export function SessionGate({ require, children }: { require: "staff" | "client"
   const { status } = useSession();
   if (status === "restoring") return <Splash />;
   if (status === "unavailable") return <RetryPanel />;
-  if (status === "signed-out") return <Redirect href="/sign-in" />;
+  if (status === "signed-out") return <Redirect href={`/sign-in?role=${require}` as any} />;
   if (status !== require) return <Redirect href={status === "staff" ? "/(admin)/dashboard" : "/(client)/home"} />;
   return <>{children}</>;
 }

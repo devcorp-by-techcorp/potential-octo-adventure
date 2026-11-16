@@ -13,7 +13,7 @@ export default function ClientLayout() {
   ];
   return (
     <SessionGate require="client">
-      <AppShell items={items} roleLabel="Client Portal" />
+      <AppShell items={items} roleLabel="Client Portal" maxTabs={4} />
     </SessionGate>
   );
 }

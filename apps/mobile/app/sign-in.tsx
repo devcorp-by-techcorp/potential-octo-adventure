@@ -4,7 +4,7 @@
  * routes into the client vs studio-admin portal.
  */
 import React, { useRef, useState } from "react";
-import { View, Text, ScrollView, Pressable, TextInput, Linking, Platform } from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput, Linking } from "react-native";
 import { Image } from "expo-image";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -48,7 +48,12 @@ export default function SignIn() {
     }
   };
 
-  const webBase = process.env.EXPO_PUBLIC_WEB_URL ?? (Platform.OS === "web" && typeof window !== "undefined" ? window.location.origin : "");
+  // The client portal that owns /client is a separate web app; never fall back to this app's own origin.
+  const webBase = (process.env.EXPO_PUBLIC_WEB_URL ?? "").replace(/\/+$/, "");
+  const openRecovery = async () => {
+    try { await Linking.openURL(`${webBase}/client`); }
+    catch { setError("We couldn't open the password reset page. Please try again later."); }
+  };
 
   // Side-by-side only when there is genuine landscape width to spare.
   const sideBySide = width >= 900 && orientation === "landscape";
@@ -94,9 +99,15 @@ export default function SignIn() {
 
         <Button label={`Enter ${role === "staff" ? "studio" : "client"} portal`} icon="arrow" fullWidth style={{ marginTop: 8 }} busy={pending} onPress={submit} />
 
-        <Pressable onPress={() => Linking.openURL(`${webBase}/client`)} accessibilityRole="link" style={{ minHeight: 44, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
-          <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, color: theme.brand.gold }}>Forgotten password?</Text>
-        </Pressable>
+        {role === "staff" ? (
+          <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, lineHeight: 18, textAlign: "center", color: theme.ink.secondary, marginTop: 10 }}>
+            Studio staff: ask the studio operator to reset your password.
+          </Text>
+        ) : webBase ? (
+          <Pressable onPress={openRecovery} accessibilityRole="link" style={{ minHeight: 44, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
+            <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, color: theme.brand.gold }}>Forgotten password?</Text>
+          </Pressable>
+        ) : null}
 
         <Pressable onPress={() => router.replace("/marketing")} style={{ minHeight: 44, alignItems: "center", justifyContent: "center", marginTop: 10 }}>
           <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, color: theme.ink.secondary }}>← Back to the studio site</Text>

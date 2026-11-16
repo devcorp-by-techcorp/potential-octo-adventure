@@ -1,4 +1,4 @@
-import type { ApiClient } from "./client";
+import type { ApiClient, RequestOptions } from "./client";
 import type { Mode, Role } from "./credentialTypes";
 
 export interface SessionInfo {
@@ -28,10 +28,10 @@ export async function signInRequest(api: ApiClient, mode: Mode, role: Role, emai
   return toSession(await api.request<SessionWire>("POST", path, { email, password }, { skipUnauthorized: true }));
 }
 
-export async function readSession(api: ApiClient, role: Role): Promise<SessionInfo> {
-  return toSession(await api.request<SessionWire>("GET", `${prefix(role)}/session`));
+export async function readSession(api: ApiClient, role: Role, options?: RequestOptions): Promise<SessionInfo> {
+  return toSession(await api.request<SessionWire>("GET", `${prefix(role)}/session`, undefined, options));
 }
 
-export async function signOutRequest(api: ApiClient, role: Role): Promise<void> {
-  await api.request<void>("POST", `${prefix(role)}/logout`, role === "client" ? {} : undefined);
+export async function signOutRequest(api: ApiClient, role: Role, options?: RequestOptions): Promise<void> {
+  await api.request<void>("POST", `${prefix(role)}/logout`, role === "client" ? {} : undefined, options);
 }

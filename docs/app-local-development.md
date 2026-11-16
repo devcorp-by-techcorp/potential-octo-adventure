@@ -70,9 +70,10 @@ pnpm mobile
 | Native on a LAN (simulator, emulator or device) | `http://<machine-ip>:8000` |
 
 On native the URL is required; outside development it must be HTTPS. An Android emulator
-reaches the host at `http://10.0.2.2:8000`. `EXPO_PUBLIC_WEB_URL` (default
-`http://localhost:8081` in the example) is the base for the password-reset link. Restart Expo
-after changing `.env`.
+reaches the host at `http://10.0.2.2:8000`. `EXPO_PUBLIC_WEB_URL` is the origin of the Vite web portal that
+serves `/client` (`http://localhost:5173` in the example); it powers the client "Forgotten
+password?" link, which is hidden when the variable is unset. The Studio role shows a note instead:
+staff passwords are reset by the studio operator. Restart Expo after changing `.env`.
 
 Web uses cookie sessions and so needs the origins in step 2. Native uses bearer tokens held in the
 platform secure store.
@@ -91,3 +92,7 @@ cd backend && TEST_MONGODB_URI='mongodb://127.0.0.1:27017/?replicaSet=phase3' py
 BROWSER_MONGODB_URI='mongodb://127.0.0.1:27017/?replicaSet=phase3' \
   APP_TEST_PYTHON=backend/.venv/bin/python pnpm e2e:mobile
 ```
+
+The e2e web export is built by `apps/mobile/e2e/build.js`, which blanks `EXPO_PUBLIC_API_URL` and
+`EXPO_PUBLIC_WEB_URL` so a developer's `apps/mobile/.env` is never baked in; the tests always use
+the same-origin proxy.

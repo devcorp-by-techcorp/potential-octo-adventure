@@ -63,6 +63,13 @@ const SESSION_URL = /\/api\/auth\/(client\/)?session$/;
         ok(T('a signed-in client visiting /dashboard is redirected to /home'), (await path(pg)) === '/home', await path(pg));
         await ctx.close(); }
 
+      // Staff guarded from the client portal.
+      { const { ctx, pg } = await fresh();
+        await signIn(pg, 'staff', STAFF); await settle(pg, '/dashboard');
+        await pg.goto(base + '/home'); await pg.waitForTimeout(900);
+        ok(T('a signed-in staff user visiting /home is redirected to /dashboard'), (await path(pg)) === '/dashboard', await path(pg));
+        await ctx.close(); }
+
       // Wrong password.
       { const { ctx, pg } = await fresh();
         await signIn(pg, 'client', CLIENT, 'not-the-password');
@@ -77,6 +84,39 @@ const SESSION_URL = /\/api\/auth\/(client\/)?session$/;
         ok(T('sign-out returns to the marketing page'), (await path(pg)) === '/marketing', await path(pg));
         await pg.goto(base + '/dashboard'); await pg.waitForTimeout(900);
         ok(T('/dashboard then redirects to /sign-in'), (await path(pg)) === '/sign-in', await path(pg));
+        await ctx.close(); }
+
+      // Sign out then reload: stays signed out, with no expiry message.
+      { const { ctx, pg } = await fresh();
+        await signIn(pg, 'staff', STAFF); await settle(pg, '/dashboard');
+        await signOut(pg);
+        await pg.goto(base + '/sign-in'); await pg.waitForTimeout(900);
+        const t = await text(pg);
+        ok(T('after sign-out and reload the user is still signed out'), (await path(pg)) === '/sign-in', await path(pg));
+        ok(T('after sign-out and reload there is no expiry message'), !t.includes('Your session has expired'), t.slice(0, 200));
+        await pg.goto(base + '/dashboard'); await pg.waitForTimeout(900);
+        ok(T('after sign-out and reload /dashboard redirects to /sign-in'), (await path(pg)) === '/sign-in', await path(pg));
+        await ctx.close(); }
+
+      // Portal switch then sign out: neither portal is restored on reload.
+      { const { ctx, pg } = await fresh();
+        await signIn(pg, 'staff', STAFF); await settle(pg, '/dashboard');
+        await signIn(pg, 'client', CLIENT);
+        ok(T('switching portals signs the client in'), (await settle(pg, '/home')) === '/home', await path(pg));
+        await signOut(pg);
+        await pg.goto(base + '/sign-in'); await pg.waitForTimeout(900);
+        const t = await text(pg);
+        ok(T('after a portal switch and sign-out the reload is signed out'), (await path(pg)) === '/sign-in' && !t.includes('Your session has expired'), await path(pg));
+        await pg.goto(base + '/dashboard'); await pg.waitForTimeout(900);
+        ok(T('the staff portal is not restored after sign-out'), (await path(pg)) === '/sign-in', await path(pg));
+        await pg.goto(base + '/home'); await pg.waitForTimeout(900);
+        ok(T('the client portal is not restored after sign-out'), (await path(pg)) === '/sign-in', await path(pg));
+        await ctx.close(); }
+
+      // Expired staff session preselects the Studio role.
+      { const { ctx, pg } = await fresh();
+        await pg.goto(base + '/dashboard'); await pg.waitForTimeout(900);
+        ok(T('a signed-out visit to /dashboard preselects the Studio role'), (await path(pg)) === '/sign-in' && (await pg.getByText(/^Enter studio portal$/i).count()) === 1, await path(pg));
         await ctx.close(); }
 
       // Expired session, staff and client.

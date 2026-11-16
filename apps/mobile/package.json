@@ -10,7 +10,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "e2e": "expo export --platform web --output-dir dist-e2e && node e2e/finance.js && node e2e/api-client.js && node e2e/session-state.js && node e2e/run.js"
+    "e2e": "node e2e/build.js && node e2e/finance.js && node e2e/api-client.js && node e2e/session-state.js && node e2e/run.js"
   },
   "dependencies": {
     "@expo-google-fonts/cinzel": "^0.2.3",
