@@ -10,7 +10,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "e2e": "expo export --platform web --output-dir dist-e2e && node e2e/finance.js && node e2e/screens.js dist-e2e && node e2e/kids.js dist-e2e && node e2e/studio.js dist-e2e"
+    "e2e": "node e2e/build.js && node e2e/finance.js && node e2e/api-client.js && node e2e/session-state.js && node e2e/run.js"
   },
   "dependencies": {
     "@expo-google-fonts/cinzel": "^0.2.3",
@@ -27,6 +27,7 @@
     "expo-linear-gradient": "~13.0.2",
     "expo-linking": "~6.3.0",
     "expo-router": "~3.5.0",
+    "expo-secure-store": "~13.0.2",
     "expo-splash-screen": "~0.27.0",
     "expo-status-bar": "~1.12.0",
     "expo-system-ui": "~3.0.0",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.0",
     "@types/react": "~18.2.0",
+    "playwright": "1.58.0",
     "typescript": "~5.4.0"
   }
 }

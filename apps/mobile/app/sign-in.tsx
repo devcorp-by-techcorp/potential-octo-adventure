@@ -3,14 +3,15 @@
  * column on compact / portrait; side-by-side on wide landscape. Role toggle
  * routes into the client vs studio-admin portal.
  */
-import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import React, { useRef, useState } from "react";
+import { View, Text, ScrollView, Pressable, TextInput, Linking } from "react-native";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTokens } from "~/theme/useTokens";
 import { useResponsive } from "~/hooks/useResponsive";
-import { useSession, Role } from "~/state/session";
+import { useSession } from "~/state/session";
+import type { Role } from "~/state/session";
 import { Eyebrow, Display, Button } from "~/components/ui";
 import { Icon } from "~/components/Icon";
 import { LogoBanner } from "~/components/Logo";
@@ -21,9 +22,38 @@ export default function SignIn() {
   const { theme, radius } = useTokens();
   const { width, height, orientation } = useResponsive();
   const insets = useSafeAreaInsets();
-  const { signIn } = useSession();
+  const { signIn, message } = useSession();
   const router = useRouter();
-  const [role, setRole] = useState<Role>("client");
+  const params = useLocalSearchParams<{ role?: string }>();
+  const [role, setRole] = useState<Role>(params.role === "staff" ? "staff" : "client");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const shownError = error ?? message;
+
+  const busyRef = useRef(false);
+  const submit = async () => {
+    if (busyRef.current) return;
+    busyRef.current = true;
+    setPending(true);
+    setError(null);
+    try {
+      const r = await signIn(role, email, password);
+      if (r.ok) router.replace(role === "staff" ? "/(admin)/dashboard" : "/(client)/home");
+      else setError(r.error);
+    } finally {
+      busyRef.current = false;
+      setPending(false);
+    }
+  };
+
+  // The client portal that owns /client is a separate web app; never fall back to this app's own origin.
+  const webBase = (process.env.EXPO_PUBLIC_WEB_URL ?? "").replace(/\/+$/, "");
+  const openRecovery = async () => {
+    try { await Linking.openURL(`${webBase}/client`); }
+    catch { setError("We couldn't open the password reset page. Please try again later."); }
+  };
 
   // Side-by-side only when there is genuine landscape width to spare.
   const sideBySide = width >= 900 && orientation === "landscape";
@@ -43,8 +73,6 @@ export default function SignIn() {
     </View>
   );
 
-  const emailFor = role === "admin" ? "victoria@illuminatestudios.com.au" : "eleanor.whitfield@hey.com";
-
   const form = (
     <ScrollView style={{ flex: sideBySide ? 1 : undefined }} contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 28, backgroundColor: theme.surface.canvas }}>
       <View style={{ width: "100%", maxWidth: 380, alignSelf: "center" }}>
@@ -52,28 +80,39 @@ export default function SignIn() {
         <Display size={34} style={{ marginTop: 6, marginBottom: 22 }}>Sign in</Display>
 
         <View style={{ flexDirection: "row", gap: 8, marginBottom: 20 }}>
-          {(["client", "admin"] as Role[]).map((r) => {
+          {(["client", "staff"] as Role[]).map((r) => {
             const on = role === r;
             return (
-              <Pressable key={r} onPress={() => setRole(r)} style={{ flex: 1, minHeight: 46, borderRadius: radius.xs, alignItems: "center", justifyContent: "center", backgroundColor: on ? theme.brand.gold : "transparent", borderWidth: 1, borderColor: on ? theme.brand.gold : theme.border.default }}>
-                <Text style={{ fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1, fontSize: 11, color: on ? theme.ink.inverse : theme.ink.secondary }}>{r === "admin" ? "Studio admin" : "Client"}</Text>
+              <Pressable key={r} onPress={() => setRole(r)} accessibilityRole="button" accessibilityState={{ selected: on }} style={{ flex: 1, minHeight: 46, borderRadius: radius.xs, alignItems: "center", justifyContent: "center", backgroundColor: on ? theme.brand.gold : "transparent", borderWidth: 1, borderColor: on ? theme.brand.gold : theme.border.default }}>
+                <Text style={{ fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1, fontSize: 11, color: on ? theme.ink.inverse : theme.ink.secondary }}>{r === "staff" ? "Studio" : "Client"}</Text>
               </Pressable>
             );
           })}
         </View>
 
-        <Field label="Email" value={emailFor} />
-        <Field label="Password" value="••••••••••" />
+        <Field label="Email" value={email} onChangeText={setEmail} autoComplete="email" textContentType="emailAddress" keyboardType="email-address" autoCapitalize="none" autoCorrect={false} onSubmit={submit} />
+        <Field label="Password" value={password} onChangeText={setPassword} autoComplete="current-password" textContentType="password" secureTextEntry autoCapitalize="none" autoCorrect={false} onSubmit={submit} />
 
-        <Button label={`Enter ${role === "admin" ? "studio" : "client"} portal`} icon="arrow" fullWidth style={{ marginTop: 8 }} onPress={() => { signIn(role); router.replace(role === "admin" ? "/(admin)/dashboard" : "/(client)/home"); }} />
+        {shownError ? (
+          <Text accessibilityRole="alert" style={{ fontFamily: "Inter_500Medium", fontSize: 13, lineHeight: 19, color: theme.status.danger, marginBottom: 10 }}>{shownError}</Text>
+        ) : null}
+
+        <Button label={`Enter ${role === "staff" ? "studio" : "client"} portal`} icon="arrow" fullWidth style={{ marginTop: 8 }} busy={pending} onPress={submit} />
+
+        {role === "staff" ? (
+          <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, lineHeight: 18, textAlign: "center", color: theme.ink.secondary, marginTop: 10 }}>
+            Studio staff: ask the studio operator to reset your password.
+          </Text>
+        ) : webBase ? (
+          <Pressable onPress={openRecovery} accessibilityRole="link" style={{ minHeight: 44, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
+            <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, color: theme.brand.gold }}>Forgotten password?</Text>
+          </Pressable>
+        ) : null}
 
         <Pressable onPress={() => router.replace("/marketing")} style={{ minHeight: 44, alignItems: "center", justifyContent: "center", marginTop: 10 }}>
           <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, color: theme.ink.secondary }}>← Back to the studio site</Text>
         </Pressable>
 
-        <Text style={{ fontFamily: "JetBrainsMono_400Regular", fontSize: 11, textAlign: "center", color: theme.ink.tertiary, marginTop: 8, lineHeight: 17 }}>
-          Demo — credentials pre-filled.{"\n"}Switch role above to preview each portal.
-        </Text>
       </View>
     </ScrollView>
   );
@@ -86,14 +125,20 @@ export default function SignIn() {
   );
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function Field({ label, value, onChangeText, onSubmit, ...rest }: { label: string; value: string; onChangeText: (t: string) => void; onSubmit: () => void } & Omit<React.ComponentProps<typeof TextInput>, "value" | "onChangeText" | "onSubmitEditing">) {
   const { theme, radius } = useTokens();
   return (
     <View style={{ marginBottom: 14 }}>
       <Text style={{ fontFamily: "Inter_600SemiBold", fontSize: 12, color: theme.ink.secondary, marginBottom: 6 }}>{label}</Text>
-      <View style={{ minHeight: 46, justifyContent: "center", paddingHorizontal: 14, borderWidth: 1, borderColor: theme.border.default, borderRadius: radius.xs, backgroundColor: theme.surface.raised }}>
-        <Text style={{ fontFamily: "Inter_400Regular", fontSize: 15, color: theme.ink.primary }}>{value}</Text>
-      </View>
+      <TextInput
+        {...rest}
+        value={value}
+        onChangeText={onChangeText}
+        onSubmitEditing={onSubmit}
+        accessibilityLabel={label}
+        placeholderTextColor={theme.ink.tertiary}
+        style={{ minHeight: 46, paddingHorizontal: 14, borderWidth: 1, borderColor: theme.border.default, borderRadius: radius.xs, backgroundColor: theme.surface.raised, fontFamily: "Inter_400Regular", fontSize: 15, color: theme.ink.primary }}
+      />
     </View>
   );
 }

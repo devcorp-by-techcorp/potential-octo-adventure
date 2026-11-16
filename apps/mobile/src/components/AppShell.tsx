@@ -21,6 +21,14 @@ import { useSession } from "~/state/session";
 import { useStudio } from "~/state/studio";
 import { initialsOf } from "~/data/studio";
 
+/** Web only: the other portal's sign-in, reached without signing out of this one. */
+function switchTarget(status: string): { role: "staff" | "client"; label: string } | null {
+  if (Platform.OS !== "web") return null;
+  if (status === "staff") return { role: "client", label: "Switch to client portal" };
+  if (status === "client") return { role: "staff", label: "Switch to studio portal" };
+  return null;
+}
+
 export interface NavItem { name: string; label: string; icon: IconName; href: string; badge?: number; }
 
 /** Unread marker on a nav icon — 8pt gold dot, ringed so it reads on any surface. */
@@ -117,9 +125,10 @@ export function AppShell({ items, roleLabel, maxTabs }: { items: NavItem[]; role
 function SideRail({ items, activeHref, onNav, insets }: { items: NavItem[]; activeHref: string; onNav: (h: string) => void; insets: { top: number; bottom: number } }) {
   const { theme } = useTokens();
   const { width } = useResponsive();
-  const { signOut } = useSession();
+  const { signOut, status } = useSession();
   const router = useRouter();
-  const leave = () => { signOut(); router.replace("/marketing"); };
+  const leave = () => { void signOut(); router.replace("/marketing"); };
+  const other = switchTarget(status);
   const showLabels = width >= 1000;
   const railW = showLabels ? 236 : 74;
   return (
@@ -140,6 +149,12 @@ function SideRail({ items, activeHref, onNav, insets }: { items: NavItem[]; acti
         );
       })}
       </ScrollView>
+      {other ? (
+        <Pressable onPress={() => router.push(`/sign-in?role=${other.role}` as any)} accessibilityRole="button" accessibilityLabel={other.label} style={{ flexDirection: "row", alignItems: "center", gap: 12, minHeight: 44, paddingHorizontal: 12, borderRadius: 4 }}>
+          <Icon name="user" size={22} color={theme.ink.tertiary} />
+          {showLabels ? <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, color: theme.ink.tertiary }}>{other.label}</Text> : null}
+        </Pressable>
+      ) : null}
       <Pressable onPress={leave} style={{ flexDirection: "row", alignItems: "center", gap: 12, minHeight: 44, paddingHorizontal: 12, borderRadius: 4 }}>
         <Icon name="logout" size={22} color={theme.ink.tertiary} />
         {showLabels ? <Text style={{ fontFamily: "Inter_500Medium", fontSize: 12.5, color: theme.ink.tertiary }}>Sign out</Text> : null}
@@ -151,15 +166,17 @@ function SideRail({ items, activeHref, onNav, insets }: { items: NavItem[]; acti
 function BottomBar({ items, activeHref, onNav, insetBottom, maxTabs }: { items: NavItem[]; activeHref: string; onNav: (h: string) => void; insetBottom: number; maxTabs?: number }) {
   const manager = useStudio().identity.manager;
   const { theme } = useTokens();
-  const { signOut } = useSession();
+  const { signOut, status } = useSession();
   const router = useRouter();
+  const other = switchTarget(status);
   const [moreOpen, setMoreOpen] = React.useState(false);
   const split = maxTabs != null && items.length > maxTabs;
   const bar = split ? items.slice(0, maxTabs) : items;
   const rest = split ? items.slice(maxTabs) : [];
   const moreOn = rest.some((i) => i.href === activeHref);
   const go = (h: string) => { setMoreOpen(false); onNav(h); };
-  const leave = () => { setMoreOpen(false); signOut(); router.replace("/marketing" as any); };
+  const leave = () => { setMoreOpen(false); void signOut(); router.replace("/marketing" as any); };
+  const switchRole = () => { setMoreOpen(false); router.push(`/sign-in?role=${other!.role}` as any); };
 
   return (
     <View style={{ flexDirection: "row", backgroundColor: theme.surface.raised, borderTopWidth: 1, borderColor: theme.border.subtle, paddingBottom: insetBottom }}>
@@ -212,7 +229,13 @@ function BottomBar({ items, activeHref, onNav, insetBottom, maxTabs }: { items: 
               })}
             </View>
             <View style={{ height: 1, backgroundColor: theme.border.subtle, marginHorizontal: 18, marginVertical: 14 }} />
-            <View style={{ paddingHorizontal: 18 }}>
+            <View style={{ paddingHorizontal: 18, gap: 10 }}>
+              {other ? (
+                <Pressable onPress={switchRole} accessibilityRole="button" style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, minHeight: 48, borderWidth: 1, borderColor: theme.border.default, borderRadius: 3 }}>
+                  <Icon name="user" size={16} color={theme.ink.secondary} />
+                  <Text style={{ fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1.4, fontSize: 11, color: theme.ink.secondary }}>{other.label}</Text>
+                </Pressable>
+              ) : null}
               <Pressable onPress={leave} style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, minHeight: 48, borderWidth: 1, borderColor: theme.border.default, borderRadius: 3 }}>
                 <Icon name="logout" size={16} color={theme.ink.secondary} />
                 <Text style={{ fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1.4, fontSize: 11, color: theme.ink.secondary }}>Sign out</Text>

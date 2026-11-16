@@ -81,6 +81,7 @@ SESSION = {
     "created_at": D,
     "expires_at": D,
     "revoked_at": ND,
+    "transport": choice("cookie", "bearer"),
     **COUNTERS,
 }
 LIMIT = record({"_id": S, "attempts": INTEGER, "expires_at": D})
@@ -206,8 +207,8 @@ SCHEMAS = {
     ),
     "staff_identities": record({**IDENTITY, "role": choice("staff")}, ("updated_at", *COUNTERS)),
     "client_identities": record({**IDENTITY, "role": choice("client")}, ("updated_at", *COUNTERS)),
-    "staff_sessions": record(SESSION, tuple(COUNTERS)),
-    "client_sessions": record({**SESSION, "scope": choice("client")}, tuple(COUNTERS)),
+    "staff_sessions": record(SESSION, ("transport", *COUNTERS)),
+    "client_sessions": record({**SESSION, "scope": choice("client")}, ("transport", *COUNTERS)),
     "staff_login_limits": LIMIT,
     "client_login_limits": LIMIT,
     "client_recovery_limits": LIMIT,

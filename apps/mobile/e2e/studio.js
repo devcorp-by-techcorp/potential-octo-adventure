@@ -1,12 +1,10 @@
 // Studio: public enquiry → guarded studio transitions → confirmed booking everywhere; the three-tab directory.
 const { chromium } = require('playwright');
-const http = require('http'), fs = require('fs'), path = require('path');
+const { attach } = require('./serve');
 const root = process.argv[2];
-const mime = { '.html':'text/html', '.js':'application/javascript', '.png':'image/png', '.ttf':'font/ttf', '.json':'application/json' };
-const srv = http.createServer((q, r) => { let p = path.join(root, decodeURIComponent(q.url.split('?')[0])); if (!fs.existsSync(p) || fs.statSync(p).isDirectory()) p = path.join(root, 'index.html'); r.writeHead(200, { 'content-type': mime[path.extname(p)] || 'application/octet-stream' }); fs.createReadStream(p).pipe(r); }).listen(0);
-const base = 'http://localhost:' + srv.address().port;
 const res = []; const ok = (n, c, x = '') => res.push(`${c ? 'PASS' : 'FAIL'}  ${n}${c ? '' : '  ' + x}`);
 (async () => {
+  const { base, close } = await attach(root);
   const b = await chromium.launch();
   for (const [sn, w, h] of [['phone', 390, 844], ['tablet-land', 1180, 820]]) {
     const ctx = await b.newContext({ viewport: { width: w, height: h } }); const pg = await ctx.newPage(); pg.setDefaultTimeout(8000);
@@ -44,7 +42,7 @@ const res = []; const ok = (n, c, x = '') => res.push(`${c ? 'PASS' : 'FAIL'}  $
       await pg.getByRole('button', { name: 'Close', exact: true }).last().click(); await pg.waitForTimeout(300);
 
       // ── Studio: guarded transitions ──
-      await nav('/sign-in'); await pg.getByText(/^studio admin$/i).first().click(); await pg.getByText(/^Enter .* portal$/i).click(); await pg.waitForTimeout(700);
+      await nav('/sign-in'); await pg.getByText(/^studio$/i).first().click(); await pg.getByLabel('Email').fill('staff@example.test'); await pg.getByLabel('Password').fill('app-test-password'); await pg.getByText(/^Enter .* portal$/i).click(); await pg.waitForTimeout(700);
       t = await text();
       ok(T('dashboard counts the new tentative request (3) and 6 contacts'), /NEW INQUIRIES\s*3/i.test(t) && /CONTACTS\s*6/i.test(t), t.slice(0, 200));
       await nav('/finance'); const fin0 = n((((await text()).match(/INVOICED · FY 25.26\s*\$([\d,]+)/i)) || [])[1]);
@@ -139,5 +137,5 @@ const res = []; const ok = (n, c, x = '') => res.push(`${c ? 'PASS' : 'FAIL'}  $
     await ctx.close();
   }
   console.log(res.join('\n')); const bad = res.filter((r) => r.startsWith('FAIL')).length;
-  console.log(`\n${res.length - bad} passed, ${bad} failed`); await b.close(); srv.close(); process.exit(bad ? 1 : 0);
+  console.log(`\n${res.length - bad} passed, ${bad} failed`); await b.close(); close(); process.exit(bad ? 1 : 0);
 })();

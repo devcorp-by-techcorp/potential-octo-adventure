@@ -165,6 +165,12 @@ For deliberately separate public API/web hosts, follow the same-site custom
 domain rules in the authentication guide and rebuild with the public
 `VITE_BACKEND_URL` Docker build argument. The default needs no public API domain.
 
+## Authorization header
+
+The backend fails closed on any request that carries both a session cookie and an `Authorization`
+header, and refuses it. A proxy or HTTP Basic auth that adds `Authorization` in front of the web
+portals would therefore sign every cookie user out. Do not put HTTP Basic auth in front of the app.
+
 ## Verification and rollback
 
 PR CI retains real-MongoDB backend/browser regressions and adds the production

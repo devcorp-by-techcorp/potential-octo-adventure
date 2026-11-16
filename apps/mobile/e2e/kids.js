@@ -1,11 +1,9 @@
 const { chromium } = require('playwright');
-const http = require('http'), fs = require('fs'), path = require('path');
+const { attach } = require('./serve');
 const root = process.argv[2], shots = process.argv[3];
-const mime = { '.html':'text/html', '.js':'application/javascript', '.png':'image/png', '.ttf':'font/ttf', '.json':'application/json' };
-const srv = http.createServer((q, r) => { let p = path.join(root, decodeURIComponent(q.url.split('?')[0])); if (!fs.existsSync(p) || fs.statSync(p).isDirectory()) p = path.join(root, 'index.html'); r.writeHead(200, { 'content-type': mime[path.extname(p)] || 'application/octet-stream' }); fs.createReadStream(p).pipe(r); }).listen(0);
-const base = 'http://localhost:' + srv.address().port;
 const res = []; const ok = (name, cond, extra='') => res.push(`${cond ? 'PASS' : 'FAIL'}  ${name}${cond ? '' : '  ' + extra}`);
 (async () => {
+  const { base, close } = await attach(root);
   const b = await chromium.launch();
   for (const [sn,w,h] of [['phone',390,844],['tablet-land',1180,820]]) {
     const ctx = await b.newContext({ viewport:{width:w,height:h} }); const pg = await ctx.newPage(); pg.setDefaultTimeout(8000);
@@ -116,7 +114,7 @@ const res = []; const ok = (name, cond, extra='') => res.push(`${cond ? 'PASS' :
       await pg.getByRole('button', { name: /Review and sign Service agreement/ }).click(); await pg.waitForTimeout(300);
       t = await text(); ok(T('doc signs'), /Signed/.test(t) && !/Review and sign/.test(t));
       // 5 admin
-      await nav('/sign-in'); await pg.getByText(/^studio admin$/i).first().click(); await pg.getByText(/^Enter .* portal$/i).click(); await pg.waitForTimeout(700);
+      await nav('/sign-in'); await pg.getByText(/^studio$/i).first().click(); await pg.getByLabel('Email').fill('staff@example.test'); await pg.getByLabel('Password').fill('app-test-password'); await pg.getByText(/^Enter .* portal$/i).click(); await pg.waitForTimeout(700);
       t = await text(); ok(T('main dashboard carries Kids overview'), /KIDS BOOKINGS|Kids bookings/i.test(t) && /Open Kids/i.test(t));
       ok(T('main dashboard exposes no child names'), !/Oliver Thompson|Ruby Singh|Mia Thompson/.test(t));
       await shot('admin-dashboard');
@@ -158,5 +156,5 @@ const res = []; const ok = (name, cond, extra='') => res.push(`${cond ? 'PASS' :
     await ctx.close();
   }
   console.log(res.join('\n')); console.log(`\n${res.filter(r=>r.startsWith('PASS')).length} passed, ${res.filter(r=>r.startsWith('FAIL')).length} failed`);
-  await b.close(); srv.close(); process.exit(res.some(r => r.startsWith('FAIL')) ? 1 : 0);
+  await b.close(); close(); process.exit(res.some(r => r.startsWith('FAIL')) ? 1 : 0);
 })();
