@@ -105,12 +105,16 @@ const LOGOUT_URL = /\/api\/auth\/(client\/)?logout$/;
         await settle(pg, '/sign-in');
         const before = await count();
         await pg.getByLabel('Email').fill(STAFF); await pg.getByLabel('Password').fill(PASSWORD);
-        await pg.getByText(/^Enter studio portal$/i).click(); await pg.waitForTimeout(900);
+        await pg.getByText(/^Enter studio portal$/i).click();
+        await pg.getByText("You're still being signed out.", { exact: false }).first().waitFor().catch(() => {});
         const refused = await text(pg);
         ok(T('a sign-in during a pending sign-out is refused with a message'), (await path(pg)) === '/sign-in' && refused.includes("You're still being signed out."), `${await path(pg)} ${refused.slice(0, 200)}`);
         const after = await count();
         ok(T('a refused sign-in creates no session'), after.staff === before.staff && after.client === before.client, JSON.stringify({ before, after }));
-        release(); await pg.waitForTimeout(1200);
+        release();
+        // Wait for the sign-out to finish (leave lands on /marketing) before reloading; a reload
+        // mid-way would cut the remaining cross-portal logouts short.
+        ok(T('the held sign-out then lands on /marketing'), (await settle(pg, '/marketing')) === '/marketing', await path(pg));
         await pg.unroute(LOGOUT_URL);
         await pg.goto(base + '/dashboard'); await pg.waitForTimeout(900);
         ok(T('after the held sign-out completes the studio is not restored'), (await path(pg)) === '/sign-in', await path(pg));
@@ -127,6 +131,19 @@ const LOGOUT_URL = /\/api\/auth\/(client\/)?logout$/;
         await pg.getByText('Sign out').first().click(); await pg.waitForTimeout(700);
         release();
         ok(T('a held sign-out lands on /marketing once the logout completes'), (await settle(pg, '/marketing')) === '/marketing', await path(pg));
+        await ctx.close(); }
+
+      // A logout request that never answers: the sign-out gives up on the server after its 8 s
+      // budget and still completes locally, so the user is not stranded on the splash.
+      { const { ctx, pg } = await fresh();
+        await signIn(pg, 'staff', STAFF); await settle(pg, '/dashboard');
+        await pg.route(LOGOUT_URL, () => { /* never answer */ });
+        if (!(await pg.getByText('Sign out').first().isVisible().catch(() => false))) await pg.getByRole('button', { name: 'More studio surfaces' }).click();
+        const started = Date.now();
+        await pg.getByText('Sign out').first().click();
+        await pg.waitForFunction(() => location.pathname === '/marketing', null, { timeout: 15000 }).catch(() => {});
+        const took = Date.now() - started;
+        ok(T('a hanging logout still lands on /marketing within the budget'), (await path(pg)) === '/marketing' && took < 12000, `${await path(pg)} after ${took} ms`);
         await ctx.close(); }
 
       // Sign out then reload: stays signed out, with no expiry message.

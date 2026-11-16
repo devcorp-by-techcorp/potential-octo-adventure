@@ -128,6 +128,8 @@ function SideRail({ items, activeHref, onNav, insets }: { items: NavItem[]; acti
   const { signOut, status } = useSession();
   const router = useRouter();
   // Navigate only after sign-out finishes, so no new sign-in can start while it is still running.
+  // AppShell unmounts while signing out (SessionGate shows the splash); router.replace still works
+  // because expo-router's useRouter() returns the global imperative router.
   const leave = async () => { await signOut(); router.replace("/marketing"); };
   const other = switchTarget(status);
   const showLabels = width >= 1000;

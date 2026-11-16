@@ -38,6 +38,8 @@ const SessionContext = createContext<SessionValue | null>(null);
 const STORE_FAILED = "We couldn't save your sign-in on this device. Please try again.";
 const GENERIC = "Something went wrong. Please try again.";
 export const SIGNING_OUT_MESSAGE = "You're still being signed out. Please wait a moment and try again.";
+/** The server part of sign-out gives up after this; local sign-out always completes. */
+const SIGN_OUT_BUDGET_MS = 8000;
 
 const isRole = (r: unknown): r is Role => r === "staff" || r === "client";
 
@@ -49,6 +51,11 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const csrfRef = useRef<string | null>(null);
   const restoringRef = useRef(false);
   const signingInRef = useRef(false);
+  // The in-flight sign-in, so a sign-out that starts meanwhile waits for it and then revokes it.
+  const signInRunRef = useRef<Promise<SignInResult> | null>(null);
+  // The role whose token / CSRF token the refs hold. Updated synchronously, unlike stateRef,
+  // which only catches up on the next render.
+  const roleRef = useRef<Role | null>(null);
   // Set synchronously when signOut() starts, so a sign-in attempted in the same tick is refused.
   const signOutRef = useRef<Promise<void> | null>(null);
   const [signingOut, setSigningOut] = useState(false);
@@ -67,6 +74,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       getToken: () => tokenRef.current,
       getCsrf: () => csrfRef.current,
       onUnauthorized: (message) => {
+        roleRef.current = null;
         tokenRef.current = null;
         csrfRef.current = null;
         genRef.current += 1;
@@ -111,6 +119,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
             try { await credentials.write({ role }); } catch { /* remembered role is a convenience */ }
           }
           if (stale()) return;
+          roleRef.current = role;
           api.resetUnauthorized();
           dispatch({ type: "restored", role, info, gen });
           return;
@@ -135,50 +144,62 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => { void restore(); }, [restore]);
 
+  const signInNow = useCallback(async (role: Role, email: string, password: string): Promise<SignInResult> => {
+    let info: SessionInfo;
+    try {
+      info = await signInRequest(api, credentials.mode, role, email.trim(), password);
+    } catch (e) {
+      return { ok: false, error: e instanceof ApiError ? e.message : GENERIC };
+    }
+    genRef.current += 1; // any restore still in flight is now stale
+    try {
+      if (credentials.mode === "bearer") {
+        if (!info.token) { dispatch({ type: "signed-out" }); return { ok: false, error: GENERIC }; }
+        await credentials.write({ role, token: info.token });
+        tokenRef.current = info.token;
+      } else {
+        await credentials.write({ role });
+      }
+    } catch {
+      tokenRef.current = null;
+      dispatch({ type: "signed-out" });
+      return { ok: false, error: STORE_FAILED };
+    }
+    csrfRef.current = info.csrfToken;
+    roleRef.current = role;
+    api.resetUnauthorized();
+    dispatch({ type: "signed-in", role, info });
+    return { ok: true };
+  }, [api]);
+
   const signIn = useCallback(async (role: Role, email: string, password: string): Promise<SignInResult> => {
     if (signOutRef.current) return { ok: false, error: SIGNING_OUT_MESSAGE };
     if (signingInRef.current) return { ok: false, error: "Sign-in is already in progress." };
     signingInRef.current = true;
-    try {
-      let info: SessionInfo;
-      try {
-        info = await signInRequest(api, credentials.mode, role, email.trim(), password);
-      } catch (e) {
-        return { ok: false, error: e instanceof ApiError ? e.message : GENERIC };
-      }
-      genRef.current += 1; // any restore still in flight is now stale
-      try {
-        if (credentials.mode === "bearer") {
-          if (!info.token) { dispatch({ type: "signed-out" }); return { ok: false, error: GENERIC }; }
-          await credentials.write({ role, token: info.token });
-          tokenRef.current = info.token;
-        } else {
-          await credentials.write({ role });
-        }
-      } catch {
-        tokenRef.current = null;
-        dispatch({ type: "signed-out" });
-        return { ok: false, error: STORE_FAILED };
-      }
-      csrfRef.current = info.csrfToken;
-      api.resetUnauthorized();
-      dispatch({ type: "signed-in", role, info });
-      return { ok: true };
-    } finally {
-      signingInRef.current = false;
-    }
-  }, [api]);
+    const run = signInNow(role, email, password);
+    signInRunRef.current = run;
+    try { return await run; }
+    finally { signingInRef.current = false; signInRunRef.current = null; }
+  }, [signInNow]);
 
   const signOutNow = useCallback(async () => {
-    const role = stateRef.current.role;
+    // A sign-in already in flight finishes first, so its new session is the one revoked here.
+    // signInNow never rejects.
+    if (signInRunRef.current) await signInRunRef.current;
+    const role = roleRef.current ?? stateRef.current.role;
     genRef.current += 1;
-    const quiet = { skipUnauthorized: true };
+    // A hanging request must not hold the user on the splash. Aborting also stops the remaining
+    // logouts, so none can land later and revoke a session signed in after this one.
+    const deadline = new AbortController();
+    const timer = setTimeout(() => deadline.abort(), SIGN_OUT_BUDGET_MS);
+    const quiet = { skipUnauthorized: true, signal: deadline.signal };
     if (credentials.mode === "cookie") {
       // The browser may hold both portals' cookies (a portal switch does not sign out), so revoke
       // both. Each logout needs that role's own CSRF token: read the session to get it, and ignore
       // failures (a 401 just means that role was not signed in).
       const roles: Role[] = role ? [role, role === "staff" ? "client" : "staff"] : ["staff", "client"];
       for (const r of roles) {
+        if (deadline.signal.aborted) break;
         try {
           const info = r === role && csrfRef.current ? null : await readSession(api, r, quiet);
           if (info) csrfRef.current = info.csrfToken;
@@ -188,6 +209,9 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } else if (role) {
       try { await signOutRequest(api, role, quiet); } catch { /* sign out locally whatever the server said */ }
     }
+    clearTimeout(timer);
+    deadline.abort();
+    roleRef.current = null;
     tokenRef.current = null;
     csrfRef.current = null;
     await safeClear();
