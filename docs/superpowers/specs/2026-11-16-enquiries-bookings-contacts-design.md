@@ -26,7 +26,8 @@ data and has been tested.
 
 1. **The backend is the source of truth, and the screens are trimmed to what it holds now**
    (option (a)). Where an app screen shows something the backend cannot store, the screen gives way.
-   Step 2 changes no business behaviour in the backend.
+   Step 2 changes no business behaviour in the backend. One owner-approved exception: read-only
+   paging for the bookings list (see "Backend change: bookings paging").
 2. **The shoot-phase ladder is kept**, mapped onto the backend's booking states (table below).
 3. **Every trimmed feature, service or function is recorded**, so it can be built back into the
    page it came from. Each record goes in three places:
@@ -61,7 +62,7 @@ data and has been tested.
 
 ## Non-goals
 
-- No new backend business features. No new enquiry states, booking fields, contact creation or
+- No new backend business features beyond the bookings paging exception. No new enquiry states, booking fields, contact creation or
   public availability endpoint.
 - No booking confirmation. Planning → confirmed stays refused.
 - No client invitations, enquiry documents, enquiry conversation, booking preparation drafts or
@@ -90,13 +91,13 @@ data and has been tested.
 | Surface | What it does on real data | Backend endpoints |
 | --- | --- | --- |
 | Public enquiry sheet (marketing page, phone and desktop) | Date, event type, collection, details and an explicit consent checkbox. On success it shows the studio reference. The submission is idempotent on retry: one `request_id` per filled form. | `POST /api/bookings` (public) |
-| Inquiries: list | Status filter (all, new, in review, archived), cursor paging, search box and bulk triage (select up to 50, then set the status, with a per-row outcome) | `GET /api/studio/enquiries`, `GET /api/studio/operations/enquiries?query=`, `POST /api/studio/operations/bulk-triage` |
-| Inquiries: detail | All enquiry fields; internal status and private note with revision-safe save; "review latest" when the record changed (409); "Create planning booking", then a link to it | `GET`/`PATCH /api/studio/enquiries/{id}`, `POST /api/studio/enquiries/{id}/booking` |
-| Bookings: list and detail | List with state filter. Detail: client, event, planned date, location, staff note, state history. Edit date, location and note (revision-safe). Move to the next state, cancel, reopen to planning. Confirmation is shown as unavailable, with the backend's reason. | `GET /api/studio/bookings`, `GET`/`PATCH /api/studio/bookings/{id}` |
+| Inquiries: list | Status filter (all, new, in review, archived) with cursor paging (`next_cursor`; a cursor is tied to its status filter, so changing the filter starts from the first page). Search box, which uses the operations endpoint: offset paging (`next_offset`, `window_exhausted`, offset capped at 10,000); its rows can carry an unknown legacy `studio_status`, shown as-is so staff can correct it. Bulk triage: select up to 50 rows, set one status, per-row outcome (`updated`, `conflict`, `not_found`, `unavailable`, `authorization_lost`, `not_attempted`). | `GET /api/studio/enquiries`, `GET /api/studio/operations/enquiries?query=`, `POST /api/studio/operations/bulk-triage` |
+| Inquiries: detail | All enquiry fields; internal status and private note with revision-safe save; "review latest" when the record changed (409). If the bookings list holds a booking whose `source_enquiry_id` is this enquiry, detail shows "Open booking"; otherwise "Create planning booking". The create call is idempotent, so a booking missed by the capped list is returned, not duplicated, and then linked. | `GET`/`PATCH /api/studio/enquiries/{id}`, `POST /api/studio/enquiries/{id}/booking` |
+| Bookings: list and detail | List with state filter and cursor paging (new, below). Detail: client, event, planned date, location, staff note, state history. Edit date, location and note (revision-safe). Move to the next state, cancel, reopen to planning. Confirmation is shown as unavailable, with the backend's reason. | `GET /api/studio/bookings`, `GET`/`PATCH /api/studio/bookings/{id}` |
 | Shoot Tracker | The phase ladder, driven by booking state. Moving a booking along the ladder is a booking state change (the same PATCH). | as Bookings |
-| Contacts | Client list (cursor paging); contact detail with their enquiry relationships and whether access is active; revoke an enquiry access grant | `GET /api/studio/contacts`, `GET /api/studio/contacts/{id}`, `POST /api/studio/enquiries/{eid}/client-access/{gid}/revoke` |
-| Dashboard | Counts: active enquiries, new / in review / archived, bookings per state, enabled clients, active access grants; upcoming shoots (the soonest planned dates from the bookings list); "observed at" time | `GET /api/studio/dashboard`, `GET /api/studio/reporting`, `GET /api/studio/bookings` |
-| New-enquiry badge in the studio navigation | Live count of new enquiries | `GET /api/studio/reporting` (`new_enquiries`) |
+| Contacts | Client list, paged with the `after` request parameter (the response's `next_cursor` is passed back as `after`); contact detail with their enquiry relationships (paged the same way) and whether access is active; revoke an enquiry access grant. The revoke sends an empty JSON body, and it also revokes every pending invitation for that enquiry; the confirmation wording says so. | `GET /api/studio/contacts`, `GET /api/studio/contacts/{id}`, `POST /api/studio/enquiries/{eid}/client-access/{gid}/revoke` |
+| Dashboard | Counts: active enquiries, new / in review / archived, bookings per state, enabled clients, active access grants; upcoming shoots (the soonest planned dates from today, Melbourne time, excluding cancelled and delivered); "observed at" time | `GET /api/studio/dashboard`, `GET /api/studio/reporting`, `GET /api/studio/bookings?order=scheduled&from=…` |
+| New-enquiry count: the studio navigation badge, Luma's studio greeting ("N new inquiries waiting") and Site Content | One live count of new enquiries everywhere it appears. In Luma and Site Content only that value changes; the rest of those components stays seeded until their own steps. | `GET /api/studio/reporting` (`new_enquiries`) |
 
 ### Carried in from step 1's open items (required before authenticated screens)
 
@@ -119,7 +120,7 @@ Each entry below becomes a trimmed-surface record (see "The trimmed-surface reco
 | Inquiries | Enquiry documents panel | Step 3 scope | Step 3 |
 | Inquiries | Enquiry conversation panel | Inbox is step 4 | Step 4 |
 | Inquiries | Booking preparation drafts | Feeds the confirmation evidence checks | The evidence-checks step |
-| Bookings | Price/value, package, time of day, "booked by", notes as the client's brief | Not stored on bookings | Finance and booking-detail work (step 4) |
+| Bookings | Price/value, package, time of day, "booked by", notes as the client's brief; the Payment card (total, retainer paid, balance due); the "Documents" and "Brief" buttons (no action today) | Not stored on bookings | Finance and booking-detail work (step 4); documents in step 3 |
 | Bookings | Booking resources (rooms, equipment) | Feeds capacity checks | The evidence-checks step |
 | Shoot Tracker | Phases "Agreement Sent", "Deposit Pending" and "Archived" | No booking state | E-signature and finance (step 4); archive policy (later) |
 | Contacts | Partners and suppliers tab, business type, ABN/ACN, partner autocomplete | No backend collection | Finance and suppliers (step 4) |
@@ -139,7 +140,7 @@ The client-facing phases stay as the tracker's ladder. Booking states drive them
 
 | Booking state | Phase shown | Studio action on the tracker |
 | --- | --- | --- |
-| `planning` | Inquiry Received | "Confirm" shown as unavailable, with the backend's 409 reason |
+| `planning` | Inquiry Received | A live "Confirm booking" action that sends the real state change; the backend refuses it (409) and its message is shown. When the evidence checks land, the same action starts working with no app change. |
 | `confirmed` | Date Confirmed | Move to preparation |
 | `preparation` | Date Confirmed (pre-shoot consultation) | Move to shoot |
 | `shoot` | Shoot Day | Move to gallery preparation |
@@ -151,6 +152,31 @@ The client-facing phases stay as the tracker's ladder. Booking states drive them
 recorded as trimmed. Because planning → confirmed is refused, every new booking stays at Inquiry
 Received or Cancelled until the evidence checks exist. Only records already further along can move.
 The screen says so plainly, never by implication.
+
+## Backend change: bookings paging
+
+The owner approved this one read-only backend change, because without it the Bookings list, the
+Shoot Tracker and the dashboard's upcoming shoots can never show more than 100 bookings.
+
+`GET /api/studio/bookings` gains:
+- `cursor`: an opaque cursor; the response adds `next_cursor` (null on the last page). A cursor is
+  tied to its filters and order, and a mismatched or malformed cursor is a 422 with a plain message,
+  following the enquiry list's pattern in `studio_enquiries.py`.
+- `order`: `updated` (the default, today's newest-updated-first order) or `scheduled` (planned
+  date ascending, then id).
+- `from`: an optional calendar date (`YYYY-MM-DD`); with `order=scheduled` only bookings planned on
+  or after it are returned.
+
+Constraints:
+- With no new parameters, the response is exactly today's (items in the same order, plus a
+  `next_cursor` field), so the Vite web portal keeps working unchanged.
+- `require_staff` as today; no write path changes.
+- A supporting index on `(scheduled_date, _id)` (and with `state` where the filter uses it), added
+  in `ensure_indexes` and in the exported schema manifest
+  (`export_database_schemas.py --check` must stay current).
+- Tests in `backend/tests/` against the real replica set: default order unchanged, both orders page
+  completely with no duplicates or gaps across pages, the `from` filter, the state filter combined
+  with paging, and bad cursors refused.
 
 ## Public enquiry sheet mapping
 
@@ -200,12 +226,14 @@ The endpoint is public and needs no session, so it works signed out on web and n
   {status, cursor}]`, `["studio", "enquiries", "detail", id]` and `["studio", "reporting"]`. The
   keys are the single map of what depends on what.
 - **Writes are mutations.** Each write invalidates the queries it affects:
-  - a triage save invalidates that enquiry's detail, the enquiry lists, search results and
-    reporting;
+  - a triage save invalidates that enquiry's detail, the enquiry lists, search results,
+    reporting and the dashboard (its `active_enquiries` count excludes archived records);
+  - a bulk triage invalidates every enquiry detail it touched, the enquiry lists, search results,
+    reporting and the dashboard, whatever the per-row outcomes;
   - creating a booking invalidates the bookings lists, the dashboard and that enquiry's detail;
   - a booking edit or state change invalidates that booking's detail, the bookings lists, the
     dashboard and the tracker;
-  - a grant revoke invalidates that contact's detail and reporting.
+  - a grant revoke invalidates that contact's detail, the contacts list and reporting.
 - **No optimistic updates.** Revisions are checked by the server; the screen shows the saved
   result only once the server confirms it.
 - **The QueryClient is created in the root layout, inside `SessionProvider`.** Its cache is cleared
@@ -337,10 +365,14 @@ suites already do. Controls keep accessible labels. Errors use `accessibilityRol
   match the backend's lists.
 - **The phase mapping** shows `preparation` as "Date Confirmed (pre-shoot consultation)" rather
   than adding a ninth client phase.
-- **Upcoming shoots** on the dashboard come from the bookings list (at most 100 records, newest
-  updates first), sorted by planned date in the app. There is no backend date-range query, so a
-  studio with more than 100 bookings would see an incomplete list. This is recorded as a known
-  limit.
+- **Upcoming shoots** on the dashboard use the new `order=scheduled&from=<today>` query, first page
+  only, excluding cancelled and delivered bookings in the app.
+- **Confirmation on the tracker and booking detail is a live action**: it sends the real state change
+  and shows the backend's 409 message. It is not a disabled control with copied text, so it starts
+  working when the evidence checks land.
+- **Enquiry detail finds an existing booking** by looking for its `source_enquiry_id` in the bookings
+  list, and otherwise offers "Create planning booking". The create call is idempotent, so a miss can
+  never duplicate a booking.
 - **No NetInfo on native** in this step. Refetch happens when the app returns to the foreground.
 - **The web portal's revoke-access call** in `web/src/pages/StudioInvitations.jsx` uses
   `DELETE /api/studio/client-access/{id}`, a route the backend does not have; the backend route is
