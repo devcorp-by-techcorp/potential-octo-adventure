@@ -6,6 +6,7 @@ const PASSWORD = 'app-test-password';
 const STAFF = 'staff@example.test', CLIENT = 'client@example.test';
 const res = []; const ok = (n, c, x = '') => res.push(`${c ? 'PASS' : 'FAIL'}  ${n}${c ? '' : '  ' + x}`);
 const SESSION_URL = /\/api\/auth\/(client\/)?session$/;
+const LOGOUT_URL = /\/api\/auth\/(client\/)?logout$/;
 
 (async () => {
   const b = await chromium.launch();
@@ -84,6 +85,48 @@ const SESSION_URL = /\/api\/auth\/(client\/)?session$/;
         ok(T('sign-out returns to the marketing page'), (await path(pg)) === '/marketing', await path(pg));
         await pg.goto(base + '/dashboard'); await pg.waitForTimeout(900);
         ok(T('/dashboard then redirects to /sign-in'), (await path(pg)) === '/sign-in', await path(pg));
+        await ctx.close(); }
+
+      // Sign-out race (Codex, PR #7): while the logout request is still pending, the app does not
+      // navigate, shows no studio data, and refuses a new sign-in; the sign-out then lands on
+      // /marketing and nothing is restored. The sign-in page is reached in-app (no reload), so the
+      // pending sign-out keeps running.
+      { const { ctx, pg } = await fresh();
+        const count = async () => { const r = await fetch(backend + '/__test/session-count'); if (!r.ok) throw new Error('session-count ' + r.status); return r.json(); };
+        await signIn(pg, 'staff', STAFF); await settle(pg, '/dashboard');
+        let release; const held = new Promise((r) => { release = r; });
+        await pg.route(LOGOUT_URL, async (route) => { await held; await route.continue(); });
+        if (!(await pg.getByText('Sign out').first().isVisible().catch(() => false))) await pg.getByRole('button', { name: 'More studio surfaces' }).click();
+        await pg.getByText('Sign out').first().click(); await pg.waitForTimeout(700);
+        const during = await text(pg);
+        ok(T('while the logout is pending the app has not navigated'), (await path(pg)) === '/dashboard', await path(pg));
+        ok(T('while the logout is pending no studio data is shown'), !/NEW INQUIRIES/i.test(during), during.slice(0, 200));
+        await pg.evaluate(() => { history.pushState(null, '', '/sign-in?role=staff'); window.dispatchEvent(new PopStateEvent('popstate')); });
+        await settle(pg, '/sign-in');
+        const before = await count();
+        await pg.getByLabel('Email').fill(STAFF); await pg.getByLabel('Password').fill(PASSWORD);
+        await pg.getByText(/^Enter studio portal$/i).click(); await pg.waitForTimeout(900);
+        const refused = await text(pg);
+        ok(T('a sign-in during a pending sign-out is refused with a message'), (await path(pg)) === '/sign-in' && refused.includes("You're still being signed out."), `${await path(pg)} ${refused.slice(0, 200)}`);
+        const after = await count();
+        ok(T('a refused sign-in creates no session'), after.staff === before.staff && after.client === before.client, JSON.stringify({ before, after }));
+        release(); await pg.waitForTimeout(1200);
+        await pg.unroute(LOGOUT_URL);
+        await pg.goto(base + '/dashboard'); await pg.waitForTimeout(900);
+        ok(T('after the held sign-out completes the studio is not restored'), (await path(pg)) === '/sign-in', await path(pg));
+        await signIn(pg, 'staff', STAFF);
+        ok(T('sign-in works again once the sign-out has finished'), (await settle(pg, '/dashboard')) === '/dashboard', await path(pg));
+        await ctx.close(); }
+
+      // A held sign-out from the dashboard lands on /marketing once the logout completes.
+      { const { ctx, pg } = await fresh();
+        await signIn(pg, 'staff', STAFF); await settle(pg, '/dashboard');
+        let release; const held = new Promise((r) => { release = r; });
+        await pg.route(LOGOUT_URL, async (route) => { await held; await route.continue(); });
+        if (!(await pg.getByText('Sign out').first().isVisible().catch(() => false))) await pg.getByRole('button', { name: 'More studio surfaces' }).click();
+        await pg.getByText('Sign out').first().click(); await pg.waitForTimeout(700);
+        release();
+        ok(T('a held sign-out lands on /marketing once the logout completes'), (await settle(pg, '/marketing')) === '/marketing', await path(pg));
         await ctx.close(); }
 
       // Sign out then reload: stays signed out, with no expiry message.

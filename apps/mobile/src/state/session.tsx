@@ -3,7 +3,7 @@
  * Web uses cookie sessions (the page never sees the token; the CSRF token
  * lives in a ref). Native keeps a bearer token in SecureStore only.
  */
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { credentials } from "~/api/credentials";
 import type { Role } from "~/api/credentials";
 import { apiBase } from "~/api/config";
@@ -23,8 +23,12 @@ export interface SessionValue {
   status: SessionStatus;
   identity: SessionInfo["identity"] | null;
   message: string | null;
+  /** True from the moment signOut() starts until its local state is cleared. */
+  signingOut: boolean;
   api: ApiClient;
+  /** Refused (ok: false) while a sign-out is pending, so the old sign-out cannot discard the new session. */
   signIn(role: Role, email: string, password: string): Promise<SignInResult>;
+  /** Resolves once the server sign-out and local clearing are done. Await it before navigating away. */
   signOut(): Promise<void>;
   restore(): Promise<void>;
 }
@@ -33,6 +37,7 @@ const SessionContext = createContext<SessionValue | null>(null);
 
 const STORE_FAILED = "We couldn't save your sign-in on this device. Please try again.";
 const GENERIC = "Something went wrong. Please try again.";
+export const SIGNING_OUT_MESSAGE = "You're still being signed out. Please wait a moment and try again.";
 
 const isRole = (r: unknown): r is Role => r === "staff" || r === "client";
 
@@ -44,6 +49,9 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const csrfRef = useRef<string | null>(null);
   const restoringRef = useRef(false);
   const signingInRef = useRef(false);
+  // Set synchronously when signOut() starts, so a sign-in attempted in the same tick is refused.
+  const signOutRef = useRef<Promise<void> | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
   // Mirrors SessionState.gen: bumped synchronously wherever signed-in / signed-out is dispatched.
   const genRef = useRef(0);
 
@@ -128,6 +136,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => { void restore(); }, [restore]);
 
   const signIn = useCallback(async (role: Role, email: string, password: string): Promise<SignInResult> => {
+    if (signOutRef.current) return { ok: false, error: SIGNING_OUT_MESSAGE };
     if (signingInRef.current) return { ok: false, error: "Sign-in is already in progress." };
     signingInRef.current = true;
     try {
@@ -160,7 +169,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [api]);
 
-  const signOut = useCallback(async () => {
+  const signOutNow = useCallback(async () => {
     const role = stateRef.current.role;
     genRef.current += 1;
     const quiet = { skipUnauthorized: true };
@@ -186,9 +195,21 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     dispatch({ type: "signed-out" });
   }, [api, safeClear]);
 
+  // A second call while one is pending (a double click) joins the first instead of starting another.
+  const signOut = useCallback((): Promise<void> => {
+    if (signOutRef.current) return signOutRef.current;
+    setSigningOut(true);
+    const run = (async () => {
+      try { await signOutNow(); }
+      finally { signOutRef.current = null; setSigningOut(false); }
+    })();
+    signOutRef.current = run;
+    return run;
+  }, [signOutNow]);
+
   const value = useMemo<SessionValue>(
-    () => ({ status: state.status, identity: state.identity, message: state.message, api, signIn, signOut, restore }),
-    [state.status, state.identity, state.message, api, signIn, signOut, restore]
+    () => ({ status: state.status, identity: state.identity, message: state.message, signingOut, api, signIn, signOut, restore }),
+    [state.status, state.identity, state.message, signingOut, api, signIn, signOut, restore]
   );
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 };
