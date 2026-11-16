@@ -35,27 +35,29 @@ databases. Provider boundaries (email, OpenAI) stayed disabled.
 | Check | Result |
 | --- | --- |
 | `cd backend && .venv/bin/ruff check .` | All checks passed |
-| `cd backend && TEST_MONGODB_URI=<replica set> .venv/bin/pytest -q` | 426 passed, 2 skipped (baseline 424 passed, 2 skipped, plus the 2 seed tests) |
+| `cd backend && TEST_MONGODB_URI=<replica set> .venv/bin/pytest -q` | 426 passed, 2 skipped (pre-branch baseline 394 passed, 2 skipped; the branch adds 32 backend tests) |
 | `cd backend && .venv/bin/python export_database_schemas.py --check` | 28 collection schemas and index/source manifest current |
 | `pnpm lint:web` | Passed, no findings |
 | `pnpm typecheck:mobile` | Passed, no errors |
-| `BROWSER_MONGODB_URI=<replica set> APP_TEST_PYTHON=backend/.venv/bin/python pnpm e2e:mobile` | Exit 0, 407 checks, none failing. Per suite: see the table below |
+| `BROWSER_MONGODB_URI=<replica set> APP_TEST_PYTHON=backend/.venv/bin/python pnpm e2e:mobile` | Exit 0, 427 checks, none failing. Per suite: see the table below |
 | `node scripts/check-design.mjs` | Token mirrors match; 25 runtime variables resolve |
 
-Browser suite results, from one full `pnpm e2e:mobile` run made at base commit `0f8d0bf` plus the
-fix-round changes to `apps/mobile/e2e/auth.js` and `backend/tests/app_server.py` (committed in the
-commit that follows `0f8d0bf`; use `git log` for its SHA):
+Browser suite results, from one full `pnpm e2e:mobile` run made at commit `36f1bda` (the commit
+that carries the final-review fixes; a later commit changes only this report). The e2e export now
+runs through `apps/mobile/e2e/build.js`, which blanks `EXPO_PUBLIC_API_URL` and
+`EXPO_PUBLIC_WEB_URL`; the run was made with a throwaway `apps/mobile/.env` present and the build
+did not contain its value:
 
 | Suite | Result |
 | --- | --- |
 | `finance.js` | 22 passed, 0 failed |
-| `api-client.js` | 40 passed, 0 failed |
+| `api-client.js` | 42 passed, 0 failed |
 | `session-state.js` | 18 passed, 0 failed |
-| `auth.js` (phone and desktop viewports) | 38 passed, 0 failed |
+| `auth.js` (phone and desktop viewports) | 56 passed, 0 failed |
 | `screens.js` | 125 clean, 0 with findings |
 | `kids.js` | 88 passed, 0 failed |
 | `studio.js` | 76 passed, 0 failed |
-| Total | 407 checks (282 PASS lines plus 125 clean screens), 0 failing |
+| Total | 427 checks (302 PASS lines plus 125 clean screens), 0 failing |
 
 The seed tests alone: `tests/test_seed_dev_accounts.py`, 2 passed. They need the replica set,
 because invitations use transactions; without `TEST_MONGODB_URI` the invitation step returns 503.
@@ -95,6 +97,19 @@ exceeded ruff's E501 limit.
    guard and the button's busy guard both removed, the check still passed, because the guard in
    `session.tsx` and the responder behaviour also prevent a second request. It guards against
    regression of the whole behaviour, not of that one line.
+
+## Final-review fixes: added coverage
+
+- `auth.js`, both viewports: sign out then reload stays signed out with no "Your session has
+  expired" message; staff then client sign-in followed by sign-out leaves neither portal restored
+  (sign-out revokes both roles' cookie sessions); a signed-out visit to `/dashboard` preselects the
+  Studio role; a signed-in staff user visiting `/home` is redirected to `/dashboard`.
+- `api-client.js`: `readSession(..., { skipUnauthorized: true })` on a 401 throws unauthorized and
+  never calls `onUnauthorized`, and does not arm the one-shot latch.
+- The client portal's bottom bar now moves Prints into the More sheet (`maxTabs={4}`), because on a
+  phone the sign-out and portal-switch controls live only in that sheet and the client had none.
+- Still not covered by automation: the stale-restore generation races (reducer-level checks in
+  `session-state.js` only) and the native bearer path.
 
 ## Not covered
 
