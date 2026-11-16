@@ -7,11 +7,13 @@ session: paste it as the first message, or tell the session to read this file.
 State as of 16 November 2026: `main` at `f5474d1` (PRs #1–#7 merged). One open PR: #8, the app
 work plan (`docs/development/app-work-plan.md`), a draft.
 
-**CI on `main` is red.** The web job failed one check on the merge of PR #7: `auth.js` [desktop]
-"double-clicking sign-in creates exactly one staff session". The same check passed on PR #7's own
-commit and on PR #8, so it is intermittent. In the failing run the count of active sessions
-*fell* during the check (staff 7 → 4, client 2 → 0), so something else revoked sessions while it
-ran; the suite shares one database across checks. See "Open items", item 1.
+**CI on `main` was red; the fix is in PR #9.** The web job failed one check on the merge of PR
+#7: `auth.js` [desktop] "double-clicking sign-in creates exactly one staff session" (staff 7 → 4,
+client 2 → 0 during the check). Cause: the test-only `/__test/session-count` route counted
+expired sessions too. The phone pass backdates every session (`/__test/expire-sessions`), and the
+TTL index on `expires_at` deletes expired sessions on MongoDB's background sweep, every 60 s. When
+a sweep landed inside the double-click window, the count fell. PR #9 counts only active sessions
+(not revoked, not expired), which a sweep never removes. `main` turns green when PR #9 merges.
 
 ---
 
@@ -194,22 +196,15 @@ auth 56, screens 125 clean, kids 88, studio 76; Worker 25 (re-run 16 November on
 
 ### Open items, in priority order
 
-1. **Make `main` green: the intermittent sign-in double-submit check.** See the note at the top.
-   `/__test/session-count` (`backend/tests/app_server.py`) counts every non-revoked session in
-   the shared database, so a sign-out or expiry from another check that lands during the
-   double-click window changes the count. Find what revokes sessions there and make the check
-   measure only its own sessions (for example, count the sessions created for that sign-in, or
-   isolate the user), rather than re-running until it passes.
-2. **Fold in the sign-out fix from the Codex review of PR #7.** `AppShell.tsx` `leave` (side rail
+1. **Fold in the sign-out fix from the Codex review of PR #7.** `AppShell.tsx` `leave` (side rail
    and More sheet) must await `signOut()` before navigating, and sign-in must be refused while a
-   sign-out is pending. Details on the Codex thread on PR #7. Add a browser check. This is
-   plausibly related to item 1.
-3. **Step 2 of the app plan: enquiries, bookings and contacts.** Design it with the owner first,
+   sign-out is pending. Details on the Codex thread on PR #7. Add a browser check.
+2. **Step 2 of the app plan: enquiries, bookings and contacts.** Design it with the owner first,
    then plan and build it, on endpoints that already exist. Before its screens make
    authenticated calls, close the step-1 items the work plan lists (browser test of the
    in-session 401 redirect, bearer write tests through the `public_content` and `booking_drafts`
    fences, a shared response model for the two token endpoints).
-4. **Deploy the gallery media Worker** (`infra/media-worker`; steps in its README). Done: the
+3. **Deploy the gallery media Worker** (`infra/media-worker`; steps in its README). Done: the
    `illuminatemygallery.com.au` zone is active on the owner's Cloudflare account; the Worker is
    configured for `media.illuminatemygallery.com.au`; the originals bucket's CORS origin is
    `https://illuminatemygallery.com.au`; the caching decision is made (token checked on every
@@ -221,10 +216,10 @@ auth 56, screens 125 clean, kids 88, studio 76; Worker 25 (re-run 16 November on
    One deliberate change from the owner's brief: viewers get `Cache-Control: private, no-cache`
    (browser must revalidate through the token check); the year-long immutable header stays on the
    edge copy only. Revocation and takedown steps are in the Worker README.
-5. **Native verification has never been run.** No simulator or device is available in the cloud.
+4. **Native verification has never been run.** No simulator or device is available in the cloud.
    The manual checklist in `test_reports/2026-11-15-app-foundation.md`, including the
    corrupt-stored-session step, must pass on a real device or simulator before any native release.
-6. **Owner decisions still open:** whether to remove now-public items (Railway preview hostname,
+5. **Owner decisions still open:** whether to remove now-public items (Railway preview hostname,
    staff-style `@illuminatestudios.com.au` addresses, seeded demo emails, test reports); whether
    to add the Claude Design handoff bundle and chat transcripts to the repo; whether to keep
    Prints in the client portal's phone "More" menu; the wage cash-flow patch
