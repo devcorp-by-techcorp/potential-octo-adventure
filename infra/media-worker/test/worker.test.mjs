@@ -39,7 +39,7 @@ const env = {
 };
 const pending = [];
 const ctx = { waitUntil: (p) => pending.push(p) };
-const BASE = "https://media.illuminatestudios.com.au/";
+const BASE = "https://media.illuminatemygallery.com.au/";
 const KEY = "prod/galleries/gal_test/assets/img_test/thumb-v1.webp";
 const call = async (pathname, { token, method = "GET", etag } = {}) => {
   const headers = token ? { Cookie: `session=abc; gallery_token=${token}` } : {};

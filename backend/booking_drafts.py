@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 import client_auth
-from auth import cookie_name, database_errors, digest, now, require_staff, require_staff_write
+from auth import database_errors, now, require_staff, require_staff_write
 from client_access import transaction
 from db import get_database
 
@@ -79,7 +79,7 @@ async def staff_fence(db, request, identity, session):
     )
     verified = await db.staff_sessions.update_one(
         {
-            "_id": digest(request.cookies.get(cookie_name(), "")),
+            "_id": request.state.staff_session["_id"],
             "revoked_at": None,
             "auth_version": identity["auth_version"],
             "expires_at": {"$gt": now()},

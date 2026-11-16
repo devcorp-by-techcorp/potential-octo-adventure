@@ -1,7 +1,7 @@
 # illuminate-media-worker
 
 Token-gated delivery of gallery thumbnails and previews from a **private** Cloudflare R2
-bucket, on `media.illuminatestudios.com.au`.
+bucket, on `media.illuminatemygallery.com.au`.
 
 ```
 MongoDB  → metadata only
@@ -57,11 +57,11 @@ wrong-gallery tokens, originals, bad paths, and failing closed when the secret i
 
 ## Before you deploy — owner to confirm
 
-1. The zone `illuminatestudios.com.au` is active (proxied) on the Cloudflare account.
+1. The zone `illuminatemygallery.com.au` is active (proxied) on the Cloudflare account.
 2. R2 is enabled on that account.
-3. The media hostname is `media.illuminatestudios.com.au`.
+3. The media hostname is `media.illuminatemygallery.com.au`.
 4. The production frontend origin for the originals bucket's CORS rule
-   (the brief assumes `https://illuminatemygallery.com`).
+   (`https://illuminatemygallery.com.au`).
 5. **Caching decision:** media is token-checked on every request; the edge cache saves the
    R2 read, not the Worker invocation. A cache hit that skipped the Worker would serve
    private images to anyone holding the URL for up to a year.
@@ -135,7 +135,7 @@ R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY
 R2_ENDPOINT_URL=https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com
 R2_BUCKET_DERIVATIVES=illuminate-prod-derivatives
 R2_BUCKET_ORIGINALS=illuminate-prod-originals
-R2_CUSTOM_DOMAIN=https://media.illuminatestudios.com.au
+R2_CUSTOM_DOMAIN=https://media.illuminatemygallery.com.au
 CLOUDFLARE_WORKER_SHARED_SECRET=<identical to the Worker secret>
 ```
 

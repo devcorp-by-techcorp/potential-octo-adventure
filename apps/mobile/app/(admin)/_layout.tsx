@@ -2,6 +2,7 @@ import React from "react";
 import { AppShell, NavItem } from "~/components/AppShell";
 import { FinanceProvider } from "~/state/finance";
 import { useRecords } from "~/state/records";
+import { SessionGate } from "~/components/SessionGate";
 
 /**
  * The nine studio-admin surfaces, in design-system order and icon vocabulary.
@@ -25,8 +26,10 @@ export default function AdminLayout() {
   const { newInquiryCount } = useRecords();
   const items = React.useMemo(() => NAV.map((i) => (i.name === "inquiries" ? { ...i, badge: newInquiryCount } : i)), [newInquiryCount]);
   return (
-    <FinanceProvider>
-      <AppShell items={items} roleLabel="Studio Admin" maxTabs={4} />
-    </FinanceProvider>
+    <SessionGate require="staff">
+      <FinanceProvider>
+        <AppShell items={items} roleLabel="Studio Admin" maxTabs={4} />
+      </FinanceProvider>
+    </SessionGate>
   );
 }

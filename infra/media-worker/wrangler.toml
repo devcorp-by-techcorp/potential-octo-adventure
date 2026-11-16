@@ -3,10 +3,10 @@ main = "src/worker.js"
 compatibility_date = "2026-05-31"
 
 # Custom domain — binds THIS WORKER (not the bucket) to the media hostname.
-# Requires the zone illuminatestudios.com.au to be active on this Cloudflare account.
+# Requires the zone illuminatemygallery.com.au to be active on this Cloudflare account.
 # No wildcard in a custom-domain pattern.
 [[routes]]
-pattern = "media.illuminatestudios.com.au"
+pattern = "media.illuminatemygallery.com.au"
 custom_domain = true
 
 # R2 binding — derivatives bucket ONLY. The Worker never touches the originals bucket.

@@ -4,7 +4,7 @@
 # environment: the same value set on the Worker. Exits non-zero if any check fails.
 set -u
 : "${CLOUDFLARE_WORKER_SHARED_SECRET:?set CLOUDFLARE_WORKER_SHARED_SECRET to the secret set on the Worker}"
-BASE="${BASE:-https://media.illuminatestudios.com.au}"
+BASE="${BASE:-https://media.illuminatemygallery.com.au}"
 GALLERY="${GALLERY:-gal_test}"
 KEY="prod/galleries/$GALLERY/assets/img_test/thumb-v1.webp"
 HERE="$(cd "$(dirname "$0")" && pwd)"

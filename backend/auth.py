@@ -4,7 +4,7 @@ import hashlib
 import secrets
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Literal
 
 from argon2 import PasswordHasher, Type
 from argon2.exceptions import InvalidHashError, VerificationError
@@ -23,6 +23,9 @@ PASSWORDS = PasswordHasher(type=Type.ID)
 DUMMY_HASH = PASSWORDS.hash(secrets.token_urlsafe(32))
 AUTH_ERROR = "Email or password is incorrect."
 WINDOW_SECONDS = 900
+EXPIRED = "Your session has expired. Please sign in again."
+MAX_CREDENTIAL_LENGTH = 128
+Transport = Literal["cookie", "bearer"]
 
 
 def now():
@@ -119,40 +122,84 @@ def clear_cookie(response):
     )
 
 
+def presented_credential(
+    request: Request, cookie: str, denied: HTTPException
+) -> tuple[str, Transport]:
+    """Return the one credential a request carries and the transport it arrived on.
+
+    Raises ``denied`` when there is none, when both a bearer header and the named
+    cookie are present, when the header is malformed, or when the token is not 1-128
+    characters. Roles pass their own cookie name and refusal. The both-credentials
+    refusal fires on any ``Authorization`` header, not only Bearer, when the role's
+    cookie is present; this is fail-closed by design.
+    """
+    header = request.headers.get("authorization")
+    cookie_value = request.cookies.get(cookie, "")
+    if header is not None and cookie_value:
+        raise denied
+    if header is not None:
+        scheme, separator, token = header.partition(" ")
+        if not separator or scheme.lower() != "bearer":
+            raise denied
+        transport: Transport = "bearer"
+    else:
+        token, transport = cookie_value, "cookie"
+    if not 1 <= len(token) <= MAX_CREDENTIAL_LENGTH:
+        raise denied
+    return token, transport
+
+
+def session_transport(session: dict) -> Transport:
+    return session.get("transport", "cookie")
+
+
+async def authenticate_staff(database, body: LoginBody, request: Request) -> dict:
+    await ensure_indexes(database)
+    email = normalize_email(body.email)
+    # Do not trust arbitrary X-Forwarded-For headers. Configure trusted proxies in Uvicorn.
+    await throttle(database, "ip", request.client.host if request.client else "unknown", 20)
+    await throttle(database, "email", email, 5)
+    identity = await database.staff_identities.find_one({"email": email})
+    eligible = identity and identity.get("enabled") and identity.get("role") == "staff"
+    encoded = identity["password_hash"] if eligible else DUMMY_HASH
+    valid = await run_in_threadpool(verify_password, encoded, body.password.get_secret_value())
+    if not eligible or not valid:
+        raise HTTPException(401, AUTH_ERROR)
+    # Rehash on login without overwriting a concurrent operator reset.
+    if PASSWORDS.check_needs_rehash(encoded):
+        replacement = await run_in_threadpool(PASSWORDS.hash, body.password.get_secret_value())
+        await database.staff_identities.update_one(
+            {"_id": identity["_id"], "auth_version": identity["auth_version"]},
+            {"$set": {"password_hash": replacement}},
+        )
+    return identity
+
+
+async def issue_staff_session(
+    database, identity: dict, transport: Transport
+) -> tuple[str, datetime]:
+    token = secrets.token_urlsafe(32)
+    expires = now() + timedelta(seconds=get_settings().auth_session_seconds)
+    await database.staff_sessions.insert_one(
+        {
+            "_id": digest(token),
+            "identity_id": identity["_id"],
+            "auth_version": identity["auth_version"],
+            "created_at": now(),
+            "expires_at": expires,
+            "revoked_at": None,
+            "transport": transport,
+        }
+    )
+    return token, expires
+
+
 @router.post("/auth/login", dependencies=[Depends(require_origin)])
 async def login(body: LoginBody, request: Request, response: Response):
-    email = normalize_email(body.email)
     with database_errors():
         database = get_database()
-        await ensure_indexes(database)
-        # Do not trust arbitrary X-Forwarded-For headers. Configure trusted proxies in Uvicorn.
-        await throttle(database, "ip", request.client.host if request.client else "unknown", 20)
-        await throttle(database, "email", email, 5)
-        identity = await database.staff_identities.find_one({"email": email})
-        eligible = identity and identity.get("enabled") and identity.get("role") == "staff"
-        encoded = identity["password_hash"] if eligible else DUMMY_HASH
-        valid = await run_in_threadpool(verify_password, encoded, body.password.get_secret_value())
-        if not eligible or not valid:
-            raise HTTPException(401, AUTH_ERROR)
-        # Rehash on login without overwriting a concurrent operator reset.
-        if PASSWORDS.check_needs_rehash(encoded):
-            replacement = await run_in_threadpool(PASSWORDS.hash, body.password.get_secret_value())
-            await database.staff_identities.update_one(
-                {"_id": identity["_id"], "auth_version": identity["auth_version"]},
-                {"$set": {"password_hash": replacement}},
-            )
-        token = secrets.token_urlsafe(32)
-        expires = now() + timedelta(seconds=get_settings().auth_session_seconds)
-        await database.staff_sessions.insert_one(
-            {
-                "_id": digest(token),
-                "identity_id": identity["_id"],
-                "auth_version": identity["auth_version"],
-                "created_at": now(),
-                "expires_at": expires,
-                "revoked_at": None,
-            }
-        )
+        identity = await authenticate_staff(database, body, request)
+        token, expires = await issue_staff_session(database, identity, "cookie")
     response.set_cookie(
         cookie_name(),
         token,
@@ -171,34 +218,52 @@ async def login(body: LoginBody, request: Request, response: Response):
     }
 
 
+@router.post("/auth/token")
+async def token_login(body: LoginBody, request: Request):
+    """Native clients: a bearer session, never a cookie, so no Origin or CSRF applies."""
+    with database_errors():
+        database = get_database()
+        identity = await authenticate_staff(database, body, request)
+        token, expires = await issue_staff_session(database, identity, "bearer")
+    return {
+        "identity": public_identity(identity),
+        "token": token,
+        "expires_at": expires.isoformat(),
+        "expires_in_seconds": get_settings().auth_session_seconds,
+    }
+
+
 async def require_staff(request: Request):
-    token = request.cookies.get(cookie_name(), "")
-    if not token or len(token) > 128:
-        raise HTTPException(401, "Your session has expired. Please sign in again.")
+    token, transport = presented_credential(request, cookie_name(), HTTPException(401, EXPIRED))
     with database_errors():
         database = get_database()
         session = await database.staff_sessions.find_one({"_id": digest(token)})
         # Motor's default datetimes are UTC-naive. TTL cleanup is never authorization.
         if (
             not session
+            or session_transport(session) != transport
             or session.get("revoked_at") is not None
             or session["expires_at"].replace(tzinfo=UTC) <= now()
         ):
-            raise HTTPException(401, "Your session has expired. Please sign in again.")
+            raise HTTPException(401, EXPIRED)
         identity = await database.staff_identities.find_one({"_id": session["identity_id"]})
         if (
             not identity
             or not identity.get("enabled")
             or identity.get("auth_version") != session["auth_version"]
         ):
-            raise HTTPException(401, "Your session has expired. Please sign in again.")
+            raise HTTPException(401, EXPIRED)
         if identity.get("role") != "staff":
             raise HTTPException(403, "Staff access is required.")
     request.state.staff_session = session
+    request.state.staff_transport = transport
     return identity
 
 
 async def require_staff_write(request: Request, identity: Annotated[dict, Depends(require_staff)]):
+    if request.state.staff_transport == "bearer":
+        # A bearer header is never attached by a browser on its own, so there is no CSRF surface.
+        return identity
     require_origin(request)
     expected = csrf_token(request.cookies.get(cookie_name(), ""))
     if not secrets.compare_digest(
@@ -213,7 +278,7 @@ async def fence_staff_write(database, request, identity, session):
 
     Updating both records forces concurrent reset, disable or session withdrawal
     to conflict with the transaction, rather than trusting an earlier dependency.
-    Call only after require_staff_write validated Origin and CSRF.
+    Call only after require_staff_write validated the request (Origin and CSRF for cookies).
     """
     account = await database.staff_identities.update_one(
         {
@@ -227,7 +292,7 @@ async def fence_staff_write(database, request, identity, session):
     )
     verified = await database.staff_sessions.update_one(
         {
-            "_id": digest(request.cookies.get(cookie_name(), "")),
+            "_id": request.state.staff_session["_id"],
             "identity_id": identity["_id"],
             "revoked_at": None,
             "auth_version": identity["auth_version"],
@@ -245,7 +310,11 @@ async def current_session(request: Request, identity: Annotated[dict, Depends(re
     expires = request.state.staff_session["expires_at"].replace(tzinfo=UTC)
     return {
         "identity": public_identity(identity),
-        "csrf_token": csrf_token(request.cookies[cookie_name()]),
+        "csrf_token": (
+            csrf_token(request.cookies[cookie_name()])
+            if request.state.staff_transport == "cookie"
+            else None
+        ),
         "expires_at": expires.isoformat(),
         "expires_in_seconds": max(1, int((expires - now()).total_seconds())),
     }
@@ -257,9 +326,10 @@ async def logout(
 ):
     with database_errors():
         await get_database().staff_sessions.update_one(
-            {"_id": digest(request.cookies[cookie_name()])}, {"$set": {"revoked_at": now()}}
+            {"_id": request.state.staff_session["_id"]}, {"$set": {"revoked_at": now()}}
         )
-    clear_cookie(response)
+    if request.state.staff_transport == "cookie":
+        clear_cookie(response)
 
 
 @router.get("/studio/home")
@@ -291,4 +361,4 @@ async def fence_staff_session(database, request, identity, session):
         session=session,
     )
     if not account.matched_count or not active.matched_count:
-        raise HTTPException(401, "Your session has expired. Please sign in again.")
+        raise HTTPException(401, EXPIRED)

@@ -132,6 +132,9 @@ pnpm typecheck:mobile
 pnpm e2e:mobile                    # needs Playwright + Chromium available to Node
 ```
 
+Signing in needs a running backend and seeded accounts: see
+[docs/app-local-development.md](docs/app-local-development.md).
+
 The workspace uses a flat `node_modules` (`node-linker=hoisted` in `.npmrc`), which the
 React Native toolchain expects. React 18 serves the mobile app and React 19 the web app.
 

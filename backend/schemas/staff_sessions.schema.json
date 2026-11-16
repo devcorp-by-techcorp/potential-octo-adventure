@@ -27,6 +27,13 @@
           "null"
         ]
       },
+      "transport": {
+        "bsonType": "string",
+        "enum": [
+          "cookie",
+          "bearer"
+        ]
+      },
       "authorization_checks": {
         "bsonType": [
           "int",
