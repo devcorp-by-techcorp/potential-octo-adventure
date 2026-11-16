@@ -39,6 +39,20 @@ const SESSION_URL = /\/api\/auth\/(client\/)?session$/;
         ok(T('staff session survives a reload'), (await path(pg)) === '/dashboard' && /NEW INQUIRIES/i.test(await text(pg)), await path(pg));
         await ctx.close(); }
 
+      // Double submit: two rapid clicks create exactly one staff session.
+      { const { ctx, pg } = await fresh();
+        const count = async () => { const r = await fetch(backend + '/__test/session-count'); if (!r.ok) throw new Error('session-count ' + r.status); return r.json(); };
+        const before = await count();
+        await pg.goto(base + '/sign-in');
+        await pg.getByText(/^studio$/i).first().click();
+        await pg.getByLabel('Email').fill(STAFF); await pg.getByLabel('Password').fill(PASSWORD);
+        await pg.getByText(/^Enter .* portal$/i).dblclick();
+        const landed = await settle(pg, '/dashboard');
+        const after = await count();
+        ok(T('double-clicking sign-in creates exactly one staff session'), after.staff - before.staff === 1 && after.client === before.client, JSON.stringify({ before, after }));
+        ok(T('double-click sign-in lands on /dashboard with no error alert'), landed === '/dashboard' && (await pg.getByRole('alert').count()) === 0, landed);
+        await ctx.close(); }
+
       // Client: sign in, land on home, survive a reload; guarded from the studio.
       { const { ctx, pg } = await fresh();
         await signIn(pg, 'client', CLIENT);

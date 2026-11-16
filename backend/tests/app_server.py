@@ -79,6 +79,17 @@ async def expire_sessions():
     return {"ok": True}
 
 
+@app.get("/__test/session-count")
+async def session_count():
+    """Test-only (this file, never the real app): non-revoked staff and client session counts."""
+    with MongoClient(os.environ["MONGODB_URI"]) as mongo:
+        counts = {
+            name: mongo[DB_NAME][name + "_sessions"].count_documents({"revoked_at": None})
+            for name in ("staff", "client")
+        }
+    return counts
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("APP_TEST_BACKEND_PORT", "8000"))
     uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning", access_log=False)

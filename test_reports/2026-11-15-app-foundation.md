@@ -23,6 +23,9 @@ A person with a simulator, emulator or device should follow
 2. Kill the app and relaunch: it should still be signed in.
 3. Sign out: it should return to marketing.
 4. Sign in as the client: it should land on the client portal.
+5. Corrupt record: store a session record with a missing or unknown role in the secure store (for
+   example a stored JSON object with no `role`, or `"role": "admin"`), then relaunch. The record
+   should be cleared and the app should land on sign-in.
 
 ## Verification commands and results
 
@@ -36,8 +39,23 @@ databases. Provider boundaries (email, OpenAI) stayed disabled.
 | `cd backend && .venv/bin/python export_database_schemas.py --check` | 28 collection schemas and index/source manifest current |
 | `pnpm lint:web` | Passed, no findings |
 | `pnpm typecheck:mobile` | Passed, no errors |
-| `BROWSER_MONGODB_URI=<replica set> APP_TEST_PYTHON=backend/.venv/bin/python pnpm e2e:mobile` | Exit 0. Suite summaries in order: 22, 40, 18, 34, 88 and 76 passed, 0 failed each (278 PASS lines, no FAIL) |
+| `BROWSER_MONGODB_URI=<replica set> APP_TEST_PYTHON=backend/.venv/bin/python pnpm e2e:mobile` | Exit 0, 407 checks, none failing. Per suite: see the table below |
 | `node scripts/check-design.mjs` | Token mirrors match; 25 runtime variables resolve |
+
+Browser suite results, from one full `pnpm e2e:mobile` run made at base commit `0f8d0bf` plus the
+fix-round changes to `apps/mobile/e2e/auth.js` and `backend/tests/app_server.py` (committed in the
+commit that follows `0f8d0bf`; use `git log` for its SHA):
+
+| Suite | Result |
+| --- | --- |
+| `finance.js` | 22 passed, 0 failed |
+| `api-client.js` | 40 passed, 0 failed |
+| `session-state.js` | 18 passed, 0 failed |
+| `auth.js` (phone and desktop viewports) | 38 passed, 0 failed |
+| `screens.js` | 125 clean, 0 with findings |
+| `kids.js` | 88 passed, 0 failed |
+| `studio.js` | 76 passed, 0 failed |
+| Total | 407 checks (282 PASS lines plus 125 clean screens), 0 failing |
 
 The seed tests alone: `tests/test_seed_dev_accounts.py`, 2 passed. They need the replica set,
 because invitations use transactions; without `TEST_MONGODB_URI` the invitation step returns 503.
@@ -65,14 +83,21 @@ exceeded ruff's E501 limit.
 4. **A corrupt native stored record is cleared and lands on sign-in.** Implemented in the
    `restore` logic of `apps/mobile/src/state/session.tsx` (a bearer record without a valid role
    or token is cleared and restore ends as signed out) and in the tolerant parse of
-   `credentials.native.ts`. **No automated test covers it.** The reducer's signed-out transition
-   is tested, but the corrupt-record decision and the clear are not. Native was also not run (see
-   above).
+   `credentials.native.ts`. Covered only by the **manual native check (not run here)**, step 5 of
+   the checklist above. No automated test covers it, because the path runs only on native.
 5. **Sign-in double submit is blocked.** Implemented in `apps/mobile/app/sign-in.tsx` with
-   `busyRef`. **No automated test covers it**: no browser or unit test double-submits the form.
+   `busyRef`, beside the busy state of the button and a second guard in `session.tsx`. Covered
+   end to end by `apps/mobile/e2e/auth.js`, at both viewports: "double-clicking sign-in creates
+   exactly one staff session" (non-revoked staff sessions read before and after through the
+   test-only `GET /__test/session-count` route in `backend/tests/app_server.py`, which the real
+   app does not have) and "double-click sign-in lands on /dashboard with no error alert".
+   Limitation: the check proves the outcome, not `busyRef` in isolation. With the `busyRef`
+   guard and the button's busy guard both removed, the check still passed, because the guard in
+   `session.tsx` and the responder behaviour also prevent a second request. It guards against
+   regression of the whole behaviour, not of that one line.
 
 ## Not covered
 
 - All native behaviour (see above).
-- Review Focus items 4 and 5 have no automated coverage.
+- Review Focus item 4 has no automated coverage (manual native check only, not run).
 - Browser suites run the web build only, in Chromium.
