@@ -25,7 +25,28 @@ Every feature trimmed along the way is recorded so it can be built back.
 18 November 2026). Read it before any task. Its "Deferred, recorded as trimmed" table is the
 starting trimmed list.
 
+**Pre-build review (18 November 2026):** every route, query parameter, limit, model field and
+backend message this plan names was checked against `backend/` at `main` `380643c`. All of them
+match, with five corrections, now folded into the tasks below:
+1. Task 2: the client token route lives in `client_auth.py`, and `expires_at` must keep its
+   current `+00:00` text.
+2. Tasks 5 and 6: an enquiry's revision field is `studio_revision`.
+3. Task 10: the dashboard shows reporting's `unclassified_enquiries`.
+4. Task 10: upcoming shoots follow `next_cursor` instead of reading only the first page.
+5. A design-system constraint for the new controls (below).
+
+See `docs/development/assessment-2026-11-18.md` for the full review.
+
 ## Global Constraints
+
+- **Design system.** `_ds/apps/mobile` is the reference for every step-2 screen. Build new
+  controls (search box, paging, bulk-select rows, the consent checkbox, `ReconcilePanel`, the
+  revoke confirmation and outcome lists) from `src/components/ui.tsx` primitives (`Button`,
+  `Card`, `Badge`, `Eyebrow`, `Display`, `Body`) and `useTokens()` colours. Don't hard-code hex
+  values or font families. Every new interactive control needs a touch target of at least 44×44
+  at phone width. Checkboxes set `aria-checked` directly, because RN-web drops it from
+  `accessibilityState`. The task reviewer compares each changed screen with its `_ds`
+  counterpart, and any visual departure that isn't a recorded trim fails review.
 
 - **The backend is the source of truth.** Screens show only what it holds. No seeded data and no
   faked behaviour on a step-2 surface.
@@ -126,14 +147,14 @@ that owns the code.
 ### Task 2: The step-1 backend follow-ups
 
 **Files:**
-- Modify: `backend/auth.py` (`token_login`), `backend/client_access.py` (`token_login` route), `backend/clients.py` or `backend/auth.py` (the new model's home)
+- Modify: `backend/auth.py` (`token_login`, and the new model's home), `backend/client_auth.py` (`token_login`, which builds the client body) and `backend/client_access.py` (the `/auth/client/token` route that calls it). `backend/clients.py` is the operator CLI and is not touched.
 - Modify: `backend/tests/test_bearer_sessions.py`
 
 **Interfaces:**
-- Produces: `TokenSessionResponse(BaseModel)` with fields `identity: PublicIdentity` (the shape `public_identity` returns), `token: str`, `expires_at: datetime` and `expires_in_seconds: int`. It is used as `response_model` on both `POST /api/auth/token` and `POST /api/auth/client/token`. The JSON stays identical to today's.
+- Produces: `TokenSessionResponse(BaseModel)` with fields `identity: PublicIdentity` (`id`, `email`, `name`: the shape both `auth.public_identity` and `client_auth.public_identity` return), `token: str`, `expires_at: str` and `expires_in_seconds: int`. It is used as `response_model` on both `POST /api/auth/token` and `POST /api/auth/client/token`. The JSON stays identical to today's. `expires_at` stays a `str` holding `expires.isoformat()`, because a Pydantic `datetime` field would serialise `+00:00` as `Z` and change the wire text.
 
 - [ ] **Step 1: Write the failing tests:**
-  - `test_token_responses_share_one_model`: both endpoints' bodies have exactly the keys `{"identity","token","expires_at","expires_in_seconds"}`, and `app.openapi()` lists the same schema name for both 200 responses.
+  - `test_token_responses_share_one_model`: both endpoints' bodies have exactly the keys `{"identity","token","expires_at","expires_in_seconds"}`, `identity` has exactly `{"id","email","name"}`, `expires_at` ends in `+00:00`, and `app.openapi()` lists the same schema name for both 200 responses.
   - `test_bearer_write_through_public_content_fence`: a bearer staff token sends `POST /api/studio/content/draft` with a valid body (copy the shape from `test_public_content.py`) and no Origin or CSRF. Expect 200.
   - `test_bearer_write_through_booking_drafts_fence`: a bearer staff token sends `POST /api/studio/enquiries/{id}/booking-draft` for a seeded enquiry (copy the setup from `test_booking_drafts.py`). Expect 200, and the draft is stored.
   - `test_bearer_write_fences_refuse_revoked_token`: after the bearer session is revoked, both writes give 401.
@@ -272,7 +293,7 @@ Behaviour:
 
 **Interfaces:**
 - Produces, in `enquiries.ts`:
-  - `EnquirySummary`, `EnquiryDetail` and `EnquiryPage`, mirroring `backend/studio_enquiries.py`;
+  - `EnquirySummary`, `EnquiryDetail` and `EnquiryPage`, mirroring `backend/studio_enquiries.py`. The revision field is `studio_revision` (default 0), not `revision`. Every enquiry write sends it as `expected_revision`, and so does each bulk-triage item;
   - `listEnquiries(api, { status?: TriageStatus; cursor?: string; limit?: number }): Promise<EnquiryPage>`;
   - `getEnquiry(api, id): Promise<EnquiryDetail>`;
   - `updateEnquiry(api, id, { expected_revision: number; studio_status?: TriageStatus; studio_note?: string }): Promise<EnquiryDetail>`.
@@ -331,7 +352,7 @@ Behaviour:
 - Consumes: `useStudioQuery` and `useStudioMutation` (Task 3), and `getEnquiry` and `updateEnquiry` (Task 5).
 
 Behaviour:
-- **Detail fields:** name, email, phone ("Not supplied"), event type, preferred date (string-formatted `DD/MM/YYYY`), collection, venue, message, consent, received, last studio update and revision.
+- **Detail fields:** name, email, phone ("Not supplied"), event type, preferred date (string-formatted `DD/MM/YYYY`), collection, venue, message, consent, received, last studio update and revision (`studio_revision`).
 - **Triage:** an internal status select and a private note (2,000-character limit, with a counter). "Save changes" is disabled while pending.
 - **On 409:** keep the draft and show `ReconcilePanel`. "Keep my draft" rebases onto the latest revision; "Use the saved version" replaces the draft.
 - **On a network failure or 503:** the draft is kept, "The studio is temporarily unavailable. Please try again." is shown, and no "Changes saved." appears (Review Focus 4).
@@ -500,14 +521,15 @@ Behaviour:
 - Consumes: `getDashboard`, `getReporting` (Task 5); `listBookings` with `order: "scheduled"` and `from: melbourneToday()` (Tasks 6 and 7); `phaseFor` (Task 8).
 
 Behaviour:
-- **KPI tiles:** "Active enquiries" (`active_enquiries`), "New" / "In review" / "Archived" (reporting), "Bookings" (sum of the dashboard's `bookings`), "Planning" (bookings.planning ?? 0), "Clients with access" (`enabled_clients`) and "Active access grants".
-- **Upcoming shoots:** up to 5 from the first page of the scheduled order, excluding cancelled and delivered. Each shows the planned date (`calendarLabel`), client, event and phase label.
+- **KPI tiles:** "Active enquiries" (`active_enquiries`), "New" / "In review" / "Archived" (reporting), "Unclassified" (`unclassified_enquiries`, shown only when above 0, so legacy statuses are never silently missing from the totals), "Bookings" (sum of the dashboard's `bookings`), "Planning" (bookings.planning ?? 0), "Clients with access" (`enabled_clients`) and "Active access grants".
+- **Upcoming shoots:** up to 5 bookings from the scheduled order (`limit: 100`), excluding cancelled and delivered. Follow `next_cursor` until 5 are found or the list ends, capped at 3 pages, so that past or cancelled bookings early in the order can't empty the panel. Each shows the planned date (`calendarLabel`), client, event and phase label.
 - **"Observed at":** the reporting `observed_at`, in the viewer's local time.
 - **Removed:** the revenue and value KPIs, the activity feed, and the money figures in the phase lane.
 - **Kids panel:** `KidsOverview` keeps its headings and gains the sample-data label.
 
 - [ ] **Step 1: Write the failing checks:**
-  - in `studio-data.js`, at both viewports: the dashboard numbers equal `GET /api/studio/dashboard` and `/reporting` read directly; upcoming shoots list the soonest planned future bookings in date order and omit a cancelled one; after triaging one enquiry to archived in Inquiries, returning to the dashboard shows "Active enquiries" one lower without a reload; the Kids panel shows the sample-data label.
+  - in `studio-data.js`, at both viewports: the dashboard numbers equal `GET /api/studio/dashboard` and `/reporting` read directly; the "Unclassified" tile shows 1 when one legacy-status enquiry is seeded and is absent when none is; upcoming shoots list the soonest planned future bookings in date order and omit a cancelled one; with 101 cancelled bookings dated first and 2 planning bookings after them, both planning bookings still appear; after triaging one enquiry to archived in Inquiries, returning to the dashboard shows "Active enquiries" one lower without a reload; the Kids panel shows the sample-data label.
+  - in `studio-data.js`, the touch-target sweep. At 390×844, on Inquiries (list, search results, select mode and detail with the reconcile panel open), Bookings detail, Tracker, Contacts detail with the revoke confirmation open, and the public enquiry sheet's details step, every visible `button`, `checkbox`, `link` and `textbox` role measures at least 44×44 CSS px. Links inside running text are exempt (WCAG 2.5.8). Report each failure with its accessible name.
   - in `auth.js`, at both viewports, the in-session 401: sign in as staff, open `/inquiries`, call `/__test/expire-sessions`, change the status filter. The user lands on `/sign-in` showing "Your session has expired. Please sign in again."
   - in `auth.js`, cache isolation (Review Focus 3):
     1. Seed an enquiry named "Visible To First Login".

@@ -1,6 +1,6 @@
 # Studio Suite app work plan
 
-State as of 16 November 2026.
+State as of 18 November 2026.
 
 Read this first in any session that continues the work on the Expo application. It is the
 current plan; `session-handoff.md` and `next-session-prompt.md` in this folder are historical
@@ -37,8 +37,8 @@ keep running until the Expo app matches them, and are then retired.
 
 | Step | Scope | Status |
 | --- | --- | --- |
-| 1. Foundation | API client, hybrid sign-in, sessions that survive restarts, route guards, browser tests against a real backend | **Built, reviewed and green in CI** in [PR #7](https://github.com/devcorp-by-techcorp/potential-octo-adventure/pull/7). It awaits owner merge. Native is not yet run on a device. |
-| 2. Enquiries, bookings and contacts | Public enquiry form, inquiry triage, bookings, shoot tracker, contacts and dashboard, all on endpoints that already exist | Next |
+| 1. Foundation | API client, hybrid sign-in, sessions that survive restarts, route guards, browser tests against a real backend | **Merged** in [PR #7](https://github.com/devcorp-by-techcorp/potential-octo-adventure/pull/7); the sign-out follow-up is in PR #8. Native is not yet run on a device. |
+| 2. Enquiries, bookings and contacts | Public enquiry form, inquiry triage, bookings, shoot tracker, contacts and dashboard, all on endpoints that already exist | Design approved; plan reviewed and awaiting owner approval |
 | 3. Content, documents and client portal home | The backend partly supports these | Planned |
 | 4. New backend services | Inbox and e-signature, finance (invoices, expenses, GST/BAS, audit trail), Illuminate Kids, staff management | Planned |
 | 5. Galleries and prints | Depends on the media Worker being deployed | Planned |
@@ -54,12 +54,17 @@ The owner chose this process for step 1 and expects it to continue.
 
 ## Next session: where to start
 
-1. **Fold in the sign-out fix from the Codex review of PR #7.** `AppShell.tsx` `leave` (both the
-   side rail and the More sheet) must await `signOut()` before navigating, and sign-in must be
-   refused while a sign-out is pending. The Codex thread on PR #7 has the details. Add a
-   browser check.
-2. **Brainstorm and design step 2** (enquiries, bookings and contacts) with the owner, then plan
-   and build it.
+Done since 16 November:
+- the sign-out fix from the Codex review of PR #7 (PR #8, with browser and unit checks);
+- the step 2 design, approved by the owner on 18 November;
+- the step 2 plan, reviewed against the backend on 18 November
+  (`docs/development/assessment-2026-11-18.md`).
+
+Next:
+1. **The owner approves the step 2 plan**
+   (`docs/superpowers/plans/2026-11-18-enquiries-bookings-contacts.md`).
+2. **Build it** task by task with subagent-driven development. Start with Tasks 1 and 2 (backend
+   only), then Task 3 (data layer). Each task gets an independent review before the next starts.
 
 ## Open items from step 1
 
