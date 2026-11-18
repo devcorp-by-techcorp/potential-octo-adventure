@@ -81,10 +81,17 @@ async def expire_sessions():
 
 @app.get("/__test/session-count")
 async def session_count():
-    """Test-only (this file, never the real app): non-revoked staff and client session counts."""
+    """Test-only (this file, never the real app): active staff and client session counts.
+
+    Active means not revoked and not expired. Expired sessions are left out on purpose: the TTL
+    index on ``expires_at`` deletes them on MongoDB's background sweep (every 60 s by default),
+    so counting them made the result change whenever a sweep ran mid-check, for example after
+    ``/__test/expire-sessions``.
+    """
+    active = {"revoked_at": None, "expires_at": {"$gt": datetime.now(UTC)}}
     with MongoClient(os.environ["MONGODB_URI"]) as mongo:
         counts = {
-            name: mongo[DB_NAME][name + "_sessions"].count_documents({"revoked_at": None})
+            name: mongo[DB_NAME][name + "_sessions"].count_documents(active)
             for name in ("staff", "client")
         }
     return counts
