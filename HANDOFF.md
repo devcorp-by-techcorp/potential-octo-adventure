@@ -4,8 +4,9 @@ Use this file to set up or check the Claude Code cloud environment for this repo
 brief a new session that runs in it. Part 1 is for the owner. Part 2 is the brief for the new
 session: paste it as the first message, or tell the session to read this file.
 
-State as of 16 November 2026: `main` at `f5474d1` (PRs #1–#7 merged). One open PR: #8, the app
-work plan (`docs/development/app-work-plan.md`), a draft.
+State as of 18 November 2026: `main` at `380643c` (PRs #1–#7 and #9 merged). One open PR: #8
+(ready for review), which holds the sign-out fix, the approved step 2 design and the step 2 plan.
+The 18 November review of that plan is in `docs/development/assessment-2026-11-18.md`.
 
 **CI on `main` was red; the fix is in PR #9.** The web job failed one check on the merge of PR
 #7: `auth.js` [desktop] "double-clicking sign-in creates exactly one staff session" (staff 7 → 4,
