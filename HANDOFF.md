@@ -1,97 +1,144 @@
 # Environment and session handoff
 
-Use this file to set up a new Claude Code cloud environment for this repository and to brief
-the first session that runs in it. Part 1 is for the person creating the environment. Part 2
-is the brief for the new session: paste it as the first message, or tell the session to read
-this file.
+Use this file to set up or check the Claude Code cloud environment for this repository and to
+brief a new session that runs in it. Part 1 is for the owner. Part 2 is the brief for the new
+session: paste it as the first message, or tell the session to read this file.
 
-State as of 14 November 2026: `main` at `dc327af`, CI green on all four jobs.
+State as of 18 November 2026: `main` at `380643c` (PRs #1–#7 and #9 merged). One open PR: #8
+(ready for review), which holds the sign-out fix, the approved step 2 design and the step 2 plan.
+The 18 November review of that plan is in `docs/development/assessment-2026-11-18.md`.
+
+**CI on `main` was red; the fix is in PR #9.** The web job failed one check on the merge of PR
+#7: `auth.js` [desktop] "double-clicking sign-in creates exactly one staff session" (staff 7 → 4,
+client 2 → 0 during the check). Cause: the test-only `/__test/session-count` route counted
+expired sessions too. The phone pass backdates every session (`/__test/expire-sessions`), and the
+TTL index on `expires_at` deletes expired sessions on MongoDB's background sweep, every 60 s. When
+a sweep landed inside the double-click window, the count fell. PR #9 counts only active sessions
+(not revoked, not expired), which a sweep never removes. `main` turns green when PR #9 merges.
 
 ---
 
-## Part 1 — Creating the environment
+## Part 1 — The environment
 
-### Repository
+### It already exists
 
-- `devcorp-by-techcorp/potential-octo-adventure` — **public**. Everything lives here: mobile
-  app, web app, backend, design tokens, gallery media Worker.
-- `devcorp-by-techcorp/studio-suite_v2` — private. The source the web app and backend were
-  copied from (at `5514573`). Attach only if a task needs to compare against it. Nothing should
-  be copied from it into the public repo without the owner's approval.
+The **`potential-octo-adventure`** cloud environment (personal, created 15 November) is set up
+for this repository. Its current settings, as read on 16 November:
 
-### Network
-
-Choose **limited** access with package registries allowed, plus these hosts:
-
-| Host | Why |
+| Setting | Value |
 | --- | --- |
-| `api.cloudflare.com` | Wrangler deploys, R2 bucket creation, secrets, cache purge |
-| `developers.cloudflare.com` | Cloudflare docs and the agent-setup prompt (blocked in the previous session) |
-| `mcp.cloudflare.com` | The Cloudflare plugin's MCP server (returned 403 in the previous session) |
-| `cdn.playwright.dev` | Chromium for the repo's pinned Python Playwright (web browser suites). Blocked by default; without it the setup script warns and skips. |
-| `registry-1.docker.io`, `auth.docker.io`, `production.cloudflare.docker.com` | Pulling `mongo:7.0.16` for the backend tests (reachable in the previous session; list them so a stricter policy does not drop them) |
+| Repository | `devcorp-by-techcorp/potential-octo-adventure` (public) |
+| Network | Limited, package registries and MCP servers allowed |
+| Allowed hosts | `api.cloudflare.com`, `dash.cloudflare.com`, `developers.cloudflare.com`, `mcp.cloudflare.com`, `cdn.playwright.dev`, `pi.cloudflare.com`, `empirical.gauzza.com` |
+| Environment variables | None set |
+| Setup script | Present (saved from another session; its text cannot be read from outside that environment) |
 
-The previous environment could not be changed to allow `developers.cloudflare.com`. If that
-remains true, a new environment created with these hosts from the start is the way round it.
-Connecting the claude.ai Cloudflare connector, or doing the deploy from your own computer, are
-the alternatives.
+Start new sessions for this repository in that environment, not in Default.
 
-### Secrets (environment secrets, never in the repo)
+`pi.cloudflare.com` looks like a typo for `api.cloudflare.com`, which is also listed; it is
+harmless but can be removed. `empirical.gauzza.com` is a memory connector, not a project
+dependency.
 
-| Name | Needed for |
-| --- | --- |
-| `CLOUDFLARE_API_TOKEN` | Wrangler in a headless session (browser login does not work in the cloud). Scope: Workers Scripts edit, Workers Routes edit, R2 edit, Zone read + Cache Purge on `illuminatestudios.com.au`. |
-| `CLOUDFLARE_ACCOUNT_ID` | Wrangler. Not secret, but keep it out of git. |
+### Recommended changes
 
-`CLOUDFLARE_WORKER_SHARED_SECRET` is **not** an environment variable. It is set once with
-`wrangler secret put` and in Railway's backend settings, by you, and never shown to or stored by
-a session.
+1. **Environment variables** (non-secret; they save every session from setting them by hand):
 
-### Setup script
+   | Name | Value |
+   | --- | --- |
+   | `TEST_MONGODB_URI` | `mongodb://127.0.0.1:27017/?replicaSet=phase3` |
+   | `BROWSER_MONGODB_URI` | `mongodb://127.0.0.1:27017/?replicaSet=phase3` |
+   | `APP_TEST_PYTHON` | `backend/.venv/bin/python` |
+   | `NODE_USE_ENV_PROXY` | `1` (the `cf` CLI uses Node's built-in fetch, which ignores the proxy without it) |
 
-Paste the contents of [`scripts/cloud-env-setup.sh`](scripts/cloud-env-setup.sh) into the
-environment's setup script field. It runs as root from the folder holding the checkouts, skips
-cleanly when the repository is not attached, and is safe to re-run. It:
+2. **Secrets** (environment secrets, never in the repo):
 
-1. pins pnpm 10.34.3 through corepack, runs `pnpm install --frozen-lockfile` and builds `@is/tokens`;
-2. creates `backend/.venv` (gitignored) with the backend's dev requirements (pytest, ruff, Playwright 1.58);
-3. downloads Chromium for that Playwright (needs `cdn.playwright.dev`; warns instead of failing);
-4. installs Wrangler 4.156.0 globally for the media Worker.
+   | Name | Needed for |
+   | --- | --- |
+   | `CLOUDFLARE_API_TOKEN` | Wrangler and `cf` without a browser sign-in. `cf`'s OAuth sign-in lasts about an hour and does not survive the container. Scope: Workers Scripts edit, Workers Routes edit, R2 edit, Zone read and Cache Purge on `illuminatemygallery.com.au`. |
+   | `CLOUDFLARE_ACCOUNT_ID` | Wrangler and `cf`. Not secret, but keep it out of git. |
 
-Tested from the checkouts folder in the previous session: first run 52 s, re-run 13 s; afterwards
-`wrangler --version`, `ruff check`, the Worker tests (25 passed) and the mobile typecheck all
-worked. Only step 3 failed there, because `cdn.playwright.dev` was not allowed.
+   `CLOUDFLARE_WORKER_SHARED_SECRET` is **not** an environment variable or secret here. The owner
+   sets it with `wrangler secret put` and in Railway's backend settings; no session sees it.
 
-It deliberately does not start Docker or MongoDB (no background daemons in setup scripts); the
-session starts them when it needs the backend tests.
+3. **Setup script.** [`scripts/cloud-env-setup.sh`](scripts/cloud-env-setup.sh) is the tested
+   reference. If you are unsure what the saved script does, replace it with this file's contents.
+   It runs as root from the folder holding the checkouts, skips cleanly when the repository is
+   not attached, and is safe to re-run. It:
+   1. pins pnpm 10.34.3 through corepack, runs `pnpm install --frozen-lockfile`, builds `@is/tokens`;
+   2. creates `backend/.venv` (gitignored) with the backend's dev requirements;
+   3. downloads the Chromium build for Playwright 1.58 (needs `cdn.playwright.dev`);
+   4. installs Wrangler 4.156.0 and `cf` 1.0.0-beta.26 globally;
+   5. pre-pulls `mongo:7.0.16`, starting `dockerd` only for the pull and stopping it again.
 
-Chromium and Playwright for Node are pre-installed in cloud containers; nothing to add for the
-mobile e2e suites.
+   Tested on 16 November against `main` at `f5474d1`, from the checkouts folder: a re-run took
+   21 s; Wrangler, `cf`, the MongoDB pull and the workspace install all worked, and no daemon was
+   left running. Step 3 failed in the test container only because it does not allow
+   `cdn.playwright.dev`; the `potential-octo-adventure` environment does.
+
+   `cf` is pinned to beta.26, the newest release at least two weeks old. The other session's
+   notes say the saved script installs beta.32 (released 13 November). Either works.
+
+**Why `cdn.playwright.dev` is required, not optional:** Playwright 1.58 is pinned for the Python
+web suites *and*, since PR #7, for the mobile e2e suites. The container's pre-installed Chromium
+is a different build (1243, against the 1208 that 1.58 needs), so without that host neither
+browser suite can launch.
 
 ---
 
 ## Part 2 — Brief for the new session
+
+### Read first
+
+1. This file.
+2. `docs/development/app-work-plan.md` — the current plan for the Expo app (on `main` once PR #8
+   is merged; until then, on branch `claude/app-work-plan`). It is the source of truth for what
+   comes next and for the process the owner expects.
+3. `docs/app-local-development.md` — running the app against a local backend.
+
+`docs/development/session-handoff.md` and `next-session-prompt.md` are **historical** v2 docs.
 
 ### What the project is
 
 Illuminate Studios "Studio Suite", one pnpm workspace:
 
 ```
-apps/mobile/        Expo SDK 51 / RN 0.74 / React 18 — marketing, client portal, studio admin,
-                    Illuminate Kids. Seeded in-memory data; NOT connected to the backend yet.
-web/                Vite + React 19 + Tailwind + shadcn/ui — public site, Luma chat, studio and
-                    client portals.
-backend/            FastAPI + Motor/MongoDB. Phase 3 writes need a replica set (transactions).
+apps/mobile/        Expo SDK 51 / RN 0.74 / React 18. Becomes the single studio and client
+                    app on desktop web, iOS and Android. Sign-in, sessions and route guards run
+                    against the real backend (step 1, PR #7). Every business screen still uses
+                    seeded in-memory data until its own step.
+web/                Vite + React 19 + Tailwind + shadcn/ui. Public site and Luma stay here; its
+                    studio and client portals retire once the Expo app matches them.
+backend/            FastAPI + Motor/MongoDB. Cookie sessions for browsers, bearer sessions for
+                    native. Phase 3 writes need a replica set (transactions).
 packages/tokens/    @is/tokens — shared design tokens (web + native).
-infra/media-worker/ Cloudflare Worker serving gallery thumbnails/previews from private R2.
-_ds/                Design reference. Hash-verified — do not edit (see "Open items").
+infra/media-worker/ Cloudflare Worker serving gallery thumbnails/previews from private R2,
+                    on media.illuminatemygallery.com.au. Not deployed.
+_ds/                Design reference. Hash-verified — do not edit.
+docs/superpowers/   Specs and plans, one pair per app step.
 docs/, goals/, test_reports/, scripts/, deploy/  Carried over from studio-suite_v2.
 ```
 
-`docs/development/session-handoff.md` and `next-session-prompt.md` are **historical** v2 docs,
-not this handoff.
+### Owner decisions to respect
 
-### Working rules carried forward
+The full table is in the app work plan. The ones most likely to matter:
+
+- **Domains:** `illuminatestudios.com.au` is the primary company domain (website and app entry;
+  DNS stays at VentraIP). `illuminatemygallery.com.au` holds gallery services and direct client
+  portal access, and is active on Cloudflare.
+- **Hybrid sign-in:** browsers use the existing cookie sessions unchanged; native uses bearer
+  tokens in SecureStore. A request carrying both a session cookie and an `Authorization` header
+  is refused, so never put HTTP Basic auth in front of the app.
+- **Booking confirmation follows the backend:** confirming an enquiry creates a *planning*
+  booking; planning → confirmed stays HTTP 409 until scheduling, authority and agreement/payment
+  checks exist.
+- **No partial releases:** nothing ships until every page and service works on real data and is
+  tested.
+- **Process per step:** design agreed with the owner (`docs/superpowers/specs/`), then a plan
+  (`docs/superpowers/plans/`), built task by task with independent review, then a final
+  whole-branch review and a draft PR.
+- **Cloudflare tooling:** `cf` CLI, except `infra/media-worker`, which keeps Wrangler.
+
+### Working rules
 
 - Never commit secrets. The repo is public.
 - Branch from `main`, push, open a **draft** PR. Never approve or merge; the owner does that.
@@ -102,64 +149,86 @@ not this handoff.
 - Do not change Railway or `railway.toml` without flagging it to the owner first.
 - Gallery/Cloudflare rules from the owner's brief: every R2 bucket stays private ("Allow Public
   Access" off); never use R2 "Connect Domain"; no `R2_BUCKET_PUBLIC` anywhere; the backend never
-  streams image bytes; originals only via backend presigned URLs; do not guess account IDs or
-  invent a zone — if the account or zone is not ready, stop and ask.
+  streams image bytes; originals only via backend presigned URLs; never guess account IDs or
+  invent a zone.
+- `ruff check` enforces a 100-character line limit. Do not run `ruff format` across the repo; it
+  rewrites unrelated files.
 - Use the user's details only for attribution, never in requests to outside services.
 
 ### Commands
 
+Docker is not running when a session starts, and a restart of the session's worker process stops
+it again. Start it, then the replica set:
+
 ```bash
-pnpm install --frozen-lockfile       # root; node-linker=hoisted, @types/react pinned to 18.2
-pnpm build                           # tokens + web
+(dockerd >/tmp/dockerd.log 2>&1 &); until docker info >/dev/null 2>&1; do sleep 1; done
+bash backend/tests/start_mongodb.sh   # mongo:7.0.16, replica set "phase3", port 27017
+```
+
+Then (the `*_MONGODB_URI` and `APP_TEST_PYTHON` values are needed unless set on the environment):
+
+```bash
+pnpm install --frozen-lockfile        # root; node-linker=hoisted, @types/react pinned to 18.2
+pnpm build                            # tokens + web
 pnpm lint:web
 pnpm check:design && pnpm check:design-source
 
+cd backend && .venv/bin/ruff check . \
+  && TEST_MONGODB_URI='mongodb://127.0.0.1:27017/?replicaSet=phase3' .venv/bin/pytest -q
+cd backend && .venv/bin/python export_database_schemas.py --check
+
 pnpm typecheck:mobile
-pnpm e2e:mobile                      # web export, then finance / screens / kids / studio suites
+BROWSER_MONGODB_URI='mongodb://127.0.0.1:27017/?replicaSet=phase3' \
+  APP_TEST_PYTHON=backend/.venv/bin/python pnpm e2e:mobile
+#   builds the web export with EXPO_PUBLIC_* blanked, runs finance / api-client / session-state,
+#   then starts backend/tests/app_server.py and runs auth / screens / kids / studio against it.
+#   One suite only: node apps/mobile/e2e/run.js auth   (after a build)
 
-bash backend/tests/start_mongodb.sh  # docker mongo:7.0.16 single-node replica set
-cd backend && ruff check . && pytest -q
-
-cd infra/media-worker && npm test    # Worker against in-memory R2 + cache (25 checks)
+python web/tests/{gallery_theme,portal_shell,run_browser}.py   # web browser suites (venv Python)
+cd infra/media-worker && npm test     # Worker against in-memory R2 + cache
 ```
 
-Docker is not running when a session starts. Start it first:
-`setsid nohup dockerd >/tmp/dockerd.log 2>&1 &` then wait for `docker info` to succeed.
-Backend tools live in `backend/.venv` (created by the setup script): `backend/.venv/bin/pytest`,
-`backend/.venv/bin/ruff`.
-Web browser tests: `python web/tests/{gallery_theme,portal_shell,run_browser}.py`; the repo pins
-Python Playwright 1.58, which may not match the container's Chromium — the setup script installs its
-browser when `cdn.playwright.dev` is allowed. Do not change the pin.
+Without `TEST_MONGODB_URI`, Phase 3 backend tests fail with "temporarily unavailable". The
+screens suite reports "N clean, M with findings", not "N passed".
 
-Last known results: backend 394 passed / 2 skipped; mobile e2e finance 22, screens 125,
-kids 88, studio 76; Worker 25; all four CI jobs green on `main`.
+Last known results (PR #7's report, commit `36f1bda`): backend 426 passed / 2 skipped; schemas
+current (28 collections); mobile e2e 427 checks — finance 22, api-client 42, session-state 18,
+auth 56, screens 125 clean, kids 88, studio 76; Worker 25 (re-run 16 November on `main`).
 
 ### Open items, in priority order
 
-1. **Deploy the gallery media Worker** (`infra/media-worker`, see its README). Blocked on the
-   owner confirming:
-   - the `illuminatestudios.com.au` zone is active on their Cloudflare account and R2 is enabled;
-   - the hostname `media.illuminatestudios.com.au`;
-   - the production frontend origin for the originals bucket's CORS rule (the brief assumes
-     `https://illuminatemygallery.com`);
-   - the caching decision: token checked on every request, edge cache saves only the R2 read.
-
-   Then: create the four private buckets, set the secret, deploy, seed a test object, run
-   `verify.sh` (expect 200, 403×4, 404, 405, then HIT), delete the test object. A green deploy
-   is not proof — the verification run is.
+1. **Fold in the sign-out fix from the Codex review of PR #7.** `AppShell.tsx` `leave` (side rail
+   and More sheet) must await `signOut()` before navigating, and sign-in must be refused while a
+   sign-out is pending. Details on the Codex thread on PR #7. Add a browser check.
+2. **Step 2 of the app plan: enquiries, bookings and contacts.** Design it with the owner first,
+   then plan and build it, on endpoints that already exist. Before its screens make
+   authenticated calls, close the step-1 items the work plan lists (browser test of the
+   in-session 401 redirect, bearer write tests through the `public_content` and `booking_drafts`
+   fences, a shared response model for the two token endpoints).
+3. **Deploy the gallery media Worker** (`infra/media-worker`; steps in its README). Done: the
+   `illuminatemygallery.com.au` zone is active on the owner's Cloudflare account; the Worker is
+   configured for `media.illuminatemygallery.com.au`; the originals bucket's CORS origin is
+   `https://illuminatemygallery.com.au`; the caching decision is made (token checked on every
+   request, edge cache saves only the R2 read). Remaining: create the four private buckets, the
+   owner sets `CLOUDFLARE_WORKER_SHARED_SECRET`, deploy, seed a test object, run `verify.sh`
+   (expect 200, 403×4, 404, 405, then HIT), delete the test object. A green deploy is not proof;
+   the verification run is.
 
    One deliberate change from the owner's brief: viewers get `Cache-Control: private, no-cache`
-   (browser must revalidate through the token check); the year-long immutable header stays on
-   the edge copy only. Revocation and takedown steps are in the Worker README.
-2. **Connect the mobile app to the backend.** It currently runs on seeded data in
-   `apps/mobile/src/data` and `src/state`. Nothing has been tested on a real device.
-3. **Wage cash-flow fix for the design reference.** `_ds/uploads/finance-core.jsx` counts wages
-   gross. A patch is at `docs/development/patches/finance-core-wage-cashflow.patch`; it has to be
-   applied in the Claude Design project, because `_ds/` is hash-verified.
-4. **Owner decisions still open:** whether to remove now-public items (Railway preview hostname,
+   (browser must revalidate through the token check); the year-long immutable header stays on the
+   edge copy only. Revocation and takedown steps are in the Worker README.
+4. **Native verification has never been run.** No simulator or device is available in the cloud.
+   The manual checklist in `test_reports/2026-11-15-app-foundation.md`, including the
+   corrupt-stored-session step, must pass on a real device or simulator before any native release.
+5. **Owner decisions still open:** whether to remove now-public items (Railway preview hostname,
    staff-style `@illuminatestudios.com.au` addresses, seeded demo emails, test reports); whether
-   to add the Claude Design handoff bundle and chat transcripts to the repo (left out so far);
-   whether to install the optional `cf` CLI.
+   to add the Claude Design handoff bundle and chat transcripts to the repo; whether to keep
+   Prints in the client portal's phone "More" menu; the wage cash-flow patch
+   (`docs/development/patches/finance-core-wage-cashflow.patch`), which has to be applied in the
+   Claude Design project because `_ds/` is hash-verified.
+
+The work plan also lists smaller step-1 follow-ups (client-facing staff wording in the phone
+"More" menu, FastAPI 422 messages, test-harness robustness, `WWW-Authenticate` on bearer 401s).
 
 ### Mobile app notes
 
@@ -167,8 +236,14 @@ kids 88, studio 76; Worker 25; all four CI jobs green on `main`.
   matching strips `/(group)` from hrefs (`src/components/AppShell.tsx`).
 - The studio's kids page is `app/(admin)/illuminate-kids.tsx`; `app/kids/*` is the public
   Illuminate Kids flow. Keep the names distinct — they collide otherwise.
-- Enquiries move through a guarded state machine (`src/data/enquiry.ts`); confirming needs a
-  linked client contact and a free date, and is what creates the booking
-  (`src/state/records.tsx`).
+- API access goes through one client (`src/api/client.ts`); sessions live in
+  `src/state/session.tsx` with a pure reducer in `sessionReducer.ts`; `SessionGate` guards routes.
+  Web stores no token (cookie sessions); native keeps the bearer token in SecureStore
+  (`credentials.native.ts`).
+- `EXPO_PUBLIC_*` values are inlined at build time; `apps/mobile/.env.example` documents
+  `EXPO_PUBLIC_API_URL` and `EXPO_PUBLIC_WEB_URL`. Never put secrets there.
+- Enquiries move through a guarded state machine (`src/data/enquiry.ts`); in the seeded data,
+  confirming needs a linked client contact and a free date (`src/state/records.tsx`). Step 2
+  replaces this with the backend's enquiry operations.
 - Finance: wages are paid net of PAYG withholding (`finCashPaid` in `src/data/finance.ts`).
 - RN-web does not emit `aria-checked` from `accessibilityState`; set the aria props directly.
