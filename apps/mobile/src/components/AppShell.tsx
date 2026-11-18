@@ -127,7 +127,10 @@ function SideRail({ items, activeHref, onNav, insets }: { items: NavItem[]; acti
   const { width } = useResponsive();
   const { signOut, status } = useSession();
   const router = useRouter();
-  const leave = () => { void signOut(); router.replace("/marketing"); };
+  // Navigate only after sign-out finishes, so no new sign-in can start while it is still running.
+  // AppShell unmounts while signing out (SessionGate shows the splash); router.replace still works
+  // because expo-router's useRouter() returns the global imperative router.
+  const leave = async () => { await signOut(); router.replace("/marketing"); };
   const other = switchTarget(status);
   const showLabels = width >= 1000;
   const railW = showLabels ? 236 : 74;
@@ -175,7 +178,7 @@ function BottomBar({ items, activeHref, onNav, insetBottom, maxTabs }: { items: 
   const rest = split ? items.slice(maxTabs) : [];
   const moreOn = rest.some((i) => i.href === activeHref);
   const go = (h: string) => { setMoreOpen(false); onNav(h); };
-  const leave = () => { setMoreOpen(false); void signOut(); router.replace("/marketing" as any); };
+  const leave = async () => { setMoreOpen(false); await signOut(); router.replace("/marketing" as any); };
   const switchRole = () => { setMoreOpen(false); router.push(`/sign-in?role=${other!.role}` as any); };
 
   return (

@@ -29,6 +29,8 @@ function kindFor(status: number): ApiErrorKind {
 export interface RequestOptions {
   /** A 401 still throws, but neither calls onUnauthorized nor arms the one-shot guard (sign-in requests). */
   skipUnauthorized?: boolean;
+  /** Aborting rejects the request as "unavailable". */
+  signal?: AbortSignal;
 }
 
 export interface ApiClient {
@@ -51,6 +53,7 @@ export function createApiClient(deps: ApiClientDeps): ApiClient {
   async function request<T>(method: "GET" | "POST" | "PATCH", path: string, body?: unknown, options?: RequestOptions): Promise<T> {
     const headers: Record<string, string> = { Accept: "application/json" };
     const init: RequestInit = { method, headers };
+    if (options?.signal) init.signal = options.signal;
     if (body !== undefined) {
       headers["Content-Type"] = "application/json";
       init.body = JSON.stringify(body);
@@ -89,7 +92,12 @@ export function createApiClient(deps: ApiClientDeps): ApiClient {
     }
 
     if (response.status === 204) return undefined as T;
-    const text = await response.text();
+    let text: string;
+    try {
+      text = await response.text();
+    } catch {
+      throw new ApiError(0, "unavailable", "Could not reach the server"); // includes an abort mid-body
+    }
     return (text ? JSON.parse(text) : undefined) as T;
   }
 

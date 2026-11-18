@@ -35,8 +35,9 @@ export function RetryPanel() {
 }
 
 export function SessionGate({ require, children }: { require: "staff" | "client"; children: React.ReactNode }) {
-  const { status } = useSession();
-  if (status === "restoring") return <Splash />;
+  const { status, signingOut } = useSession();
+  // While signing out, show nothing live: the caller navigates away once signOut() resolves.
+  if (status === "restoring" || signingOut) return <Splash />;
   if (status === "unavailable") return <RetryPanel />;
   if (status === "signed-out") return <Redirect href={`/sign-in?role=${require}` as any} />;
   if (status !== require) return <Redirect href={status === "staff" ? "/(admin)/dashboard" : "/(client)/home"} />;
