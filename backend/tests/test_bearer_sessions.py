@@ -10,6 +10,7 @@ import auth
 import client_auth
 from clients import change_client
 from db import get_database
+from public_content import DEFAULTS
 from server import create_app
 from staff import change_staff
 from tests.test_auth import EMAIL, ORIGIN, PASSWORD, login
@@ -158,6 +159,71 @@ async def test_bearer_write_through_transactional_fence(client, staff):
     body = {"id": str(uuid4()), "name": "Bearer photographer", "kind": "photographer"}
     response = await client.post("/api/studio/booking-resources", headers=bearer(token), json=body)
     assert response.status_code == 200 and response.json()["name"] == "Bearer photographer"
+
+
+CONTENT_DRAFT = "/api/studio/content/draft"
+DRAFT_ENQUIRY = record(41)
+BOOKING_DRAFT = f"/api/studio/enquiries/{DRAFT_ENQUIRY['_id']}/booking-draft"
+
+
+def content_draft():
+    return {"expected_revision": 0, "command_id": str(uuid4()), "content": DEFAULTS}
+
+
+def booking_draft():
+    return {
+        "command_id": str(uuid4()),
+        "starts_at": "2099-12-20T10:00:00+11:00",
+        "ends_at": "2099-12-20T12:00:00+11:00",
+        "timezone": "Australia/Melbourne",
+    }
+
+
+async def test_bearer_write_through_public_content_fence(client, staff):
+    token = await issue(client)
+    response = await client.post(CONTENT_DRAFT, headers=bearer(token), json=content_draft())
+    assert "origin" not in response.request.headers
+    assert response.status_code == 200, response.text
+    assert response.json()["revision"] == 1
+
+
+async def test_bearer_write_through_booking_drafts_fence(client, staff):
+    await get_database().booking_requests.insert_one(dict(DRAFT_ENQUIRY))
+    token = await issue(client)
+    response = await client.post(BOOKING_DRAFT, headers=bearer(token), json=booking_draft())
+    assert "origin" not in response.request.headers
+    assert response.status_code == 200, response.text
+    stored = await get_database().booking_drafts.find_one({"enquiry_id": DRAFT_ENQUIRY["_id"]})
+    assert stored["_id"] == response.json()["id"] and stored["state"] == "draft"
+
+
+async def test_bearer_write_fences_refuse_revoked_token(client, staff):
+    db = get_database()
+    await db.booking_requests.insert_one(dict(DRAFT_ENQUIRY))
+    token = await issue(client)
+    await db.staff_sessions.update_one(
+        {"_id": auth.digest(token)}, {"$set": {"revoked_at": auth.now()}}
+    )
+    content = await client.post(CONTENT_DRAFT, headers=bearer(token), json=content_draft())
+    draft = await client.post(BOOKING_DRAFT, headers=bearer(token), json=booking_draft())
+    assert content.status_code == 401 and draft.status_code == 401
+    assert await db.public_content.count_documents({}) == 0
+    assert await db.booking_drafts.count_documents({}) == 0
+
+
+async def test_token_responses_share_one_model(client, client_account):
+    staff_body = (await token_login(client)).json()
+    client_body = (await client_token_login(client)).json()
+    for body in (staff_body, client_body):
+        assert set(body) == {"identity", "token", "expires_at", "expires_in_seconds"}
+        assert set(body["identity"]) == {"id", "email", "name"}
+        assert body["expires_at"].endswith("+00:00")
+    paths = create_app().openapi()["paths"]
+    schemas = [
+        paths[path]["post"]["responses"]["200"]["content"]["application/json"]["schema"]
+        for path in (TOKEN_PATH, CLIENT_TOKEN_PATH)
+    ]
+    assert schemas[0] == schemas[1] == {"$ref": "#/components/schemas/TokenSessionResponse"}
 
 
 CLIENT_EMAIL = RECIPIENT
