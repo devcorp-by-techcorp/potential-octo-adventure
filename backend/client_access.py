@@ -15,6 +15,7 @@ from starlette.concurrency import run_in_threadpool
 
 import client_auth as clients
 from auth import (
+    TokenSessionResponse,
     database_errors,
     digest,
     fence_staff_session,
@@ -532,7 +533,7 @@ async def login(body: clients.ClientLoginBody, request: Request, response: Respo
     return await clients.login(body, request, response)
 
 
-@router.post("/auth/client/token")
+@router.post("/auth/client/token", response_model=TokenSessionResponse)
 async def token_login(body: clients.ClientLoginBody, request: Request):
     return await clients.token_login(body, request)
 

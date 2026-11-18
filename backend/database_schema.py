@@ -59,6 +59,8 @@ COLLECTIONS = {
         index("source_enquiry_id", unique=True),
         index([("state", 1), ("updated_at", -1), ("_id", -1)]),
         index([("updated_at", -1), ("_id", -1)]),
+        index([("scheduled_date", 1), ("_id", 1)]),
+        index([("state", 1), ("scheduled_date", 1), ("_id", 1)]),
     ],
     "booking_drafts": [
         index("enquiry_id", unique=True), index([("starts_at", 1), ("_id", 1)]),

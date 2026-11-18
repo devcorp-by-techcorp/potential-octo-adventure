@@ -4,8 +4,9 @@ Use this file to set up or check the Claude Code cloud environment for this repo
 brief a new session that runs in it. Part 1 is for the owner. Part 2 is the brief for the new
 session: paste it as the first message, or tell the session to read this file.
 
-State as of 16 November 2026: `main` at `f5474d1` (PRs #1–#7 merged). One open PR: #8, the app
-work plan (`docs/development/app-work-plan.md`), a draft.
+State as of 18 November 2026: `main` at `1063c5c` (PRs #1–#9 merged). One open PR: #11, the
+draft working PR for step 2. It recovered PR #10's plan corrections and assessment, which had
+merged into PR #8's branch after PR #8 itself merged. The step 2 build runs on #11.
 
 **CI on `main` was red; the fix is in PR #9.** The web job failed one check on the merge of PR
 #7: `auth.js` [desktop] "double-clicking sign-in creates exactly one staff session" (staff 7 → 4,
@@ -89,9 +90,8 @@ browser suite can launch.
 ### Read first
 
 1. This file.
-2. `docs/development/app-work-plan.md` — the current plan for the Expo app (on `main` once PR #8
-   is merged; until then, on branch `claude/app-work-plan`). It is the source of truth for what
-   comes next and for the process the owner expects.
+2. `docs/development/app-work-plan.md` — the current plan for the Expo app. It is the source of
+   truth for what comes next and for the process the owner expects.
 3. `docs/app-local-development.md` — running the app against a local backend.
 
 `docs/development/session-handoff.md` and `next-session-prompt.md` are **historical** v2 docs.

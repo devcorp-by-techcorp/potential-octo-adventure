@@ -112,6 +112,25 @@ class LoginBody(BaseModel):
     password: SecretStr = Field(min_length=1, max_length=1024)
 
 
+class PublicIdentity(BaseModel):
+    id: str
+    email: str
+    name: str
+
+
+class TokenSessionResponse(BaseModel):
+    """Bearer sign-in body, shared by the staff and client token routes.
+
+    `expires_at` stays a string holding `datetime.isoformat()`, so the wire text keeps its
+    `+00:00` offset; a `datetime` field would serialise it as `Z`.
+    """
+
+    identity: PublicIdentity
+    token: str
+    expires_at: str
+    expires_in_seconds: int
+
+
 def public_identity(identity):
     return {"id": str(identity["_id"]), "email": identity["email"], "name": identity["name"]}
 
@@ -218,7 +237,7 @@ async def login(body: LoginBody, request: Request, response: Response):
     }
 
 
-@router.post("/auth/token")
+@router.post("/auth/token", response_model=TokenSessionResponse)
 async def token_login(body: LoginBody, request: Request):
     """Native clients: a bearer session, never a cookie, so no Origin or CSRF applies."""
     with database_errors():

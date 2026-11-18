@@ -307,3 +307,130 @@ async def test_selective_revoke_audits_and_immediately_hides_booking(client, set
     stored = await database.client_access.find_one({"_id": grant_id})
     assert stored["revoked_at"] and stored["revoked_by"]
     assert stored["history"][-1]["action"] == "revoked"
+
+
+PAGE_PATH = "/api/studio/bookings"
+BAD_CURSOR = "Invalid booking cursor. Refresh the list."
+
+
+async def seed_bookings(client, headers, dates):
+    """Create one booking per date through the real create path."""
+    database = get_database()
+    created = []
+    for index, planned in enumerate(dates, start=100):
+        enquiry = record(index=index)
+        await database.booking_requests.insert_one(enquiry)
+        response = await client.post(
+            f"/api/studio/enquiries/{enquiry['_id']}/booking",
+            headers=headers,
+            json={"scheduled_date": planned},
+        )
+        assert response.status_code == 200
+        created.append(response.json())
+    return created
+
+
+async def follow(client, params):
+    pages, cursor = [], None
+    while True:
+        query = {**params, **({"cursor": cursor} if cursor else {})}
+        response = await client.get(PAGE_PATH, params=query)
+        assert response.status_code == 200
+        body = response.json()
+        pages.append(body["items"])
+        cursor = body["next_cursor"]
+        if cursor is None:
+            return pages
+
+
+DATES = [
+    "2027-03-05", "2027-01-10", "2027-03-05", "2027-02-01", "2027-03-05", "2027-01-10",
+    "2027-04-01",
+]  # fmt: skip
+
+
+async def test_list_default_order_unchanged(client, setup):
+    _, headers = setup
+    created = await seed_bookings(client, headers, DATES[:3])
+    body = (await client.get(PAGE_PATH)).json()
+    assert body["next_cursor"] is None
+    ordered = sorted(created, key=lambda b: (b["updated_at"], b["id"]), reverse=True)
+    assert [item["id"] for item in body["items"]] == [b["id"] for b in ordered]
+
+
+async def test_list_pages_updated_order_completely(client, setup):
+    _, headers = setup
+    created = await seed_bookings(client, headers, DATES)
+    pages = await follow(client, {"limit": 3})
+    assert [len(page) for page in pages] == [3, 3, 1]
+    items = [item for page in pages for item in page]
+    assert sorted(item["id"] for item in items) == sorted(b["id"] for b in created)
+    stamps = [item["updated_at"] for item in items]
+    assert stamps == sorted(stamps, reverse=True)
+
+
+async def test_list_pages_scheduled_order_completely(client, setup):
+    _, headers = setup
+    created = await seed_bookings(client, headers, DATES)
+    pages = await follow(client, {"limit": 3, "order": "scheduled"})
+    assert [len(page) for page in pages] == [3, 3, 1]
+    items = [item for page in pages for item in page]
+    assert [item["id"] for item in items] == [
+        b["id"] for b in sorted(created, key=lambda b: (b["scheduled_date"], b["id"]))
+    ]
+
+
+async def test_scheduled_from_filters(client, setup):
+    _, headers = setup
+    await seed_bookings(client, headers, DATES)
+    params = {"order": "scheduled", "from": "2027-03-01", "limit": 2}
+    items = [item for page in await follow(client, params) for item in page]
+    assert [item["scheduled_date"] for item in items] == [
+        "2027-03-05", "2027-03-05", "2027-03-05", "2027-04-01"
+    ]  # fmt: skip
+
+
+async def test_state_filter_with_paging(client, setup):
+    _, headers = setup
+    created = await seed_bookings(client, headers, DATES[:5])
+    for booking in created[:2]:
+        response = await client.patch(
+            f"{PAGE_PATH}/{booking['id']}",
+            headers=headers,
+            json={"expected_revision": 0, "state": "cancelled"},
+        )
+        assert response.status_code == 200
+    pages = await follow(client, {"state": "planning", "limit": 2})
+    assert [len(page) for page in pages] == [2, 1]
+    items = [item for page in pages for item in page]
+    assert {item["id"] for item in items} == {b["id"] for b in created[2:]}
+    assert {item["state"] for item in items} == {"planning"}
+
+
+async def test_bad_cursor_refused(client, setup):
+    _, headers = setup
+    await seed_bookings(client, headers, DATES[:3])
+    cursor = (await client.get(PAGE_PATH, params={"limit": 1})).json()["next_cursor"]
+    assert cursor
+    for params in (
+        {"cursor": "not-a-cursor"},
+        {"cursor": cursor, "order": "scheduled"},
+        {"cursor": cursor, "state": "planning"},
+    ):
+        response = await client.get(PAGE_PATH, params=params)
+        assert response.status_code == 422
+        assert response.json()["detail"] == BAD_CURSOR
+    scheduled = (await client.get(PAGE_PATH, params={"limit": 1, "order": "scheduled"})).json()
+    response = await client.get(
+        PAGE_PATH,
+        params={"cursor": scheduled["next_cursor"], "order": "scheduled", "from": "2027-01-01"},
+    )
+    assert response.status_code == 422 and response.json()["detail"] == BAD_CURSOR
+
+
+async def test_from_requires_scheduled_order(client, setup):
+    assert (await client.get(PAGE_PATH, params={"from": "2027-03-01"})).status_code == 422
+    response = await client.get(PAGE_PATH, params={"order": "updated", "from": "2027-03-01"})
+    assert response.status_code == 422
+    response = await client.get(PAGE_PATH, params={"order": "scheduled", "from": "nope"})
+    assert response.status_code == 422
