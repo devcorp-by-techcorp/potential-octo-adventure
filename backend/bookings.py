@@ -1,11 +1,22 @@
 """Persistent, revisioned studio bookings derived from immutable enquiries."""
 
+import base64
+import binascii
+import json
 from datetime import UTC, date, datetime
 from typing import Annotated, Literal
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 from pymongo import ReturnDocument
 
 from auth import database_errors, fence_staff_write, require_staff, require_staff_write
@@ -57,6 +68,82 @@ class BookingDetail(BookingSummary):
 
 class BookingPage(BaseModel):
     items: list[BookingSummary]
+    next_cursor: str | None = None
+
+
+Order = Literal["updated", "scheduled"]
+SORTS = {
+    "updated": [("updated_at", -1), ("_id", -1)],
+    "scheduled": [("scheduled_date", 1), ("_id", 1)],
+}
+
+
+class BookingCursor(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+    version: Literal[1]
+    order: Order
+    state: State | None
+    from_date: CalendarDate | None = Field(alias="from")
+    updated_at: datetime | None = None
+    scheduled_date: CalendarDate | None = None
+    id: UUID
+
+    @model_validator(mode="after")
+    def sort_value_matches_order(self):
+        if self.order == "updated":
+            valid = (
+                self.updated_at is not None
+                and self.updated_at.utcoffset() is not None
+                and self.updated_at.utcoffset().total_seconds() == 0
+                and self.scheduled_date is None
+            )
+        else:
+            valid = self.scheduled_date is not None and self.updated_at is None
+        if not valid:
+            raise ValueError("Cursor sort value does not match its order.")
+        return self
+
+
+def page_query(order, state, from_date, cursor):
+    query = {"state": state} if state else {}
+    if from_date:
+        query["scheduled_date"] = {"$gte": from_date}
+    if cursor:
+        try:
+            raw = base64.b64decode(cursor + "=" * (-len(cursor) % 4), altchars=b"-_", validate=True)
+            position = BookingCursor.model_validate(json.loads(raw))
+            if (position.order, position.state, position.from_date) != (order, state, from_date):
+                raise ValueError("Filter mismatch")
+        except (ValueError, ValidationError, binascii.Error, UnicodeError):
+            raise HTTPException(422, "Invalid booking cursor. Refresh the list.") from None
+        last_id = str(position.id)
+        if order == "updated":
+            after = [
+                {"updated_at": {"$lt": position.updated_at}},
+                {"updated_at": position.updated_at, "_id": {"$lt": last_id}},
+            ]
+        else:
+            after = [
+                {"scheduled_date": {"$gt": position.scheduled_date}},
+                {"scheduled_date": position.scheduled_date, "_id": {"$gt": last_id}},
+            ]
+        # Combine with $and so the range filter on scheduled_date is kept.
+        query = {"$and": [query, {"$or": after}]} if query else {"$or": after}
+    return query
+
+
+def next_cursor(document, order, state, from_date):
+    value = BookingCursor(
+        version=1,
+        order=order,
+        state=state,
+        from_date=from_date,
+        updated_at=document["updated_at"].replace(tzinfo=UTC) if order == "updated" else None,
+        scheduled_date=document["scheduled_date"] if order == "scheduled" else None,
+        id=document["_id"],
+    )
+    payload = value.model_dump_json(by_alias=True)
+    return base64.urlsafe_b64encode(payload.encode()).decode().rstrip("=")
 
 
 class CreateBooking(BaseModel):
@@ -122,6 +209,8 @@ async def ensure_indexes(database):
     await database.bookings.create_index("source_enquiry_id", unique=True)
     await database.bookings.create_index([("state", 1), ("updated_at", -1), ("_id", -1)])
     await database.bookings.create_index([("updated_at", -1), ("_id", -1)])
+    await database.bookings.create_index([("scheduled_date", 1), ("_id", 1)])
+    await database.bookings.create_index([("state", 1), ("scheduled_date", 1), ("_id", 1)])
 
 
 @router.post("/enquiries/{enquiry_id}/booking", response_model=BookingDetail)
@@ -178,17 +267,28 @@ async def list_bookings(
     identity: Annotated[dict, Depends(require_staff)],
     state: State | None = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    order: Order = "updated",
+    from_date: Annotated[CalendarDate | None, Query(alias="from")] = None,
+    cursor: Annotated[str | None, Query(min_length=1, max_length=512)] = None,
 ):
+    if from_date and order != "scheduled":
+        raise HTTPException(422, "from requires order=scheduled.")
+    query = page_query(order, state, from_date, cursor)
     with database_errors():
         database = get_database()
         await ensure_indexes(database)
         items = (
-            await database.bookings.find({"state": state} if state else {})
-            .sort([("updated_at", -1), ("_id", -1)])
-            .limit(limit)
-            .to_list(length=limit)
+            await database.bookings.find(query)
+            .sort(SORTS[order])
+            .limit(limit + 1)
+            .to_list(length=limit + 1)
         )
-    return {"items": [_public(item) for item in items]}
+    more = len(items) > limit
+    items = items[:limit]
+    return {
+        "items": [_public(item) for item in items],
+        "next_cursor": next_cursor(items[-1], order, state, from_date) if more else None,
+    }
 
 
 @router.get("/bookings/{booking_id}", response_model=BookingDetail)

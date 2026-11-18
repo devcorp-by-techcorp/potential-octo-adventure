@@ -15,7 +15,7 @@ def test_committed_exports_are_complete_and_current():
         assert (ROOT / name).read_text() == expected, name
     manifest = json.loads(generated["manifest.json"])
     assert manifest["validationApplied"] is False
-    assert sum(len(c["indexes"]) for c in manifest["collections"].values()) == 70
+    assert sum(len(c["indexes"]) for c in manifest["collections"].values()) == 72
     for item in manifest["collections"].values():
         for source in item["sources"]:
             assert (ROOT.parent.parent / source).is_file()
