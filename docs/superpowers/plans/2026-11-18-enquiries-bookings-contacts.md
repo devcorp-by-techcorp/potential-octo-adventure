@@ -61,7 +61,7 @@ See `docs/development/assessment-2026-11-18.md` for the full review.
 - **Every removal is recorded.** Each task lists its trims. Anything removed but not listed fails
   review.
 - **Existing tests are never deleted to get green.** A replaced check is listed in its task, and
-  the controller lists it on PR #8.
+  the controller lists it on PR #11.
 - **No change to `.github/workflows/`, `railway.toml` or Railway settings.** Adding suites to
   `apps/mobile/package.json` `e2e` or to `e2e/run.js` is allowed (the owner was told). Anything
   beyond that: stop and ask.
@@ -76,7 +76,7 @@ See `docs/development/assessment-2026-11-18.md` for the full review.
 - **The Illuminate Kids panels** (`KidsOverview`) on the Dashboard, Bookings, Inquiries and Tracker
   stay seeded, keep their headings, and gain a visible label: "Sample data until Illuminate Kids is
   connected."
-- **Draft PR #8 only.** Never approve or merge.
+- **Draft PR #11 only** (PR #8 merged on 18 November). Never approve or merge.
 - **The test environment:**
   - Start dockerd, then run `bash backend/tests/start_mongodb.sh`. If it reports a name conflict,
     first run `docker rm -f studio-suite-ci-mongo`.
@@ -570,7 +570,7 @@ Behaviour:
   - "Native verification: NOT RUN", with the step-2 manual items added to the checklist: an enquiry from the phone, triage, a booking state move, and the cache cleared after sign-out.
 - [ ] **Step 4: Update `app-work-plan.md`:**
   - step 2's status;
-  - the open items: the web portal's broken `DELETE /api/studio/client-access/{id}` call, the native reconnect limit (no NetInfo), and the trimmed list (pointing at the spec table and the PR #8 comments).
+  - the open items: the web portal's broken `DELETE /api/studio/client-access/{id}` call, the native reconnect limit (no NetInfo), and the trimmed list (pointing at the spec table and the PR #11 comments).
 - [ ] **Step 5: Commit.**
 
 **Trimmed in this task:** none.
@@ -581,7 +581,7 @@ Behaviour:
 
 After each task passes review, the controller:
 1. pushes the branch;
-2. posts one PR #8 comment listing the task's trims and replaced checks, with columns: surface, trimmed, why, restores in, files;
+2. posts one PR #11 comment listing the task's trims and replaced checks, with columns: surface, trimmed, why, restores in, files;
 3. writes one Empirical record per trim in `studio-suite_v2`, tagged `potential-octo-adventure`, `studio-suite`, `trimmed-surface` and the surface name;
 4. appends every ruling to the progress ledger.
 

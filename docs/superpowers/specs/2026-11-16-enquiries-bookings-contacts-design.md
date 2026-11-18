@@ -32,7 +32,7 @@ data and has been tested.
 3. **Every trimmed feature, service or function is recorded**, so it can be built back into the
    page it came from. Each record goes in three places:
    - this document;
-   - a comment on the working-branch PR (#8);
+   - a comment on the working-branch PR (#11; #8 merged before the build began);
    - an Empirical record in the `studio-suite_v2` workspace, tagged `trimmed-surface`.
 
    A temporary loss of features is accepted; a permanent, unrecorded loss is not.
@@ -286,7 +286,7 @@ suites already do. Controls keep accessible labels. Errors use `accessibilityRol
 ## The trimmed-surface record
 
 - **This document's table** is the starting list. The implementation plan carries it per task.
-- **PR #8:**
+- **PR #11:**
   - after each reviewed task, one comment lists what that task trimmed, using the same columns
     (surface, trimmed, why, restores in, files touched);
   - a final consolidated comment lists everything.

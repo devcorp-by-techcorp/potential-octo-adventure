@@ -37,8 +37,8 @@ keep running until the Expo app matches them, and are then retired.
 
 | Step | Scope | Status |
 | --- | --- | --- |
-| 1. Foundation | API client, hybrid sign-in, sessions that survive restarts, route guards, browser tests against a real backend | **Merged** in [PR #7](https://github.com/devcorp-by-techcorp/potential-octo-adventure/pull/7); the sign-out follow-up is in PR #8. Native is not yet run on a device. |
-| 2. Enquiries, bookings and contacts | Public enquiry form, inquiry triage, bookings, shoot tracker, contacts and dashboard, all on endpoints that already exist | Design approved; plan reviewed and awaiting owner approval |
+| 1. Foundation | API client, hybrid sign-in, sessions that survive restarts, route guards, browser tests against a real backend | **Merged** in [PR #7](https://github.com/devcorp-by-techcorp/potential-octo-adventure/pull/7); the sign-out follow-up merged in PR #8. Native is not yet run on a device. |
+| 2. Enquiries, bookings and contacts | Public enquiry form, inquiry triage, bookings, shoot tracker, contacts and dashboard, all on endpoints that already exist | **In progress** in draft PR #11 |
 | 3. Content, documents and client portal home | The backend partly supports these | Planned |
 | 4. New backend services | Inbox and e-signature, finance (invoices, expenses, GST/BAS, audit trail), Illuminate Kids, staff management | Planned |
 | 5. Galleries and prints | Depends on the media Worker being deployed | Planned |
@@ -60,11 +60,11 @@ Done since 16 November:
 - the step 2 plan, reviewed against the backend on 18 November
   (`docs/development/assessment-2026-11-18.md`).
 
-Next:
-1. **The owner approves the step 2 plan**
-   (`docs/superpowers/plans/2026-11-18-enquiries-bookings-contacts.md`).
-2. **Build it** task by task with subagent-driven development. Start with Tasks 1 and 2 (backend
-   only), then Task 3 (data layer). Each task gets an independent review before the next starts.
+- the owner approved the amended plan and started the build on 18 November, in draft PR #11.
+
+Next: **continue the step 2 build** in PR #11, task by task
+(`docs/superpowers/plans/2026-11-18-enquiries-bookings-contacts.md`). The ticked boxes in
+PR #11's description show progress. Each task gets an independent review before the next starts.
 
 ## Open items from step 1
 
