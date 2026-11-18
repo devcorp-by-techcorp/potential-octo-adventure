@@ -1,6 +1,6 @@
 # Step 2: enquiries, bookings and contacts on real data
 
-Date: 16 November 2026. Status: draft for owner approval.
+Date: 16 November 2026. Status: approved by the owner on 18 November 2026, including the calls listed at the end.
 
 This is step 2 of the Studio Suite app work plan (`docs/development/app-work-plan.md`). Step 1
 (`2026-11-15-app-foundation-design.md`) built the API client, hybrid sign-in and route guards.
